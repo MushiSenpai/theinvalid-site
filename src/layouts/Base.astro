@@ -1,0 +1,55 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'theinvalid — Madhan Kumar Reddy',
+  description = 'AI Infrastructure Operator. I spec, direct LLMs, and verify. Sovereign local LLM, video and audio stacks on an RTX 5090 — all public, benchmarks and failures included.',
+} = Astro.props;
+
+const path = Astro.url.pathname;
+const current = (p: string) =>
+  (p === '/' ? path === '/' : path.startsWith(p)) ? 'page' : undefined;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="alternate" type="application/rss+xml" title="theinvalid blog" href="/rss.xml" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    <nav class="site">
+      <a class="brand" href="/">theinvalid<span style="color: var(--accent)">.me</span></a>
+      <a href="/projects" aria-current={current('/projects')}>projects</a>
+      <a href="/blog" aria-current={current('/blog')}>blog</a>
+      <a href="/resume" aria-current={current('/resume')}>resume</a>
+      <a href="https://github.com/MushiSenpai" rel="me">github</a>
+    </nav>
+    <main>
+      <slot />
+    </main>
+    <footer class="site">
+      <p>
+        Built by directing LLMs against specs — <a href="/resume#how-i-work--read-this-first">here's exactly how</a>.
+        No trackers, no cookies, no JavaScript frameworks.
+      </p>
+      <p>
+        © 2026 Madhan Kumar Reddy ·
+        <a href="https://github.com/MushiSenpai">GitHub</a> ·
+        <a href="https://www.linkedin.com/in/reddymk/">LinkedIn</a> ·
+        <a href="/rss.xml">RSS</a>
+      </p>
+    </footer>
+  </body>
+</html>

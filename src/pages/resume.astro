@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import { Content as Resume } from '../content/resume.md';
+---
+
+<Base
+  title="Resume — Madhan Kumar Reddy"
+  description="AI Infrastructure Operator — I spec, direct LLMs, and verify. Resume, honestly written."
+>
+  <Resume />
+  <hr />
+  <p style="font-family: var(--mono); font-size: 0.85rem; color: var(--muted)">
+    Want this as a file? <a href="/resume.md" download>Download the markdown</a> —
+    same content, no tracking pixel, nothing hidden in the formatting.
+  </p>
+</Base>

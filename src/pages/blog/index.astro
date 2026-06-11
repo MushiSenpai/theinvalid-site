@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-SG', { year: 'numeric', month: 'short', day: '2-digit' });
+---
+
+<Base title="Blog — theinvalid.me" description="Failures, decisions, and what they cost — the build log of a sovereign AI stack.">
+  <h1>The failure log</h1>
+  <p style="color: var(--muted)">
+    Why abandoned plans get written up: the dead ends were the expensive part,
+    so they're the valuable part. New posts as the work happens.
+  </p>
+  <ul class="postlist">
+    {posts.map((post) => (
+      <li>
+        <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
+        <span>
+          <a href={`/blog/${post.id}`}>{post.data.title}</a>
+          <br /><span style="color: var(--muted); font-size: 0.9rem">{post.data.description}</span>
+        </span>
+      </li>
+    ))}
+  </ul>
+</Base>

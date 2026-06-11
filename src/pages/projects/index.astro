@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<Base title="Projects — theinvalid.me">
+  <h1>Projects</h1>
+  <p style="color: var(--muted)">
+    Three infrastructure stacks and the products built on them. Every repo is
+    public; statuses are honest — <code>building</code> means building.
+  </p>
+  {projects.map((p) => (
+    <article class="card">
+      <h3>
+        <a href={`/projects/${p.id}`}>{p.data.title}</a>
+        <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+      </h3>
+      <p class="oneliner">{p.data.oneliner}</p>
+      <p class="meta">
+        <span>{p.data.stack.join(' · ')}</span>
+        <a href={p.data.repo}>repo ↗</a>
+      </p>
+    </article>
+  ))}
+</Base>

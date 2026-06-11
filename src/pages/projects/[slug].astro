@@ -1,0 +1,43 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((p) => ({ params: { slug: p.id }, props: { project: p } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const posts = (await getCollection('blog', (e) => e.data.project === project.id)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-SG', { year: 'numeric', month: 'short', day: '2-digit' });
+---
+
+<Base title={`${project.data.title} — theinvalid.me`} description={project.data.oneliner}>
+  <h1>{project.data.title} <span class={`badge ${project.data.status}`}>{project.data.status}</span></h1>
+  <p style="color: var(--muted)">{project.data.oneliner}</p>
+  <p class="meta" style="font-family: var(--mono); font-size: 0.85rem;">
+    <a href={project.data.repo}>{project.data.repo.replace('https://', '')} ↗</a>
+    &nbsp;·&nbsp; {project.data.stack.join(' · ')}
+  </p>
+  <hr />
+  <Content />
+
+  {posts.length > 0 && (
+    <>
+      <h2>Posts about this project</h2>
+      <ul class="postlist">
+        {posts.map((post) => (
+          <li>
+            <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
+            <a href={`/blog/${post.id}`}>{post.data.title}</a>
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+</Base>
