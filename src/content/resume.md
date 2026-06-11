@@ -100,7 +100,7 @@ Two intentional breaks (2014–2016, 2017–2023): recovery from burnout, care f
 - **Field AI Deployment Specialist / On-Premises AI Solutions Engineer** — deploying local models inside client facilities where data cannot leave the building (this is literally what my home lab practices daily)
 - **AI Implementation Consultant / Solutions Delivery Manager** — translating messy client requirements into rigid specs for AI execution
 - **Sovereign AI Infrastructure Planner** — self-hosted, private-network, open-weight deployments
-- **AI Data Curation & Localization roles** — built on the 36-language QC instincts
+- **AI Data Curation & Localization** — the same cross-language error-spotting I did on 36 languages of studio subtitles at Deluxe, applied to AI training-data quality
 
 Fast learner, comfortable in roles I haven't done before; equally at home as a one-person operation or inside a team. **Open to international project-to-project travel.**
 
