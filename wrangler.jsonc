@@ -1,0 +1,10 @@
+{
+  // Cloudflare Workers static-assets config — the modern replacement for
+  // classic Pages. `npx wrangler deploy` uploads ./dist as edge-served
+  // static files. No Worker code runs; this site is pure static.
+  "name": "theinvalid-site",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}
