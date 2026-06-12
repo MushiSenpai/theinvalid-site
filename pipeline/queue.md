@@ -250,3 +250,11 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | E-12 | H | E1c: SAM3 video pipeline grafted into VOID via direct API-graph surgery (4 video nodes replace SAM3_Detect, quadmask rewired). Root infra fix: comfy-env==0.3.89 was a missing pip dep silently disabling ALL SAM3 *video* nodes (image SAM3_Detect came from same pack but loaded). Ghost reduced not eliminated on worst-case clip — honest finding: mask-tracking fixed, residual is inpaint-quality limit | E1c bench 2026-06-12 | unmined |
 | E-13 | M | Worst-case test selection inflates failure: subject behind transparent glassware in low light is near-impossible for any inpainter; bench client-readiness on REPRESENTATIVE footage, document the hard case separately | E1c | unmined |
 | E-14 | M | Quantitative frame-diff metrics need a motion-free reference region — measuring a ghost box that overlaps a spinning fan reports fan motion as ghost energy (false null result); pick static background for deltas | E1c quant attempt | unmined |
+
+## Coverage-audit additions (2026-06-13, gaps found vs stack docs)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| S-16 | H | FlashInfer MoE backend is broken on consumer Blackwell (SM_120) — Nemotron MoE crashes; `--moe-backend triton` is the fix. Exact-error SEO gold | Decision Log + sovereign README | unmined |
+| C-16 | M | SeedVR2 is FP16-ONLY (NVFP4 port fails, VAE/DiT entangled), needs multi-step 720→1080→2160 not one jump, blocks_to_swap 32, and "never 30s+ per batch" is the health signal | creative catalogue v1.4 Crystalforge gotcha | unmined |
+| C-17 | L | Distilled vs base run-settings are NOT interchangeable: distilled = 4 steps/CFG 1.0 (raising steps hurts), base = 20 steps/FluxGuidance 3.5 (4 steps = soft/under-formed). Same model family, opposite knobs | catalogue Flashfire/Goldsmith gotchas | unmined |
+| S-17 | L | Hunyuan is NOT MoE — single sampler is correct (vs Wan 2.2 which REQUIRES two); applying the two-sampler fix to Hunyuan would be wrong | catalogue Hunyuan "DO-NOT-TOUCH" | unmined |
