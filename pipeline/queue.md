@@ -80,6 +80,21 @@ Format rules: PIPELINE.md.
 **Sources:** creative repo benchmarks.csv Vanisher row (2026-06-12); EXECUTION-PLAN E1 entry; /tmp/e1-frames methodology (frame-delta vs control region).
 **Targets:** linkedin, reddit:r/StableDiffusion, hn
 
+## [queued] the-bug-was-a-zero-size-stack
+**Angle:** A Flutter game rendered pure blank — and three sophisticated theories (dual-GPU passthrough, the Flame engine, "X11 screenshots of GL animations lie") were all wrong. The fix was one line: a Stack sizes itself to its largest NON-positioned child, and a conditional `SizedBox.shrink()` overlay collapsed the whole game to 0×0 during play. What found it: replacing the subtree with a red ColoredBox and bisecting — plus a human eyewitness report that falsified the lying-screenshots theory. Debug by bisection, not theory; and when your verification tool might be lying, verify the verifier.
+**Sources:** komorebi repo CHANGELOG 1.1.1 + commit 3ed3b9d (regression test); session memory 2026-06-12.
+**Targets:** linkedin, reddit:r/FlutterDev, hn
+
+## [queued] i-slept-while-the-llm-shipped-five-releases
+**Angle:** "Finish all the phases, I'm going to sleep." Overnight: a pomodoro module, a physics tower game, v1.0 polish with whole-DB export, and an online leaderboard — each phase tested, committed, CI-green before the next began. The honest parts: the safety classifier refused to let the agent install services on production infra unattended (correctly), so the deploy became a script-as-deliverable blessed in the morning; one "lesson" recorded overnight turned out to be wrong and was corrected by daylight. Method post: phase gates, CI as the night watchman, and why autonomy needs refusal points.
+**Sources:** komorebi repo commits e3f5998→19ebcd1 + CHANGELOG 0.7.0–1.1.0; server/arena/deploy.sh; session memory.
+**Targets:** linkedin, hn
+
+## [queued] multiplayer-without-servers-seed-the-rng-with-the-date
+**Angle:** Real-time multiplayer needs WebSockets, state sync, and anti-cheat. A daily duel needs none of it: seed the piece RNG with the UTC date and everyone on Earth stacks the same blocks that day — a leaderboard row is the only network traffic. Fair, async, offline-tolerant competition from one integer. When "play together" actually means "compare honestly," determinism is the whole server.
+**Sources:** komorebi lib/services/arena_api.dart (dailyMode/dailySeed) + seed-determinism test; server/arena/README.md modes section.
+**Targets:** linkedin, reddit:r/gamedev, hn
+
 ## [manual] why-theinvalid-dot-me
 **Angle:** The name story — reclaiming the worst insult. Personal; the human writes this one.
 **Targets:** linkedin
@@ -194,6 +209,16 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | P-16 | M | Unit tests don't cover seams: a function reduced to return-None passed 24 green tests; the smoke test added after caught a real regression in hours | LESSONS §19-20, bugs 8 | unmined |
 | P-17 | L | Common Voice moved to Mozilla Data Collective (Oct 2025): HF repos are stubs, no search API (enumerate sitemap.xml), per-dataset web terms gate, CSV field-limit overflow | DEVLOG session 6 | unmined |
 | P-18 | L | concat demuxer wants uniform streams (the establishing shot carries silent AAC for this); alpha intermediates need ProRes4444/VP9 — libx264 cannot | LESSONS §5, §11 | unmined |
+| P-19 | H | Flutter Stack sizes to its largest NON-positioned child — a conditional SizedBox.shrink() collapsed a game view to 0×0; red-box bisection beat three days of GPU/engine theories | komorebi 3ed3b9d, CHANGELOG 1.1.1 | queued (zero-size-stack post) |
+| P-20 | M | When the verification tool might lie, verify the verifier: blank X11 captures of a live GL window spawned a false lesson; a human eyewitness falsified it — keep eyewitnesses in the loop | komorebi session 2026-06-12 | queued (zero-size-stack post) |
+| P-21 | M | drift stream `.first` inside mutations/dialogs deadlocks under widget-test fake-async (bit twice); reads in write paths use one-shot get() | komorebi CHANGELOG 0.3.0 + 0.6.0 fixes | unmined |
+| P-22 | H | Date-seeded RNG = async multiplayer with zero realtime infra: same daily piece sequence for everyone, scores compare fairly | komorebi arena_api.dart dailySeed | queued (date-seed post) |
+| P-23 | M | Overnight autonomous phases with CI gates; safety classifier correctly refused unattended prod-VPS installs → ship the deploy as an idempotent script to bless in the morning | komorebi overnight run 2026-06-12 | queued (slept-while-shipping post) |
+| P-24 | M | GitHub macOS runners give a Linux-only shop continuous iOS/macOS compile verification (free on public repos); signing stays the only Mac-bound step | komorebi ci.yml apple job | unmined |
+| P-25 | L | 800MB /tmp: flutter test/build scratch dirs fill it and runs die mid-suite or hang — export TMPDIR to the big disk | komorebi session | unmined |
+| P-26 | L | System openjdk was JRE-only → Gradle "toolchain does not provide JAVA_COMPILER"; user-space Temurin JDK + flutter config --jdk-dir fixes without sudo | komorebi android build | unmined |
+| P-27 | L | ListView(children:) in bottom sheets is viewport-lazy — scrollUntilVisible before asserting below-the-fold widgets in tests | komorebi widget tests | unmined |
+| P-28 | L | Game loops without an engine: event-loop Timer + CustomPainter repaint Listenable beats setState-per-frame from a Ticker (and sidesteps embedder quirks) | komorebi tower_view.dart | unmined |
 
 ## Bench & headless-ComfyUI session (E, 2026-06-12)
 | id | pri | lesson / decision | source | status |
