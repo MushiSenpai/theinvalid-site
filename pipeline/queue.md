@@ -218,6 +218,9 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | P-15 | M | Cast diversity must be explicit: score ties collapsed an entire cast (narrator included) onto dict-order-first | bug 10 + en-parity fix | unmined |
 | P-16 | M | Unit tests don't cover seams: a function reduced to return-None passed 24 green tests; the smoke test added after caught a real regression in hours | LESSONS §19-20, bugs 8 | unmined |
 | P-17 | L | Common Voice moved to Mozilla Data Collective (Oct 2025): HF repos are stubs, no search API (enumerate sitemap.xml), per-dataset web terms gate, CSV field-limit overflow | DEVLOG session 6 | unmined |
+| P-19 | H | "Run it together or break it down?" wasn't the question: a 1.4GB PDF was 4684 vertical webtoon strips, not 179 pages — inspect before deciding | comic-narrator session 9 | unmined |
+| P-20 | M | Webtoons break paged pipelines 3 ways: 300-DPI ingestion OOMs (extract native), tall strips blind the vision encoder (slice by gutters), ~20.5k panels = ~14 GPU-days | DEVLOG session 9, Track F | unmined |
+| P-21 | M | The right answer to an impossible batch is a slicer + a one-episode stress test, not a 2-week monolith — same lesson as the first real manga page | session 9 | unmined |
 | P-18 | L | concat demuxer wants uniform streams (the establishing shot carries silent AAC for this); alpha intermediates need ProRes4444/VP9 — libx264 cannot | LESSONS §5, §11 | unmined |
 | P-19 | H | Flutter Stack sizes to its largest NON-positioned child — a conditional SizedBox.shrink() collapsed a game view to 0×0; red-box bisection beat three days of GPU/engine theories | komorebi 3ed3b9d, CHANGELOG 1.1.1 | queued (zero-size-stack post) |
 | P-20 | M | When the verification tool might lie, verify the verifier: blank X11 captures of a live GL window spawned a false lesson; a human eyewitness falsified it — keep eyewitnesses in the loop | komorebi session 2026-06-12 | queued (zero-size-stack post) |
