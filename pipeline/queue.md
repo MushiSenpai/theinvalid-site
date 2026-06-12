@@ -204,3 +204,8 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | E-4 | M | creative-mode.sh pointed at a compose dir that never existed — phantom-path drift, found only when actually run | this session | unmined |
 | E-5 | M | VOID outputs half-resolution + caps frames — editing tier needs the upscale pass chained for deliverables | E1 bench | unmined |
 | E-6 | L | Chrome+extension refused a localhost port that curl could reach — when one client fails, try another before debugging the server | this session | unmined |
+| E-7 | H | E1b: ghost root-caused — Vanisher uses image-mode SAM3_Detect (no temporal propagation) so masks drop when subject is occluded; same bug class as the Shapeshifter fix. Frame-cap and fill-prompt fixes verified (6s full duration) | E1b bench 2026-06-12 | unmined |
+| E-8 | M | Custom-node updates shift widget order — saved UI workflows silently misalign values into wrong slots (resolution=0); construct API prompts from live /object_info instead | crystalforge debugging | unmined |
+| E-9 | M | After restarting ComfyUI, the browser frontend keeps a stale node registry — reload the page or unknown-class nodes serialize without class_type | same | unmined |
+| E-10 | M | Runtime-pip-rot case #3: SeedVR2 deps (rotary_embedding_torch, omegaconf) died with container recreation; dry-import loop (import → catch ModuleNotFoundError → pip install → repeat) finds the full set in one pass | same | unmined |
+| E-11 | L | The fill prompt said 'empty sidewalk daylight' in a laboratory scene — template prompts left over from other tests quietly degrade results; always read the actual widget values | E1b | unmined |
