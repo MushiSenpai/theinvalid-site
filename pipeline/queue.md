@@ -221,6 +221,10 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | P-19 | H | "Run it together or break it down?" wasn't the question: a 1.4GB PDF was 4684 vertical webtoon strips, not 179 pages — inspect before deciding | comic-narrator session 9 | unmined |
 | P-20 | M | Webtoons break paged pipelines 3 ways: 300-DPI ingestion OOMs (extract native), tall strips blind the vision encoder (slice by gutters), ~20.5k panels = ~14 GPU-days | DEVLOG session 9, Track F | unmined |
 | P-21 | M | The right answer to an impossible batch is a slicer + a one-episode stress test, not a 2-week monolith — same lesson as the first real manga page | session 9 | unmined |
+| P-22 | H | Per-clip AAC slices + -c copy concat = boundary clicks AND long dead-audio spans; mux ONE continuous narration over the assembled video instead | comic-narrator session 10 | unmined |
+| P-23 | M | A camera move that "works in one scene and not the next" is the wrong primitive — a static frame + speaker spotlight halo beats zoom-roulette | session 10 review | unmined |
+| P-24 | M | We built a forensic vision extractor then drove the render from crude bboxes; the unlock is asking for director signals (shot_type, action_intensity, reading_path) | TTS-RESEARCH.md | unmined |
+| P-25 | L | SFX one-shots must be trimmed (~2.5s) or N action cues stretch a panel to ~19s of dwell | session 10 | unmined |
 | P-18 | L | concat demuxer wants uniform streams (the establishing shot carries silent AAC for this); alpha intermediates need ProRes4444/VP9 — libx264 cannot | LESSONS §5, §11 | unmined |
 | P-19 | H | Flutter Stack sizes to its largest NON-positioned child — a conditional SizedBox.shrink() collapsed a game view to 0×0; red-box bisection beat three days of GPU/engine theories | komorebi 3ed3b9d, CHANGELOG 1.1.1 | queued (zero-size-stack post) |
 | P-20 | M | When the verification tool might lie, verify the verifier: blank X11 captures of a live GL window spawned a false lesson; a human eyewitness falsified it — keep eyewitnesses in the loop | komorebi session 2026-06-12 | queued (zero-size-stack post) |
