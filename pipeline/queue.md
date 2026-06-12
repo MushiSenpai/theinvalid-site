@@ -95,6 +95,11 @@ Format rules: PIPELINE.md.
 **Sources:** komorebi lib/services/arena_api.dart (dailyMode/dailySeed) + seed-determinism test; server/arena/README.md modes section.
 **Targets:** linkedin, reddit:r/gamedev, hn
 
+## [queued] i-benchmarked-an-ai-avatar-pipeline-end-to-end
+**Angle:** E2: photo + script → cloned-voice talking-head video, fully local, in ~5 min (TTS 25s + LatentSync 280s for 34.5s of speech). Gross sync verifiably correct (mouth tracks speech/silence against ffmpeg silencedetect), but lip-interior artifacts kill broadcast close-ups while staying fine for social-format. The honest deliverability line: avatar work is sellable at small format today, not at full-frame.
+**Sources:** audio repo benchmarks.md E2 result; outputs/audio/lip-sync/5d4c4fca_lipsync.mp4.
+**Targets:** linkedin, reddit:r/LocalLLaMA
+
 ## [manual] why-theinvalid-dot-me
 **Angle:** The name story — reclaiming the worst insult. Personal; the human writes this one.
 **Targets:** linkedin
