@@ -1,38 +1,49 @@
-# Blog topic queue — single intake for all projects
+# Blog queue + lesson backlog — the single repository
 
-Format and rules: see PIPELINE.md. The bot takes the FIRST `[queued]` block,
-top to bottom. Append new lessons at the position that matches their priority.
+Two sections. **§A** is the FIFO publication queue (the Wednesday bot takes the
+FIRST `[queued]` block). **§B** is the comprehensive backlog: EVERY issue,
+failure, and decision across ALL projects, past and future, with priority.
+Topics get promoted §B → §A by writing a topic block. Every work session that
+produces a lesson appends to §B (or straight to §A if it's clearly a post).
+Format rules: PIPELINE.md.
 
 ---
 
+# §A — Publication queue (FIFO)
+
 ## [queued] your-firewall-isnt-protecting-your-docker-containers
 **Angle:** Docker silently bypasses UFW for every published port — found because a phone on my own Wi-Fi could open my ComfyUI with zero auth. The DOCKER-USER chain fix, and why you must verify from an untrusted device.
-**Sources:** sovereign-ai-stack repo LESSONS.md (Docker bypasses UFW); scripts/harden-docker-firewall.sh; chat 2026-06-10.
+**Sources:** sovereign-ai-stack repo LESSONS.md (Docker bypasses UFW); scripts/harden-docker-firewall.sh; backlog I-2.
 **Targets:** linkedin, reddit:r/selfhosted, hn
+
+## [queued] a-32gb-gpu-is-a-budget-not-a-suggestion
+**Angle:** The VRAM discipline that makes one RTX 5090 run an LLM stack, a video stack, and an audio stack: unplugging the monitor from the GPU to run display on onboard graphics (~25K context tokens reclaimed), never co-loading models — purge VRAM, fresh-load per task, sequential modes with handoff scripts — and why NVFP4 was the only quantization leaving real KV-cache headroom.
+**Sources:** Decision Log §12 (sequential workflow), §13 (iGPU switch), §7 (180K ctx math), README VRAM tables; backlog S-1..S-5.
+**Targets:** linkedin, reddit:r/LocalLLaMA, hn
 
 ## [queued] nightly-wheels-are-a-depreciating-asset
 **Angle:** Rebuilding a one-month-old Dockerfile failed twice because "install from the nightly index" instructions expire in weeks; the working container had silently drifted to stable torch. Pin what's proven; runtime pip installs rot.
-**Sources:** audio-stack repo LESSONS.md ("The June rebuild"); EXECUTION-PLAN B1 entry; worker-pip-freeze-2026-06-10.txt.
+**Sources:** audio-stack repo LESSONS.md ("The June rebuild"); worker-pip-freeze-2026-06-10.txt; backlog I-4.
 **Targets:** linkedin, reddit:r/LocalLLaMA
 
 ## [queued] moving-dockers-data-root-doesnt-move-containerd
-**Angle:** /var hit 99% weeks after I "moved Docker to the big disk" — because image builds live in containerd's store, which is a different root. How the watchdog caught it, how to find the eater, the migration script.
-**Sources:** EXECUTION-PLAN 2026-06-11 entries; scripts/move-containerd-root.sh; chat 2026-06-11.
+**Angle:** /var hit 99% weeks after I "moved Docker to the big disk" — image builds live in containerd's store, a different root. How the watchdog caught it day-1, finding the eater, the migration script.
+**Sources:** EXECUTION-PLAN 2026-06-11; scripts/move-containerd-root.sh; backlog I-3.
 **Targets:** linkedin, reddit:r/selfhosted, hn
 
 ## [queued] six-hours-in-tensorrt-llm-so-you-dont-have-to
-**Angle:** TRT-LLM AutoDeploy can't trace multimodal-mandatory models; NVIDIA's own benchmark paper uses vLLM for this model. How to recognize when to stop digging.
-**Sources:** sovereign stack doc Decision Log §1–6.
+**Angle:** Eight distinct failures ending at AutoDeploy's inability to trace multimodal-mandatory models; NVIDIA's own benchmark paper uses vLLM. How to recognize when to stop digging.
+**Sources:** Decision Log §3.1–3.8, §4; backlog S-9.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
 
 ## [queued] what-i-designed-in-may-vs-what-shipped-in-june
-**Angle:** Open with the AI-generated architecture image (gorgeous, wrong in 7+ places within a month); close with the versioned Mermaid diagram. Plans are hypotheses; diagrams that can't be diffed will drift.
-**Sources:** the v1.6.4 image (user's exports); Decision Log §v1.6-1, §v1.7-1; sovereign repo README Mermaid section.
+**Angle:** The AI-generated architecture image (gorgeous, wrong in 7+ places within a month) vs the versioned Mermaid diagram. Plans are hypotheses; diagrams that can't be diffed will drift — and so do spec status lines (the audio spec said "Planned" for 3 weeks after the system was built).
+**Sources:** the v1.6.4 image; Decision Log §v1.6-1, §v1.7-1; backlog M-6, M-7.
 **Targets:** linkedin, hn
 
 ## [queued] sovereignty-as-routing-not-policy
 **Angle:** Three LLM fallback chains, three guarantees — including the client profile that refuses to fall back, because silent degradation is worse than failure.
-**Sources:** sovereign stack doc §Provider Fallback Routing + §Sovereignty Tiers; repo README.
+**Sources:** sovereign doc §Provider Fallback Routing + §Sovereignty Tiers; backlog S-11.
 **Targets:** linkedin, reddit:r/selfhosted
 
 ## [queued] i-built-a-3-stack-ai-system-without-writing-code
@@ -42,20 +53,117 @@ top to bottom. Append new lessons at the position that matches their priority.
 
 ## [queued] the-sam3-mask-that-crashed-vace
 **Angle:** A days-long tensor-dimension bug that looked like a model problem and was a wiring problem: image-mode [1,H,W] masks vs video-mode [N,H,W].
-**Sources:** creative repo problems-and-solutions glossary; creative doc v1.5.1 changelog.
+**Sources:** creative repo problems-and-solutions glossary §8 + changelog; backlog C-7.
 **Targets:** reddit:r/StableDiffusion, linkedin
 
 ## [queued] 25-ways-the-audio-stack-install-deviated-from-its-spec
 **Angle:** Entry points lie, pin everything, the spec is a hypothesis — a tour of the LESSONS.md genre and why publishing failures beats hiding them.
-**Sources:** audio repo LESSONS.md (all sections).
+**Sources:** audio repo LESSONS.md (all); backlog A-1..A-6.
 **Targets:** linkedin, reddit:r/LocalLLaMA
 
 ## [queued] shipping-a-domain-site-and-offsite-backup-in-one-evening
-**Angle:** The small lessons nobody writes down: parking DNS records block custom domains, zone-scoped API tokens can't touch Pages, storage boxes ship with all access toggles off, and Cloudflare's Pages is quietly becoming Workers.
-**Sources:** EXECUTION-PLAN 2026-06-11 entries; theinvalid-site docs/SITE-DECISIONS.md §8.
+**Angle:** The small lessons nobody writes down: parking DNS records block custom domains, zone-scoped API tokens can't touch Pages/Workers, storage boxes ship with all access toggles off, restic sftp needs relative paths, and Cloudflare Pages is quietly becoming Workers.
+**Sources:** EXECUTION-PLAN 2026-06-11; SITE-DECISIONS.md §8; backlog I-5..I-9.
 **Targets:** linkedin, reddit:r/selfhosted
 
 ## [manual] why-theinvalid-dot-me
 **Angle:** The name story — reclaiming the worst insult. Personal; the human writes this one.
-**Sources:** personal.
-**Targets:** linkedin (site about-page derivative)
+**Targets:** linkedin
+
+---
+
+# §B — Lesson & decision backlog (comprehensive, all projects, forever)
+
+Priority: **H** = strong standalone post · **M** = good section/short post ·
+**L** = footnote material, fold into related posts.
+Status: `unmined` → `queued` (promoted to §A) → `published` (date).
+
+## Sovereign stack (S)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| S-1 | H | iGPU/headless decision: monitor off the 5090 → ~1GB VRAM / ~25K ctx reclaimed | Decision Log §13 | queued (32gb-budget) |
+| S-2 | H | Sequential modes: never co-load — purge VRAM, fresh-load per task | §12 | queued (32gb-budget) |
+| S-3 | H | NVFP4 over FP8/BF16: the only quant leaving real KV headroom on 32GB | §weights rationale | queued (32gb-budget) |
+| S-4 | M | 180K not 256K: leave 25% context headroom, bump only on real errors | §7 | queued (32gb-budget) |
+| S-5 | M | FP8 KV cache ≈ free 2× context for description tasks | §8 | queued (32gb-budget) |
+| S-6 | M | EVS off for forensic work: 30% slower beats missed details | §9 | unmined |
+| S-7 | M | Tiered triage (hero/secondary/category/atmospheric) stops hallucinated enumeration in dense scenes | §10 | unmined |
+| S-8 | M | Capture model reasoning traces as provenance for client work | §11 | unmined |
+| S-9 | H | TRT-LLM: 8 distinct failures (schema, subcommand, mamba_ssm, CUTLASS, use_cache, HF_HUB_OFFLINE, deps, pixel_values) | §3.1–3.8 | queued (trt-llm post) |
+| S-10 | M | KV-cache ceiling: 3–5 concurrent agents max; "60-agent local swarm" claims = serialized or cloud fan-out | v1.4 analysis | unmined |
+| S-11 | H | Three profiles, three guarantees; client profile refuses fallback | §Routing | queued (sovereignty post) |
+| S-12 | M | Always-on CPU floor (llama.cpp, 60GB RAM): agents survive GPU purges | Phase 4.5 | unmined |
+| S-13 | L | llama.cpp builds <9283 lack nemotron_h_moe arch — rebuild after pulls | memory/lessons | unmined |
+| S-14 | M | Tool-evaluation checklist; "LLM recommends with zero trade-offs" = red flag | §6, v1.4 | unmined |
+| S-15 | L | Keep failed-attempt artifacts on disk deliberately (TRT-LLM dirs) — they're the receipts | §15 | unmined |
+
+## Hermes / LiteLLM / cockpit (H)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| H-1 | M | `fallback_providers` is top-level in profile YAML — nested form silently ignored | memory/litellm-lessons | unmined |
+| H-2 | M | Profile-scoped .env pre-empts global .env (HERMES_HOME set before dotenv) | same | unmined |
+| H-3 | L | Provider slug `custom` not `openai_compatible` (v0.14 canonical list) | same | unmined |
+| H-4 | M | LiteLLM image ignores mounted config without explicit `--config` flag → database-only mode, cryptic 400s | same | unmined |
+| H-5 | L | LiteLLM needs both docker networks (postgres bridge + phoenix) for OTEL | same | unmined |
+| H-6 | L | Phoenix OTLP = gRPC :4317, not HTTP :4318 | same | unmined |
+| H-7 | M | COOKIE_SECURE=0 required for PWA over HTTP-on-tailscale (cookie RFC) | §v1.6.3-1 | unmined |
+| H-8 | M | Pin HERMES_DASHBOARD_SESSION_TOKEN or every restart breaks remote pairing | §v1.7-1 | unmined |
+| H-9 | L | Port collisions: verify actual ports (DeerFlow :2026 not :3000) before reserving | §v1.6.1-1, §v1.6.4-5 | unmined |
+| H-10 | M | Cockpit churn: Aion UI → 3rd-party PWA → official Desktop in 6 weeks — UI layers are the least stable part of the stack | §v1.6-1, §v1.7-1 | unmined |
+| H-11 | M | Free-tier cloud cascade (Option B): budget caps + cooldowns make $0 inference reliable | §v1.6.4-2 | unmined |
+
+## Creative stack (C)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| C-1 | H | Wan 2.2 "crystalline shadow": days-long artifact bug = missing two-sampler MoE chain (wiring, not model) | glossary §1 | unmined |
+| C-2 | M | FLUX 4B base vs distilled filename trap | glossary §2 | unmined |
+| C-3 | H | `docker system prune` deleted the ComfyUI image — prune is not housekeeping when containers are stopped | glossary §3 | unmined |
+| C-4 | M | Migrating docker data-root under three live stacks without breaking them | glossary §4 | unmined |
+| C-5 | M | Multi-stack boundary discipline: don't nuke the neighbors (shared daemon, shared GPU) | glossary §5 | unmined |
+| C-6 | M | Local patches (4× WanVideoWrapper VRAM) must be documented + re-applied after every update | glossary §6 | unmined |
+| C-7 | H | SAM3 image-mode vs video-mode masks crashed VACE (tensor dims) | glossary §8 + changelog | queued (sam3 post) |
+| C-8 | L | VOID subgraph "Prompt has no outputs" trap | glossary §7 | unmined |
+| C-9 | L | VACE color splotches = unconnected mask input | glossary §8 | unmined |
+| C-10 | L | flash_attn KeyError was a false alarm — read the actual traceback origin | glossary §9 | unmined |
+| C-11 | M | Tool churn (SeedVR2 v2.5, RTX VSR re-eval): re-verify "facts" monthly in fast ecosystems | glossary §10 | unmined |
+| C-12 | H | The reframe: client work is video EDITING not generation — changed the whole architecture tier | glossary §11, v1.3 | unmined |
+| C-13 | M | An upstream model repo vanished overnight — mirror critical dependencies, check licenses early | v1.5 changelog | unmined |
+| C-14 | M | VOID removed the object AND its reflection — capability discoveries belong in test logs | v1.4 notes | unmined |
+| C-15 | M | Forensic bridge: dense scene constraints starve diffusion of room to hallucinate | v1.5 bridge files | unmined |
+
+## Audio stack (A) — details in repo LESSONS.md
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| A-1 | H | Entry points lie: 3 of 5 model repos had different real entry points than their README | LESSONS.md | queued (25-ways post) |
+| A-2 | M | faster-whisper needs CTranslate2 conversion + preprocessor_config (n_mels silent corruption) | LESSONS.md | queued (25-ways) |
+| A-3 | M | Fish Speech pinned to v1.5.1: code and weights must move together | LESSONS.md | queued (25-ways) |
+| A-4 | M | Hallo2: six stacked fixes (xformers index, NCCL, GLES symlink, eager attn, output path, right repo org) | LESSONS.md | queued (25-ways) |
+| A-5 | M | YuE: LFS pointer stubs from plain git clone; sdpa patch; mono MP3 output | LESSONS.md | queued (25-ways) |
+| A-6 | M | RQ pattern: gateway enqueues, separate GPU worker consumes — and the worker needs the full nvidia runtime block | LESSONS.md | queued (25-ways) |
+
+## Infra / ops (I)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| I-1 | H | cron PATH ≠ shell PATH; monitor outcomes not exit codes; heartbeat the watchdog | post live | published 2026-06-10 |
+| I-2 | H | Docker bypasses UFW (DOCKER-USER chain fix; verify from untrusted device) | LESSONS.md | queued |
+| I-3 | H | Docker data-root move ≠ containerd store move (169GB on /var) | EXECUTION-PLAN | queued |
+| I-4 | H | Nightly wheels depreciate; runtime pip installs rot on container recreation | audio LESSONS | queued |
+| I-5 | M | Registrar parking DNS records block Cloudflare custom domains | 2026-06-11 | queued (one-evening) |
+| I-6 | M | Zone-scoped CF tokens can't manage Workers/Pages (account-level perm) | same | queued (one-evening) |
+| I-7 | M | Hetzner Storage Boxes ship with ALL access toggles off — looks like wrong password | same | queued (one-evening) |
+| I-8 | L | restic sftp needs relative path on storage boxes (`:./repo` not `:/repo`) | same | queued (one-evening) |
+| I-9 | L | Cloudflare Pages → Workers migration: new sites need wrangler.jsonc assets config | same | queued (one-evening) |
+| I-10 | L | smartd on Ubuntu: enable error is an alias quirk; real unit is smartmontools.service | 2026-06-10 | unmined |
+| I-11 | L | GitHub email-privacy rejects pushes with real email — use the noreply identity from commit #1 | same | unmined |
+| I-12 | M | Backup coverage inventory question: "can I re-download this?" — everything answering no goes in | backup.sh history | unmined |
+| I-13 | M | Docs referenced a script (agent-mode.sh) that never existed — phantom-reference drift | 2026-06-10 | unmined |
+| I-14 | M | GUI mode-picker at login: zenity + autostart beats remembering mode scripts | mode-picker.sh | unmined |
+
+## Products (P) — komorebi, comic narrator, arena
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| P-1 | M | ffmpeg zoompan requires even-aligned dimensions (2.5D parallax gotcha) | comic narrator session | unmined |
+| P-2 | M | Job-status contract between app and RQ gateway: design the status vocabulary first | comic narrator session | unmined |
+| P-3 | M | PocketBase as a one-binary leaderboard backend: anon-create capped + admin-only mutations | komorebi arena deploy | unmined |
+| P-4 | L | Fresh VPSes lack unzip — deploy scripts must self-install their tools | arena deploy.sh | unmined |
+| P-5 | M | Local-first app + opt-in online features: the sync boundary as a privacy feature | komorebi SPEC | unmined |

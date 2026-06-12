@@ -47,7 +47,21 @@ feed it, how to stop it.
 
 ## Feeding the queue (the "one single place")
 
-`pipeline/queue.md` is the only intake. A topic block looks like:
+`pipeline/queue.md` has TWO sections:
+
+- **§A Publication queue** — FIFO topic blocks the bot consumes.
+- **§B Lesson & decision backlog** — the COMPREHENSIVE repository: every
+  issue, failure, and design decision from every project, past and future,
+  as a prioritized table (H = strong standalone post, M = good section,
+  L = footnote). Statuses: `unmined` → `queued` → `published <date>`.
+
+**Standing convention (all projects, all sessions, forever):** the moment a
+lesson or decision happens, append a row to §B — or a full topic block to §A
+if it's clearly post-worthy. Promotion §B → §A = write the topic block and
+flip the row's status to `queued`. This is how future projects feed the blog
+automatically; the backlog is never "done."
+
+A §A topic block looks like:
 
 ```markdown
 ## [queued] some-slug-here
