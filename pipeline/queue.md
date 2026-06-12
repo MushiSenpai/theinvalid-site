@@ -75,6 +75,10 @@ Format rules: PIPELINE.md.
 **Angle:** A real manga page lost ALL its dialogue because Nemotron returned `"dialogues[]"` — the prompt's array notation — as literal JSON keys, and `.get("dialogues")` silently got nothing. Model output variance as a distribution: same prompt at temp 0.1 produced pixel bboxes, normalized floats, plain keys, bracket keys, and occasionally no JSON at all (json_repair returns a bare string; callers .get() and die). The discipline: normalize at the parse boundary, validate types, retry once per item.
 **Sources:** comic-manga-narrator docs/DEVLOG.md sessions 2+5 (bugs 3, 6, 9); docs/LESSONS.md §1-2; backlog P-6, P-7.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
+## [queued] i-benchmarked-open-source-object-removal-for-client-work
+**Angle:** E1 bench, honestly scored: VOID removed a person from real footage in 149s on an RTX 5090 (27GB peak) — mid-clip fill statistically as stable as untouched pixels (frame-deltas 7.0-8.0 vs 8.3 control), BUT a partial-removal ghost where the subject crouched, half-resolution output, and a truncated tail. The verdict: not client-deliverable yet, and exactly what to fix next. Numbers, frames, and the scoring method included.
+**Sources:** creative repo benchmarks.csv Vanisher row (2026-06-12); EXECUTION-PLAN E1 entry; /tmp/e1-frames methodology (frame-delta vs control region).
+**Targets:** linkedin, reddit:r/StableDiffusion, hn
 
 ## [manual] why-theinvalid-dot-me
 **Angle:** The name story — reclaiming the worst insult. Personal; the human writes this one.
@@ -190,3 +194,13 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | P-16 | M | Unit tests don't cover seams: a function reduced to return-None passed 24 green tests; the smoke test added after caught a real regression in hours | LESSONS §19-20, bugs 8 | unmined |
 | P-17 | L | Common Voice moved to Mozilla Data Collective (Oct 2025): HF repos are stubs, no search API (enumerate sitemap.xml), per-dataset web terms gate, CSV field-limit overflow | DEVLOG session 6 | unmined |
 | P-18 | L | concat demuxer wants uniform streams (the establishing shot carries silent AAC for this); alpha intermediates need ProRes4444/VP9 — libx264 cannot | LESSONS §5, §11 | unmined |
+
+## Bench & headless-ComfyUI session (E, 2026-06-12)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| E-1 | H | Driving ComfyUI headless via its OWN frontend: TCP proxy + browser preview + `app.loadGraphData()`/`app.queuePrompt()` — sidesteps UI-vs-API JSON formats AND subgraph conversion | this session | unmined |
+| E-2 | H | E1 bench results: 149s/27GB person removal, stable fill, t=0.5 ghost, half-res output | benchmarks.csv | queued (bench post) |
+| E-3 | M | ComfyUI container doesn't mount input/ — UI-uploaded videos die with container recreation; mount it or docker cp | compose inspection | unmined |
+| E-4 | M | creative-mode.sh pointed at a compose dir that never existed — phantom-path drift, found only when actually run | this session | unmined |
+| E-5 | M | VOID outputs half-resolution + caps frames — editing tier needs the upscale pass chained for deliverables | E1 bench | unmined |
+| E-6 | L | Chrome+extension refused a localhost port that curl could reach — when one client fails, try another before debugging the server | this session | unmined |
