@@ -10,6 +10,15 @@ Do exactly this, in order:
    (skip [manual] and [published ...] blocks). If none exists, print only
    "QUEUE-EMPTY" and stop.
 
+1b. BATCHING for backlog throughput: if the first [queued] §A topic is a
+   low-priority (L) roundup-style item, OR if §A has no [queued] topics but §B
+   has 3+ unmined L-priority rows sharing a theme (e.g. several ComfyUI gotchas,
+   several Docker traps), write ONE roundup post bundling 3-5 of them ("N hard-won
+   X gotchas, each of which cost me a day") instead of a single-lesson post. Mark
+   each bundled §B row [published <date> → <slug>]. High/Medium items always get
+   their own post — only L-items get batched. This drains the backlog ~2x faster
+   without diluting the strong standalone posts.
+
 2. Gather the raw material listed under **Sources:** for that topic (files in
    this repo, the public MushiSenpai GitHub repos via web if referenced, or
    the named local paths). Use ONLY verifiable facts from those sources —
