@@ -26,7 +26,7 @@ import Base from '../layouts/Base.astro';
     <h3>🛡️ Sovereign AI Deployment <span class="badge shipped">headline offer</span></h3>
     <p class="oneliner">A private LLM running inside your facility. Your data physically cannot reach a cloud API — enforced by routing, not by a promise.</p>
     <p>vLLM or llama.cpp on your hardware (or I spec the hardware to buy), with fallback chains that <em>fail loudly</em> rather than leak silently, Tailscale-only access, default-deny firewall, monitored backups, and a runbook your team can operate. The exact discipline I run my own stack on — <a href="/projects/sovereign-ai-stack">see it</a>, publicly, daily.</p>
-    <p class="meta"><strong>From SGD 3,000</strong> · 2 weeks spec + staging, 1 week on-site if needed</p>
+    <p class="meta"><strong>SGD 3,000–8,000 by scope</strong> (single-model single-box at the low end; multi-stack, multi-user, or compliance-documented deployments at the high end) · 2 weeks spec + staging, 1 week on-site if needed</p>
   </article>
 
   <article class="card">
@@ -39,8 +39,14 @@ import Base from '../layouts/Base.astro';
   <article class="card">
     <h3>🎬 Local Creative Pipelines</h3>
     <p class="oneliner">Object removal, 4K finishing, avatar videos, voice cloning, auto-dubbing — all on-prem.</p>
-    <p>Turnkey versions of my <a href="/projects/creative-stack">creative</a> and <a href="/projects/audio-stack">audio</a> stacks: a webtoon studio's <a href="/projects/comic-narrator">comic-to-video</a> pipeline, a marketing team's avatar ad-reads, a dubbing house's localization. I'm honest about the quality boundaries (representative footage: yes; broadcast close-ups: not yet) — the <a href="/blog">benchmarks are public</a>.</p>
-    <p class="meta"><strong>Removal SGD 25/sec (min 150) · Avatar video SGD 150 · Project quotes for pipelines</strong></p>
+    <p>Turnkey versions of my <a href="/projects/creative-stack">creative</a> and <a href="/projects/audio-stack">audio</a> stacks: a webtoon studio's <a href="/projects/comic-narrator">comic-to-video</a> pipeline, a marketing team's avatar ad-reads, a dubbing house's localization. I'm honest about the quality boundaries — the <a href="/blog">benchmarks are public</a> and prices are tiered by deliverable quality, not hype:</p>
+    <table style="font-size:0.85rem">
+      <tr><th>Tier</th><th>What you get</th><th>Object removal</th><th>Avatar video</th></tr>
+      <tr><td><strong>Draft</strong></td><td>fast preview, source resolution, no finishing</td><td>SGD 12/sec (min 80)</td><td>SGD 80</td></tr>
+      <tr><td><strong>Production</strong></td><td>QA'd removal + 1080p finish / social-grade avatar</td><td>SGD 25/sec (min 150)</td><td>SGD 150</td></tr>
+      <tr><td><strong>Delivery</strong></td><td>4K finish, multi-pass QA, revision included</td><td>SGD 40/sec (min 240)</td><td>quote</td></tr>
+    </table>
+    <p class="meta">Hard footage (low light, heavy occlusion) is quoted after a free sample frame — I'll tell you honestly if the tech isn't there yet. Rates evolve with the <a href="https://github.com/MushiSenpai/mushishi-creative-stack/blob/main/benchmarks/benchmarks.csv">public benchmarks</a>.</p>
   </article>
 
   <article class="card">

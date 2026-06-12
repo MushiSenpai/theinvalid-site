@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Case studies — theinvalid.me"
+  description="Real problems solved with local AI: comic-to-video automation, object removal on production footage, and sovereign LLM deployment — each as problem, solution, outcome, with honest limits."
+>
+  <h1>Case studies</h1>
+  <p style="color:var(--muted)">
+    Problem → solution → outcome. These are built and measured on my own stack —
+    where a number is from a real run I say so, and where something didn't work
+    I say that too. Client engagements will be added here (with permission) as
+    they happen.
+  </p>
+
+  <article class="card">
+    <h3>Comic page → narrated video, fully local</h3>
+    <p><strong>Problem.</strong> Turning static comic/manga pages into dramatized video normally means manual editing per panel, or cloud services that ingest the artwork. A webtoon creator wants automation <em>and</em> wants the unreleased art to never leave their machine.</p>
+    <p><strong>Solution.</strong> A pipeline (<a href="/projects/comic-narrator">Comic Narrator</a>) that detects panels with a vision LLM + OpenCV, voices each character with a local clone, narrates captions, and drives a Ken-Burns + 2.5D parallax camera — all on one RTX 5090, nothing cloud.</p>
+    <p><strong>Outcome.</strong> Page-to-video runs end to end and is in active hardening on real, full-length series pages. Honest status: the hard problems (panel-order logic, model output variance, VRAM co-residence of a 30B LLM + TTS) are documented as they're solved — see the <a href="/blog">build log</a>.</p>
+    <p class="meta">local · vision LLM · voice clone · ffmpeg · zero cloud</p>
+  </article>
+
+  <article class="card">
+    <h3>Removing an object from production footage</h3>
+    <p><strong>Problem.</strong> A clip needs an object gone — cleanly, temporally stable, without shipping the footage to a cloud VFX tool.</p>
+    <p><strong>Solution.</strong> Netflix's VOID inpainting + SAM3 video-mask tracking, run locally (<a href="/projects/creative-stack">Creative Stack</a>), with a 4K finishing pass.</p>
+    <p><strong>Outcome.</strong> On representative footage: <strong>clean removal in 180 seconds, no ghost, background reconstructed perfectly</strong>. On a worst-case clip (subject behind glassware, low light) it leaves a residue — and I tell clients that up front, with a free sample frame before any quote. The <a href="/blog/object-removal-arc">full honest write-up</a> shows both.</p>
+    <p class="meta">VOID · SAM3 · SeedVR2 4K · 180s/clip · measured, failures included</p>
+  </article>
+
+  <article class="card">
+    <h3>A sovereign LLM that physically can't leak</h3>
+    <p><strong>Problem.</strong> A team wants an AI assistant but is bound by data rules — nothing sensitive may touch OpenAI or Anthropic.</p>
+    <p><strong>Solution.</strong> The <a href="/projects/sovereign-ai-stack">Sovereign Stack</a>: vLLM + Nemotron on local hardware with routing-enforced privacy tiers — the "client" profile <em>refuses to fall back to cloud at all</em>, failing loudly instead of degrading silently. Tailscale-only, default-deny firewall, monitored backups.</p>
+    <p><strong>Outcome.</strong> Daily-operated on my own machine at <strong>up to 268 tokens/sec</strong> (observed under real multimodal load), 180K context. The guarantee isn't a policy promise — it's enforced by the routing, and the whole thing is public so a client can audit exactly how before trusting it.</p>
+    <p class="meta">vLLM · Nemotron · routing-enforced privacy · 268 tok/s observed</p>
+  </article>
+
+  <p style="margin-top:2rem">
+    <a href="/services">→ What this costs and how to start</a>
+  </p>
+</Base>

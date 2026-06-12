@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Cloud vs local AI — break-even calculator — theinvalid.me"
+  description="Estimate when a local AI rig pays back versus monthly cloud API spend. Enter your usage; see the break-even month. Sovereign local inference is a capital cost that depreciates; cloud is a tax that never stops."
+>
+  <h1>Cloud vs local: when does owning the rig pay off?</h1>
+  <p style="color:var(--muted)">
+    Cloud API spend is a tax that never stops. A local rig is a one-time cost
+    that depreciates — and your data never leaves the building. Enter your usage
+    to see roughly when local wins. <em>Estimates, not a quote — every number is
+    editable and the assumptions are shown.</em>
+  </p>
+
+  <div style="display:grid; gap:0.9rem; max-width:34rem; margin:1.5rem 0;">
+    <label>Text tokens generated / month (millions)
+      <input id="tokens" type="number" value="20" min="0" step="1" />
+    </label>
+    <label>Cloud price per 1M output tokens (USD)
+      <input id="cloudprice" type="number" value="15" min="0" step="0.5" />
+    </label>
+    <label>Images generated / month
+      <input id="images" type="number" value="2000" min="0" step="100" />
+    </label>
+    <label>Cloud price per image (USD)
+      <input id="imgprice" type="number" value="0.04" min="0" step="0.01" />
+    </label>
+    <label>Local rig cost (USD)
+      <input id="rig" type="number" value="6000" min="0" step="500" />
+    </label>
+    <label>Your local electricity (USD per kWh)
+      <input id="kwh" type="number" value="0.22" min="0" step="0.01" />
+    </label>
+  </div>
+
+  <div id="out" class="card" style="font-size:1.05rem"></div>
+
+  <p class="meta" style="margin-top:1rem">
+    Assumes the rig draws ~0.5 kW under sustained AI load and runs ~6 h/day of
+    actual inference. Local image/token costs are electricity only (machine cost
+    per job is cents — the rig is the real number). Doesn't price your time, or
+    the value of data never leaving your building, which for regulated work is
+    often the whole point. <a href="/services">Want this deployed?</a>
+  </p>
+
+  <script is:inline>
+    const $ = (id) => document.getElementById(id);
+    const ids = ['tokens','cloudprice','images','imgprice','rig','kwh'];
+    function calc() {
+      const tokensM = +$('tokens').value, cloudPrice = +$('cloudprice').value;
+      const images = +$('images').value, imgPrice = +$('imgprice').value;
+      const rig = +$('rig').value, kwh = +$('kwh').value;
+      const cloudMonthly = tokensM * cloudPrice + images * imgPrice;
+      // local: electricity only. ~0.5kW * 6h/day * 30 days = 90 kWh/mo
+      const localMonthly = 90 * kwh;
+      const saved = cloudMonthly - localMonthly;
+      const out = $('out');
+      if (saved <= 0) {
+        out.innerHTML = `<strong>Cloud is cheaper at this volume.</strong> Your usage (US$${cloudMonthly.toFixed(0)}/mo cloud vs ~US$${localMonthly.toFixed(0)}/mo local electricity) is low enough that a rig wouldn't pay back on cost alone. Local still wins if <em>data sovereignty</em> is the requirement — that's not a cost question.`;
+      } else {
+        const months = rig / saved;
+        out.innerHTML = `Cloud: <strong>US$${cloudMonthly.toFixed(0)}/mo</strong> · Local: <strong>~US$${localMonthly.toFixed(0)}/mo</strong> electricity · Saving <strong>US$${saved.toFixed(0)}/mo</strong>.<br><br>The rig pays for itself in <strong>${months < 1 ? 'under 1 month' : Math.ceil(months) + ' month' + (Math.ceil(months) > 1 ? 's' : '')}</strong> — then it's ~US$${saved.toFixed(0)}/mo back in your pocket, every month, with your data never leaving the building.`;
+      }
+    }
+    ids.forEach((id) => $(id).addEventListener('input', calc));
+    calc();
+  </script>
+</Base>

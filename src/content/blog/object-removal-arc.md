@@ -16,6 +16,9 @@ First clip — a dim laboratory scene, a scientist standing behind a rack of gla
 
 Except for one stretch around the half-second mark, where he crouched behind a beaker. There, a soft blue smear of him stayed behind. A ghost.
 
+![The ghost: in run 1 a soft blue smear of the removed subject persisted where he crouched behind glassware; run 2's fixes reduced it but the residue is visible.](/object-removal-ghost.png)
+
+
 I could have written "object removal: works." That would have been a lie of omission. The honest entry was: *works mid-clip, leaves a ghost on occlusion, output is half-resolution and truncated.* Three specific, fixable problems — which is a far more useful thing to know than a thumbs-up.
 
 ## Run 2: fixing the easy two, naming the hard one

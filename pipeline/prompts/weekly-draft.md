@@ -36,6 +36,11 @@ Do exactly this, in order:
      failure output, then an H2 "The fix".
    - tags = the searchable tech terms, not vibes (comfyui, sam3, vllm — not
      "journey", "lessons").
+   - VISUALS: if the topic's Sources mention image paths, output files, or
+     frames, embed at least one image: copy it to public/<slug>-<name>.png
+     and reference it ![honest caption](/<slug>-<name>.png). Show the FAILURE
+     visually when one exists — readers trust what they can see. Never invent
+     or stage images; only use real artifacts from the runs.
 
 4. Create drafts/<slug>/ containing:
    - linkedin.txt — 3-6 sentences, story-first, hook in line one, link LAST,
