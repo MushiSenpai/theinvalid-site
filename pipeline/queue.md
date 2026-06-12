@@ -75,7 +75,7 @@ Format rules: PIPELINE.md.
 **Angle:** A real manga page lost ALL its dialogue because Nemotron returned `"dialogues[]"` — the prompt's array notation — as literal JSON keys, and `.get("dialogues")` silently got nothing. Model output variance as a distribution: same prompt at temp 0.1 produced pixel bboxes, normalized floats, plain keys, bracket keys, and occasionally no JSON at all (json_repair returns a bare string; callers .get() and die). The discipline: normalize at the parse boundary, validate types, retry once per item.
 **Sources:** comic-manga-narrator docs/DEVLOG.md sessions 2+5 (bugs 3, 6, 9); docs/LESSONS.md §1-2; backlog P-6, P-7.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
-## [queued] i-benchmarked-open-source-object-removal-for-client-work
+## [published 2026-06-12 → object-removal-arc] i-benchmarked-open-source-object-removal-for-client-work
 **Angle:** E1 bench, honestly scored: VOID removed a person from real footage in 149s on an RTX 5090 (27GB peak) — mid-clip fill statistically as stable as untouched pixels (frame-deltas 7.0-8.0 vs 8.3 control), BUT a partial-removal ghost where the subject crouched, half-resolution output, and a truncated tail. The verdict: not client-deliverable yet, and exactly what to fix next. Numbers, frames, and the scoring method included.
 **Sources:** creative repo benchmarks.csv Vanisher row (2026-06-12); EXECUTION-PLAN E1 entry; /tmp/e1-frames methodology (frame-delta vs control region).
 **Targets:** linkedin, reddit:r/StableDiffusion, hn
@@ -100,7 +100,7 @@ Format rules: PIPELINE.md.
 **Sources:** audio repo benchmarks.md E2 result; outputs/audio/lip-sync/5d4c4fca_lipsync.mp4.
 **Targets:** linkedin, reddit:r/LocalLLaMA
 
-## [queued] same-pipeline-clean-vs-ghost-the-clip-makes-the-call
+## [published 2026-06-12 → object-removal-arc] same-pipeline-clean-vs-ghost-the-clip-makes-the-call
 **Angle:** E1d closes the object-removal arc honestly. The exact same VOID+SAM3-video pipeline that left a ghost on a worst-case clip (subject behind glassware, low light) produces a CLEAN, deliverable removal on a representative clip (well-lit kitchen, separable spoon) — 180s, no ghost, perfect background reconstruction. The lesson for anyone evaluating AI tools: a single failure frame proves nothing; test selection IS the evaluation. Side-by-side frames + the dependency rabbit-hole (comfy-env silently disabling the video nodes) included.
 **Sources:** creative benchmarks.csv Vanisher E1-E1d rows; COVERAGE.md; /tmp/e1d-frames.
 **Targets:** linkedin, reddit:r/StableDiffusion, hn
