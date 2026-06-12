@@ -66,6 +66,16 @@ Format rules: PIPELINE.md.
 **Sources:** EXECUTION-PLAN 2026-06-11; SITE-DECISIONS.md §8; backlog I-5..I-9.
 **Targets:** linkedin, reddit:r/selfhosted
 
+## [queued] killing-the-two-pass-dance
+**Angle:** Fitting a 30B multimodal LLM and a TTS engine on one 32GB RTX 5090: six boot attempts, why `gpu-memory-utilization` is a fraction of TOTAL validated against FREE, weights-in-VRAM ≠ checkpoint-on-disk (21.5GiB vs "~18"), and `--max-num-batched-tokens` as the hidden knob nobody mentions (16384→4096 freed the GiBs that utilization tweaking couldn't). Full draft already exists in the repo — bot adapts, not writes from scratch.
+**Sources:** comic-manga-narrator docs/BLOG-killing-the-two-pass-dance.md; DEVLOG session 2; backlog P-8.
+**Targets:** linkedin, reddit:r/LocalLLaMA, hn
+
+## [queued] the-model-echoed-my-prompt-back
+**Angle:** A real manga page lost ALL its dialogue because Nemotron returned `"dialogues[]"` — the prompt's array notation — as literal JSON keys, and `.get("dialogues")` silently got nothing. Model output variance as a distribution: same prompt at temp 0.1 produced pixel bboxes, normalized floats, plain keys, bracket keys, and occasionally no JSON at all (json_repair returns a bare string; callers .get() and die). The discipline: normalize at the parse boundary, validate types, retry once per item.
+**Sources:** comic-manga-narrator docs/DEVLOG.md sessions 2+5 (bugs 3, 6, 9); docs/LESSONS.md §1-2; backlog P-6, P-7.
+**Targets:** linkedin, reddit:r/LocalLLaMA, hn
+
 ## [manual] why-theinvalid-dot-me
 **Angle:** The name story — reclaiming the worst insult. Personal; the human writes this one.
 **Targets:** linkedin
@@ -162,8 +172,21 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 ## Products (P) — komorebi, comic narrator, arena
 | id | pri | lesson / decision | source | status |
 |---|---|---|---|---|
-| P-1 | M | ffmpeg zoompan requires even-aligned dimensions (2.5D parallax gotcha) | comic narrator session | unmined |
+| P-1 | M | ffmpeg zoompan requires even-aligned dimensions (2.5D parallax gotcha) | comic narrator session | superseded → P-12 |
 | P-2 | M | Job-status contract between app and RQ gateway: design the status vocabulary first | comic narrator session | unmined |
 | P-3 | M | PocketBase as a one-binary leaderboard backend: anon-create capped + admin-only mutations | komorebi arena deploy | unmined |
 | P-4 | L | Fresh VPSes lack unzip — deploy scripts must self-install their tools | arena deploy.sh | unmined |
 | P-5 | M | Local-first app + opt-in online features: the sync boundary as a privacy feature | komorebi SPEC | unmined |
+| P-6 | H | Models echo prompt notation as literal output keys ("dialogues[]"); normalize at parse, never only at prompt | comic-narrator LESSONS §1, bug 6 | queued (model-echo post) |
+| P-7 | M | Model variance is a distribution: coerce geometry, type-check parses (json_repair returns bare strings), retry once per item | LESSONS §2, bugs 3/9 | queued (model-echo post) |
+| P-8 | H | vLLM coexistence on 32GB: util = TOTAL-fraction checked vs FREE; weights-in-VRAM ≠ disk; --max-num-batched-tokens is the hidden knob | LESSONS §7-9, BLOG draft | queued (two-pass post) |
+| P-9 | H | The model already extracts what the pipeline ignores (tone/pacing/bboxes were dead data for 5 sessions) — immersion gaps are consumer problems | LESSONS §3, §12 | unmined |
+| P-10 | M | Forensic soundscape: ambient from what's VISIBLE (cow → moo), per-panel beds, duck under speech — the author drew the sound sources on purpose | DEVLOG sessions 3+5, Track E | unmined |
+| P-11 | M | ALL-CAPS lettering is typography, not speech: interjection lexicon for TTS, original lettering for subtitles | LESSONS §13 | unmined |
+| P-12 | M | Own your camera math: one Python trajectory consumed by background AND overlay beats reverse-engineering zoompan (incl. its undocumented even-snap) | LESSONS §10, supersedes P-1 | unmined |
+| P-13 | M | License-first voice sourcing: emotive corpora are NC; pitch-ladder autocorrelation selects speakers with zero metadata; cloning follows accent AND affect | LESSONS §14-15, VOICES.md | unmined |
+| P-14 | M | Voice-actor cloning is a publicity-rights violation; similarity CASTING (acoustic distance over licensed banks) is the legal equivalent | VOICES.md, match-voice.py | unmined |
+| P-15 | M | Cast diversity must be explicit: score ties collapsed an entire cast (narrator included) onto dict-order-first | bug 10 + en-parity fix | unmined |
+| P-16 | M | Unit tests don't cover seams: a function reduced to return-None passed 24 green tests; the smoke test added after caught a real regression in hours | LESSONS §19-20, bugs 8 | unmined |
+| P-17 | L | Common Voice moved to Mozilla Data Collective (Oct 2025): HF repos are stubs, no search API (enumerate sitemap.xml), per-dataset web terms gate, CSV field-limit overflow | DEVLOG session 6 | unmined |
+| P-18 | L | concat demuxer wants uniform streams (the establishing shot carries silent AAC for this); alpha intermediates need ProRes4444/VP9 — libx264 cannot | LESSONS §5, §11 | unmined |
