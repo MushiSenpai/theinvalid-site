@@ -262,3 +262,10 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | C-16 | M | SeedVR2 is FP16-ONLY (NVFP4 port fails, VAE/DiT entangled), needs multi-step 720→1080→2160 not one jump, blocks_to_swap 32, and "never 30s+ per batch" is the health signal | creative catalogue v1.4 Crystalforge gotcha | unmined |
 | C-17 | L | Distilled vs base run-settings are NOT interchangeable: distilled = 4 steps/CFG 1.0 (raising steps hurts), base = 20 steps/FluxGuidance 3.5 (4 steps = soft/under-formed). Same model family, opposite knobs | catalogue Flashfire/Goldsmith gotchas | unmined |
 | S-17 | L | Hunyuan is NOT MoE — single sampler is correct (vs Wan 2.2 which REQUIRES two); applying the two-sampler fix to Hunyuan would be wrong | catalogue Hunyuan "DO-NOT-TOUCH" | unmined |
+
+## Stress-test & multi-user (B-blocked, GPU)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| B-1 | H | Concurrency stress test (ramp simulated users, find tok/s + latency knee) — THE number needed to quote multi-employee deployments. Continuous batching means throughput does NOT divide by user count; KV-cache memory is the real limit (3-5 long-ctx sessions = wall) | COSTING.md multi-user block; user q 2026-06-13 | blocked-on-gpu |
+| B-2 | M | Full Nemotron stress test at session end (sustained max-load tok/s, thermal, power, throttle) — proper numbers vs the passive 139-avg observation | user req 2026-06-13 | blocked-on-gpu |
+| B-3 | M | Tier-5 PRIVATE capability benchmark (stats only, never public price/imagery) — see COSTING.md positioning | user 2026-06-13 | blocked-on-gpu |
