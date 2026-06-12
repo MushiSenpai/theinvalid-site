@@ -22,6 +22,21 @@ Do exactly this, in order:
    the fix → the transferable lesson → "what I'd tell you to check today" if
    applicable. End with a link to the relevant repo.
 
+   SEO FOR NICHE DISCOVERABILITY (these posts serve people hitting rare,
+   specific problems — write so search finds them):
+   - Include EXACT error messages VERBATIM in the body, in code formatting
+     (e.g. `ModuleNotFoundError: No module named 'comfy_env'`,
+     `ERROR: ResolutionImpossible`) — these strings ARE the search queries.
+   - Title or description must contain the natural-language query a stuck
+     person would type ("xformers nightly cu130 install fails", "vLLM RTX 5090
+     no kernel image"). Description = the query + the answer's shape.
+   - Name every tool WITH version (vLLM 0.20, ComfyUI, SAM3, torch 2.8.0) at
+     least once — version-qualified searches are high-intent.
+   - Use an H2 like "The error" or "Symptoms" early, containing the literal
+     failure output, then an H2 "The fix".
+   - tags = the searchable tech terms, not vibes (comfyui, sam3, vllm — not
+     "journey", "lessons").
+
 4. Create drafts/<slug>/ containing:
    - linkedin.txt — 3-6 sentences, story-first, hook in line one, link LAST,
      3-4 hashtags. No "I'm excited to share".
