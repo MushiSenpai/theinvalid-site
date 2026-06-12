@@ -100,6 +100,11 @@ Format rules: PIPELINE.md.
 **Sources:** audio repo benchmarks.md E2 result; outputs/audio/lip-sync/5d4c4fca_lipsync.mp4.
 **Targets:** linkedin, reddit:r/LocalLLaMA
 
+## [queued] same-pipeline-clean-vs-ghost-the-clip-makes-the-call
+**Angle:** E1d closes the object-removal arc honestly. The exact same VOID+SAM3-video pipeline that left a ghost on a worst-case clip (subject behind glassware, low light) produces a CLEAN, deliverable removal on a representative clip (well-lit kitchen, separable spoon) — 180s, no ghost, perfect background reconstruction. The lesson for anyone evaluating AI tools: a single failure frame proves nothing; test selection IS the evaluation. Side-by-side frames + the dependency rabbit-hole (comfy-env silently disabling the video nodes) included.
+**Sources:** creative benchmarks.csv Vanisher E1-E1d rows; COVERAGE.md; /tmp/e1d-frames.
+**Targets:** linkedin, reddit:r/StableDiffusion, hn
+
 ## [manual] why-theinvalid-dot-me
 **Angle:** The name story — reclaiming the worst insult. Personal; the human writes this one.
 **Targets:** linkedin
