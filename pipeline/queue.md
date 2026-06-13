@@ -11,7 +11,7 @@ Format rules: PIPELINE.md.
 
 # §A — Publication queue (FIFO)
 
-## [queued] your-firewall-isnt-protecting-your-docker-containers
+## [published 2026-06-13] your-firewall-isnt-protecting-your-docker-containers
 **Angle:** Docker silently bypasses UFW for every published port — found because a phone on my own Wi-Fi could open my ComfyUI with zero auth. The DOCKER-USER chain fix, and why you must verify from an untrusted device.
 **Sources:** sovereign-ai-stack repo LESSONS.md (Docker bypasses UFW); scripts/harden-docker-firewall.sh; backlog I-2.
 **Targets:** linkedin, reddit:r/selfhosted, hn
