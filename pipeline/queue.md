@@ -110,6 +110,11 @@ Format rules: PIPELINE.md.
 **Sources:** sovereign doc Decision Log §v1.6.2-1 (the six + the four lessons); backlog H-12..H-17.
 **Targets:** linkedin, reddit:r/selfhosted, hn
 
+## [queued] my-tested-workflows-broke-from-upstream-drift
+**Angle:** I ran a benchmark sweep across 9 ComfyUI workflows I'd built and "tested" weeks earlier. Result: only 5 of 9 still validate on the current ComfyUI — 4 broke from upstream drift. `ModelSamplingFlux.patch() got an unexpected keyword argument` (a node API changed under me), `Node 'Video Latent' has no class_type` (a custom node renamed/removed), Hunyuan workflows missing 4-5 nodes each. The honest lesson: "tested and working" has a SHELF LIFE on a fast-moving stack. A workflow is a snapshot against an environment that keeps moving; without pinned custom-node versions, your tested artifacts rot. Either pin everything, or treat re-validation as routine maintenance — and BENCHMARK PERIODICALLY so you discover the rot before a client does.
+**Sources:** creative benchmarks COVERAGE.md sweep 2026-06-13; /tmp/sweep-results.csv; the 4 specific errors.
+**Targets:** linkedin, reddit:r/comfyui, reddit:r/StableDiffusion, hn
+
 ## [manual] why-theinvalid-dot-me
 **Angle:** The name story — reclaiming the worst insult. Personal; the human writes this one.
 **Targets:** linkedin
@@ -300,3 +305,10 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | E-15 | H | E4: forensic bridge ran END-TO-END for the first time. Nemotron 3-pass analysis of a clip → machine_payload.json with 16 remove targets (13 reflections/shadows!), 9 PRESERVE targets, scene-aware fill prompt, invariants. The differentiator (dense forensic constraints vs human guessing) PROVEN to produce data autonomously. | forensic e4-kitchen bundle | unmined |
 | E-16 | H | The bridge's node-ID map went stale: forensic_to_comfy.py targeted the OLD image-mode SAM3 node (167:149:78) + wrong LoadVideo key ("video" not "file"), so v1 ran the baked lab clip instead of the analyzed kitchen clip — produced a plausible-but-wrong result that LOOKED successful. Lesson: when a workflow's internals change (E1c rewired SAM3 to video pipeline), every external script that injects into it by node-ID silently breaks. Verify injection landed on the LIVE job, not just that it ran. | E4 debugging | unmined |
 | E-17 | M | Forensic analysis auto-chose the HERO removal target ("the egg in the pan") and wrote its own fill prompt — no human typed "remove X". This is the sellable anti-hallucination story: the model decides what to remove AND what to preserve from dense scene analysis. | e4-kitchen machine_payload | unmined |
+
+## Benchmark sweep findings (2026-06-13)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| BS-1 | H | 4 of 9 "tested" workflows broke from ComfyUI upstream drift (node API changes + missing custom nodes). Tested-and-working has a shelf life; pin node versions or re-validate as routine maintenance | sweep 2026-06-13 | queued (drift post) |
+| BS-2 | M | Goldsmith measured: 6s/11.2GB for a 1024² keyframe (confirms the catalogue's ~3.3s ballpark, slower in practice) | sweep | unmined |
+| BS-3 | M | graphToPrompt() validates a workflow's node availability headlessly without queueing — fast way to audit a whole workflow library for drift | sweep technique | unmined |
