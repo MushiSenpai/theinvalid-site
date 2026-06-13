@@ -125,6 +125,11 @@ Format rules: PIPELINE.md.
 **Sources:** audio benchmarks.md E2; public/avatar-lipsync-frames.png.
 **Targets:** linkedin, reddit:r/LocalLLaMA
 
+## [queued] a-self-healing-catalogue-for-a-stack-that-drifts
+**Angle:** I benchmarked 9 ComfyUI workflows and found 4 had silently broken from upstream node renames (HunyuanVideoModelLoader -> HunyuanVideo15*, EmptyWanLatentVideo -> Wan22ImageToVideoLatent). "Tested" rots. So I built a monthly maintenance job: it validates every workflow against the LIVE node registry, auto-discovers new ones, regenerates a public catalogue with real numbers, and pings my phone with what drifted — but deliberately does NOT auto-"fix" renames (different I/O = a human/LLM rebuild call, not a safe auto-patch). The honest engineering line: automate detection and reporting fully; gate the risky repairs behind judgment.
+**Sources:** scripts/workflow-validate.py + generate-catalogue.py + workflow-maintenance.sh; COVERAGE.md; benchmarks.csv.
+**Targets:** linkedin, reddit:r/comfyui, hn
+
 ## [manual] why-theinvalid-dot-me
 **Angle:** The name story — reclaiming the worst insult. Personal; the human writes this one.
 **Targets:** linkedin
