@@ -293,3 +293,10 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | S-17 | L | CPU Nemotron is the PRISM abliterated/unrestricted variant — deliberate: unrestricted local floor, never client-routed | §v1.6.4-1 | unmined |
 
 **Audit verdict:** sovereign Decision Log §v1.6.x now ~fully captured (was the main gap). Creative glossary (C-1..15), audio LESSONS (A-1..6), infra (I-1..14), products (P-1..8) confirmed covered. Tier-6/uncensored creative doc: finishing lessons in C-11; uncensored intentionally private (COSTING Tier-5 note), not a public gap. **Coverage now ~95%+.**
+
+## E4 forensic bridge (first end-to-end run, 2026-06-13)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| E-15 | H | E4: forensic bridge ran END-TO-END for the first time. Nemotron 3-pass analysis of a clip → machine_payload.json with 16 remove targets (13 reflections/shadows!), 9 PRESERVE targets, scene-aware fill prompt, invariants. The differentiator (dense forensic constraints vs human guessing) PROVEN to produce data autonomously. | forensic e4-kitchen bundle | unmined |
+| E-16 | H | The bridge's node-ID map went stale: forensic_to_comfy.py targeted the OLD image-mode SAM3 node (167:149:78) + wrong LoadVideo key ("video" not "file"), so v1 ran the baked lab clip instead of the analyzed kitchen clip — produced a plausible-but-wrong result that LOOKED successful. Lesson: when a workflow's internals change (E1c rewired SAM3 to video pipeline), every external script that injects into it by node-ID silently breaks. Verify injection landed on the LIVE job, not just that it ran. | E4 debugging | unmined |
+| E-17 | M | Forensic analysis auto-chose the HERO removal target ("the egg in the pan") and wrote its own fill prompt — no human typed "remove X". This is the sellable anti-hallucination story: the model decides what to remove AND what to preserve from dense scene analysis. | e4-kitchen machine_payload | unmined |
