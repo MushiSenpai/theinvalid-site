@@ -130,6 +130,10 @@ Format rules: PIPELINE.md.
 **Sources:** scripts/workflow-validate.py + generate-catalogue.py + workflow-maintenance.sh; COVERAGE.md; benchmarks.csv.
 **Targets:** linkedin, reddit:r/comfyui, hn
 
+## [queued] my-uncensored-llm-was-leaking-raw-tokenizer-output
+**Angle:** Benchmarking my two unrestricted local LLMs (the creative-pipeline script writers): CPU Nemotron PRISM ran clean at 18 tok/s, no refusals. But GPU Dolphin 24B AWQ — same uncensored role — came back at ~2 tok/s with `Ġ` and `Ċ` BPE artifacts leaking into the output text. Classic symptom of a chat-template/decode misconfig at the serving layer (awq_marlin @ 0.25 GPU-mem). Lesson: "it responds" isn't "it works" — inspect the actual bytes, and benchmark every model you rely on, because a misconfigured serving config produces plausible-looking garbage.
+**Sources:** COSTING.md encoder section (private numbers); /tmp/encoder-bench.py; 2026-06-14.
+**Targets:** linkedin, reddit:r/LocalLLaMA
 ## [manual] why-theinvalid-dot-me
 **Angle:** The name story — reclaiming the worst insult. Personal; the human writes this one.
 **Targets:** linkedin
