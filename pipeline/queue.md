@@ -115,6 +115,16 @@ Format rules: PIPELINE.md.
 **Sources:** creative benchmarks COVERAGE.md sweep 2026-06-13; /tmp/sweep-results.csv; the 4 specific errors.
 **Targets:** linkedin, reddit:r/comfyui, reddit:r/StableDiffusion, hn
 
+## [queued] one-rtx-5090-how-many-users-the-honest-answer
+**Angle:** "How many people can use a local LLM at once?" I stress-tested it instead of guessing. Sustained single-stream: 276 tok/s. Concurrency: 2 users=1.4x, 4=2.4x, KNEES at 8 concurrent (728 tok/s aggregate, flat after). vLLM continuous batching means throughput does NOT divide by user count, but KV-cache memory caps concurrent active generations at ~8 on 32GB. Translation: ~10-15 heavy or ~30-40 light chat users on one RTX 5090, latency under 2.5s.
+**Sources:** sovereign nemotron-stress.csv; stress test 2026-06-13.
+**Targets:** linkedin, reddit:r/LocalLLaMA, hn
+
+## [queued] i-built-an-avatar-that-introduces-itself-as-an-avatar
+**Angle:** E2: photo + script -> cloned-voice talking head, fully local, ~5 min. Honest quality with frames: gross lip-sync correct (mouth tracks speech vs silence, verified against ffmpeg silencedetect), but lip-interior artifacts at full-frame zoom = social-grade not broadcast close-up. The script is meta: the avatar says it's an avatar made on one machine.
+**Sources:** audio benchmarks.md E2; public/avatar-lipsync-frames.png.
+**Targets:** linkedin, reddit:r/LocalLLaMA
+
 ## [manual] why-theinvalid-dot-me
 **Angle:** The name story — reclaiming the worst insult. Personal; the human writes this one.
 **Targets:** linkedin
