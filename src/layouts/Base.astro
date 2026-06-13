@@ -28,6 +28,13 @@ const current = (p: string) =>
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={new URL(path, 'https://theinvalid.me').href} />
+    <meta property="og:image" content="https://theinvalid.me/og-image.png" />
+    <meta property="og:site_name" content="theinvalid.me" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://theinvalid.me/og-image.png" />
   </head>
   <body>
     <nav class="site">
