@@ -105,6 +105,11 @@ Format rules: PIPELINE.md.
 **Sources:** creative benchmarks.csv Vanisher E1-E1d rows; COVERAGE.md; /tmp/e1d-frames.
 **Targets:** linkedin, reddit:r/StableDiffusion, hn
 
+## [queued] six-footguns-installing-a-local-ai-agent-on-ubuntu-24
+**Angle:** Phase 2.5 of my Hermes install surfaced six environmental traps the spec never anticipated, each costing real time: (1) PEP 668 puts the `hermes` binary in `~/.local/bin` not `/usr/local/bin`, breaking every systemd `ExecStart`; (2) `pip install hermes[web]` doesn't actually install `aiohttp`; (3) the dashboard refuses `0.0.0.0` without `--insecure`; (4) nvm-managed Node is invisible to systemd (use NodeSource apt); (5) Workspace silently requires `HERMES_PASSWORD` when `HOST=0.0.0.0`; (6) the worst one — a profile-level `.env` with `override=True` silently REPLACED a strong random `API_SERVER_KEY` with a weak guessable value. Lesson: parameterize binary paths at install time, never trust extras-specs, and document config precedence aggressively.
+**Sources:** sovereign doc Decision Log §v1.6.2-1 (the six + the four lessons); backlog H-12..H-17.
+**Targets:** linkedin, reddit:r/selfhosted, hn
+
 ## [manual] why-theinvalid-dot-me
 **Angle:** The name story — reclaiming the worst insult. Personal; the human writes this one.
 **Targets:** linkedin
@@ -273,3 +278,18 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | B-1 | H | Concurrency stress test (ramp simulated users, find tok/s + latency knee) — THE number needed to quote multi-employee deployments. Continuous batching means throughput does NOT divide by user count; KV-cache memory is the real limit (3-5 long-ctx sessions = wall) | COSTING.md multi-user block; user q 2026-06-13 | blocked-on-gpu |
 | B-2 | M | Full Nemotron stress test at session end (sustained max-load tok/s, thermal, power, throttle) — proper numbers vs the passive 139-avg observation | user req 2026-06-13 | blocked-on-gpu |
 | B-3 | M | Tier-5 PRIVATE capability benchmark (stats only, never public price/imagery) — see COSTING.md positioning | user 2026-06-13 | blocked-on-gpu |
+
+## Coverage-audit additions (2026-06-13) — gaps found grepping stack docs vs backlog
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| H-12 | H | PEP 668: pip --break-system-packages lands binaries in ~/.local/bin not /usr/local/bin — parameterize systemd ExecStart via `which X` at install | §v1.6.2-1.1 | queued (six-footguns) |
+| H-13 | M | `pip install foo[web]` extras can silently omit deps (aiohttp missing from hermes[web]) — verify imports, don't trust extras-spec | §v1.6.2-1.2 | queued (six-footguns) |
+| H-14 | M | nvm-managed Node is invisible to systemd services — use NodeSource apt Node for system services, nvm for interactive dev | §v1.6.2-1.4 | queued (six-footguns) |
+| H-15 | H | The silent `.env override=True` security bug: a profile-level .env replaced a strong random API key with a weak guessable one — precedence bugs are security bugs | §v1.6.2-1.6 | queued (six-footguns) |
+| H-16 | L | Dashboard refuses 0.0.0.0 without --insecure; Workspace needs HERMES_PASSWORD at HOST=0.0.0.0 | §v1.6.2-1.3,5 | queued (six-footguns) |
+| H-17 | M | Credential rotation: keys pasted into an LLM chat for handover were rotated to openssl rand -hex 32 — documented rotation procedure now exists | §v1.6.2-1 side effect | unmined |
+| H-18 | M | Hermes Desktop remote-gateway: pin HERMES_DASHBOARD_SESSION_TOKEN (else fresh uncopyable token each start) + dashboard MUST run --tui or chat WebSocket silently fails (#1 failure mode) | §v1.7-1 two requirements | unmined |
+| S-16 | L | Tailscale travel test: direct peer path held through lid-close on mobile hotspot, no DERP; CGNAT/corp-FW may force DERP — re-test if encountered | §v1.6.4-6 | unmined |
+| S-17 | L | CPU Nemotron is the PRISM abliterated/unrestricted variant — deliberate: unrestricted local floor, never client-routed | §v1.6.4-1 | unmined |
+
+**Audit verdict:** sovereign Decision Log §v1.6.x now ~fully captured (was the main gap). Creative glossary (C-1..15), audio LESSONS (A-1..6), infra (I-1..14), products (P-1..8) confirmed covered. Tier-6/uncensored creative doc: finishing lessons in C-11; uncensored intentionally private (COSTING Tier-5 note), not a public gap. **Coverage now ~95%+.**
