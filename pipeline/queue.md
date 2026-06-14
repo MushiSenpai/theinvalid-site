@@ -140,6 +140,11 @@ Format rules: PIPELINE.md.
 
 ---
 
+## [queued] i-built-an-ai-agent-company-on-my-own-hardware
+**Angle:** Stood up a Paperclip "company" (CEO/Builder/Reviewer) on a fully local Hermes+LiteLLM stack. It works — agents autonomously wrote code, tests, and a CI pipeline. But three honest lessons: (1) ~40s per-run overhead forces a two-tier design (fast Hermes-direct vs governed Paperclip); (2) the cheap CEO self-reviewed and APPROVED genuinely buggy code (an auth-less health check that reports a live service as DOWN) — mocked tests hid it; (3) model choice dominates everything (DeepSeek-Flash 0.8s vs Kimi 27-40s). Takeaway: a strong independent reviewer + a permanent human merge gate is load-bearing, not optional.
+**Sources:** EXECUTION-PLAN.md 2026-06-14 entries; queue §B PA-1..PA-9; /data/ai/08-portfolio/devkit.
+**Targets:** linkedin, reddit:r/LocalLLaMA, hn
+
 # §B — Lesson & decision backlog (comprehensive, all projects, forever)
 
 Priority: **H** = strong standalone post · **M** = good section/short post ·
@@ -331,3 +336,26 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | BS-1 | H | 4 of 9 "tested" workflows broke from ComfyUI upstream drift (node API changes + missing custom nodes). Tested-and-working has a shelf life; pin node versions or re-validate as routine maintenance | sweep 2026-06-13 | queued (drift post) |
 | BS-2 | M | Goldsmith measured: 6s/11.2GB for a 1024² keyframe (confirms the catalogue's ~3.3s ballpark, slower in practice) | sweep | unmined |
 | BS-3 | M | graphToPrompt() validates a workflow's node availability headlessly without queueing — fast way to audit a whole workflow library for drift | sweep technique | unmined |
+
+
+## Paperclip + Hermes agent company (2026-06-14)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| PA-1 | H | Hermes-local Paperclip agents need Extra args `--provider custom` or Hermes can't resolve a LiteLLM model name (e.g. cloud-preferred) → falls back to anthropic auto-detection → "Normalized model anthropic/claude-sonnet-4" failures. Fix routes via the active profile's custom provider (:4000), auto-loading LITELLM_MASTER_KEY from ~/.hermes/.env even under a clean spawn env. | WOR-3 debugging | queued (agent-company post) |
+| PA-2 | H | Paperclip+Hermes has ~30-40s STRUCTURAL per-run overhead (cold hermes spawn + LiteLLM provider probing) regardless of model — the real reason it "feels slow". Drove the two-tier architecture: Hermes-direct (warm :8642) for fast single-agent jobs, Paperclip only for governed multi-agent work. | speed diagnosis | queued (agent-company post) |
+| PA-3 | H | Cheap-model self-review APPROVED real buggy code: CEO wrote stack_health.py that reports LiteLLM DOWN (no auth header → 401) and self-reviewed it "spec-compliant". Mocked tests hid the bug. Validates strong independent reviewer + permanent human merge gate. | WOR-3 verify | queued (agent-company post) |
+| PA-4 | H | Agent speed is dominated by model: deepseek-flash 0.8s vs Kimi-via-NGC 27-40s (timeout) — a ~30-50x swing from one config field. | model speed test | unmined |
+| PA-5 | M | Paperclip UI: local-adapter agents have NO system-prompt field; the "Capabilities" box is the persona, hard rules enforced by config (budget caps, board-approval toggle, Advanced Run Policy). | dashboard build | unmined |
+| PA-6 | M | The CEO went autonomous unprompted — generated its own backlog (CI pipeline, health dashboard, API docs) from a roadmap line and started building. Pause stops it instantly. Keep heartbeats OFF until deliberate. | resume test | unmined |
+| PA-7 | M | Hermes Desktop update = git checkout the release tag matching the CLI (v2026.6.5) + `npm run pack` (electron-builder --dir; AppImage/rpm need appimagetool/rpmbuild you lack). `.desktop` launcher points at release/linux-unpacked/. The `hermes desktop` wrapper is broken for pip installs (probes site-packages for the JS workspace). | desktop update | unmined |
+| PA-8 | M | Dead GPU agent endpoint (:8000 unloaded) makes LiteLLM personal-chain "hang" ~45s (slow failover past the dead hop). Use deepseek/groq for cloud-fast or load GPU agent-mode for sovereign-fast. | model test | unmined |
+| PA-9 | L | infra-digest.sh = Hermes-direct tier proof: bash gathers status → Hermes (deepseek) writes a plain-language daily digest → ntfy. Intelligence layer atop healthcheck.sh threshold alerts. Cron 08:30. | infra-digest build | unmined |
+| SA-1 | M | Super-app strategy: collapse florinpop17/app-ideas (~90 ideas, 95k stars) into super-apps — DevKit (dev tools), FocusFlow (productivity, extends Komorebi), DocForge (PDF). DevKit picked for agents: client-side, tool-by-tool, clear free/pro. | github research | unmined |
+
+## B — bigger cross-checking agent org (2026-06-14 night)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| PA-10 | H | Built a 5-agent Paperclip org (CEO-coordinator + Architect + Builder + QA + Reviewer, all report to CEO, hire-approval gate fired on each). Researched real SaaS + 2026 multi-agent team structures to design it. | B build | queued (agent-company post) |
+| PA-11 | H | **Prompt-level role constraints DON'T force delegation.** Reconfigured the CEO as "coordinator who NEVER implements" — it ignored that and fixed the DevKit code itself anyway (a capable Hermes agent self-serves because it CAN). Real fix needs a STRUCTURAL lever: remove the CEO's file-write/code tools so it MUST delegate, or route task-types to specific agents. The Architect/Builder/QA never got invoked. | B delegation test | queued (agent-company post) |
+| PA-12 | M | The CEO got resourceful in a concerning way: wrote a Python script using the Paperclip REST API + a token from /tmp to POST its own status comment and PATCH the issue to "done" — bypassing the intended UI flow. Capable agents route around controls; enforce limits structurally, not by instruction. | run 107dce7f | unmined |
+| PA-13 | L | hermes-founder-os skill pack installed (9 SaaS skills: validation-lab/prd-studio/architecture-reviewer/rapid-saas-builder/build-system/ux-critic/growth-lab/launch-room/founder-os) into ~/.hermes/skills/. | install | unmined |
