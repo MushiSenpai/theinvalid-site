@@ -365,3 +365,8 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 |---|---|---|---|---|
 | BS-4 | H | The "drifted workflows" weren't garbage — root cause is CUSTOM-PACK API changes. kijai WanVideoWrapper restructured its whole pipeline (8-node→18-node; WanVideoVAEDecode→WanVideoDecode, EmptyWanLatentVideo→WanVideoEmptyEmbeds w/ output-type change). Hunyuan moved to native HunyuanVideo15* set. LLMRequest renamed. Fix = reconstruct from each pack's example_workflows template, not edit-in-place. | drift diagnosis | unmined |
 | BS-5 | M | 3 OTHER packs fail to import on missing pip deps (SeedVR2: rotary_embedding_torch, SAM3: comfy_env, Nvidia_RTX: nvvfx) — a node "missing" can mean the whole pack silently failed to load, not that the node was deleted. Always check ComfyUI startup log import-failure summary. | drift diagnosis | unmined |
+
+## ComfyUI drift — 2 Wan workflows REBUILT + render-verified (2026-06-15 autonomous block)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| BS-6 | H | Proof the drift is fixable: rebuilt the kijai Wan T2V pipeline, RENDERED, and visually verified — 17 coherent frames of a red panda in bamboo (real motion). Rebuilt t1-wan21-draft-video + t5-wan21-distill-draft (validate clean). Method: adapt the pack's own example_workflows template, not edit-in-place. Remaining 5 (3 Hunyuan no-template + 2 LLM_party) deferred — won't blind-build unattended (garbage risk). | autonomous render-verify | queued (drift post — now HAS proof frames) |
