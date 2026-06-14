@@ -370,3 +370,8 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | id | pri | lesson / decision | source | status |
 |---|---|---|---|---|
 | BS-6 | H | Proof the drift is fixable: rebuilt the kijai Wan T2V pipeline, RENDERED, and visually verified — 17 coherent frames of a red panda in bamboo (real motion). Rebuilt t1-wan21-draft-video + t5-wan21-distill-draft (validate clean). Method: adapt the pack's own example_workflows template, not edit-in-place. Remaining 5 (3 Hunyuan no-template + 2 LLM_party) deferred — won't blind-build unattended (garbage risk). | autonomous render-verify | queued (drift post — now HAS proof frames) |
+
+## ComfyUI drift — ALL Wan + Hunyuan FIXED + render-verified (2026-06-15 marathon)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| BS-7 | H | 7 drifted workflows fixed: Wan (t1/t5-distill render-verified), SeedVR2+VACE (baked deps), and ALL 3 Hunyuan15 RENDER-VERIFIED (dreamforge/quickening/sharpscale → 1080p). Method: official ComfyUI templates + a reusable litegraph→API converter (ui2api_render.py: auto-fix model names, prune-to-output) + render+visual-verify each. Downloaded ~11GB encoders (qwen_2.5_vl, byt5, sigclip, 1080p SR). Only the 2 LLM-orchestration ones remain. | marathon | queued (drift post — strong proof frames) |
