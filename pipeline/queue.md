@@ -213,6 +213,8 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | A-4 | M | Hallo2: six stacked fixes (xformers index, NCCL, GLES symlink, eager attn, output path, right repo org) | LESSONS.md | queued (25-ways) |
 | A-5 | M | YuE: LFS pointer stubs from plain git clone; sdpa patch; mono MP3 output | LESSONS.md | queued (25-ways) |
 | A-6 | M | RQ pattern: gateway enqueues, separate GPU worker consumes — and the worker needs the full nvidia runtime block | LESSONS.md | queued (25-ways) |
+| A-7 | M | Unified workflow catalogue: one page now merges scriptwriting (Nemotron/Dolphin) + creative + audio; each tile carries BOTH a quality tier and a capability, with a client-side Group-by + filter toggle (default = tier). Driven by audio-benchmarks.csv with honest measured/estimate/perf-pending/blocked badges — only 3 audio pipelines have hard numbers, empty cells stay empty | generate-catalogue.py rewrite; audio-benchmarks.csv | unmined |
+| A-8 | L | Status-from-notes detection must match an explicit uppercase `BLOCKED` marker, not a lowercased "block" substring — Vanisher's prose ("dep that blocked the video nodes") false-flagged the tile as blocked until the check was tightened | generate-catalogue.py status_of() | unmined |
 
 ## Infra / ops (I)
 | id | pri | lesson / decision | source | status |
