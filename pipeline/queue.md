@@ -16,7 +16,7 @@ Format rules: PIPELINE.md.
 **Sources:** sovereign-ai-stack repo LESSONS.md (Docker bypasses UFW); scripts/harden-docker-firewall.sh; backlog I-2.
 **Targets:** linkedin, reddit:r/selfhosted, hn
 
-## [queued] a-32gb-gpu-is-a-budget-not-a-suggestion
+## [published 2026-06-19] a-32gb-gpu-is-a-budget-not-a-suggestion
 **Angle:** The VRAM discipline that makes one RTX 5090 run an LLM stack, a video stack, and an audio stack: unplugging the monitor from the GPU to run display on onboard graphics (~25K context tokens reclaimed), never co-loading models — purge VRAM, fresh-load per task, sequential modes with handoff scripts — and why NVFP4 was the only quantization leaving real KV-cache headroom.
 **Sources:** Decision Log §12 (sequential workflow), §13 (iGPU switch), §7 (180K ctx math), README VRAM tables; backlog S-1..S-5.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
