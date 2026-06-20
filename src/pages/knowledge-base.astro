@@ -1,0 +1,182 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+// Master Index / Knowledge Base.
+// Reads the blog content collection at BUILD time, so it auto-updates as posts
+// are added — no generator to run, no manual list to maintain. Group a post by
+// the FIRST of its tags that matches a topic's tag set; anything unmatched falls
+// into "Other / uncategorised" so a new post is never silently dropped.
+
+type Topic = {
+  id: string;
+  title: string;
+  blurb: string;
+  tags: string[];
+};
+
+// Each topic owns a set of tags. Order matters: a post is filed under the first
+// topic (top to bottom) whose tag set intersects the post's tags. To add a new
+// technology group, add an entry here; to re-file existing posts, add the tag.
+//
+// Ordering principle: place INTENT-defining topics above topics whose tags often
+// appear incidentally. A post tagged `docker`+`security` is a security post, so
+// networking-security sits above containers-build; a post tagged `docker`+`rtx-5090`
+// is a build post, so containers-build sits above hardware-gpu. This keeps a post
+// out of a bucket it only touched in passing.
+const TOPICS: Topic[] = [
+  {
+    id: 'llm-serving',
+    title: 'LLM serving & inference',
+    blurb: 'Running large language models locally — vLLM, quantisation, context length, throughput.',
+    tags: ['vllm', 'nemotron', 'nvfp4', 'fp8', 'inference', 'llm', 'quantization', 'quantisation', 'context', 'tokens-per-second', 'litellm'],
+  },
+  {
+    id: 'creative-ai',
+    title: 'Creative AI — video & image',
+    blurb: 'ComfyUI, object removal, upscaling and the rest of the local video / image pipeline.',
+    tags: ['comfyui', 'ai-video', 'object-removal', 'image', 'video', 'sam3', 'void', 'upscale', 'parallax', 'comic'],
+  },
+  {
+    id: 'audio',
+    title: 'Audio stack',
+    blurb: 'Speech, voice cloning, transcription and the audio toolchain.',
+    tags: ['audio', 'tts', 'whisper', 'whisperx', 'fish-speech', 'voice', 'musetalk'],
+  },
+  {
+    id: 'networking-security',
+    title: 'Networking & security',
+    blurb: 'Firewalls, iptables vs Docker, Tailscale, default-deny and keeping things private.',
+    tags: ['ufw', 'iptables', 'security', 'selfhosted', 'tailscale', 'firewall', 'networking', 'caddy', 'vps'],
+  },
+  {
+    id: 'containers-build',
+    title: 'Containers & build / dependencies',
+    blurb: 'Docker, pinned wheels, torch / CUDA build pain and reproducible environments.',
+    tags: ['docker', 'pip', 'torch', 'xformers', 'build', 'dependencies', 'wheels', 'cu130'],
+  },
+  {
+    id: 'hardware-gpu',
+    title: 'Hardware & GPU / VRAM',
+    blurb: 'Fitting models onto one card — VRAM budgeting, the RTX 5090, display offload, model co-residence.',
+    tags: ['rtx-5090', 'vram', 'gpu', 'cuda', 'hardware', 'nvidia'],
+  },
+  {
+    id: 'ops-automation',
+    title: 'Ops, automation & reliability',
+    blurb: 'Cron, backups, monitoring outcomes, and the failures that taught the lessons.',
+    tags: ['ops', 'backups', 'monitoring', 'cron', 'failure', 'automation', 'reliability', 'benchmarking'],
+  },
+];
+
+const OTHER: Omit<Topic, 'tags'> = {
+  id: 'other',
+  title: 'Other / uncategorised',
+  blurb: 'Posts that do not yet fit a topic above — tag them to file them.',
+};
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-SG', { year: 'numeric', month: 'short', day: '2-digit' });
+
+// Bucket every post into exactly one topic (first match wins; else "other").
+type Bucket = { topic: Topic | typeof OTHER; posts: typeof posts };
+const buckets: Bucket[] = TOPICS.map((t) => ({ topic: t, posts: [] as typeof posts }));
+const other: Bucket = { topic: OTHER, posts: [] as typeof posts };
+
+for (const post of posts) {
+  const tags = post.data.tags ?? [];
+  const match = TOPICS.find((t) => tags.some((tag) => t.tags.includes(tag)));
+  (match ? buckets.find((b) => b.topic.id === match.id)! : other).posts.push(post);
+}
+
+// Only render topics that actually have posts; append "other" if non-empty.
+const sections: Bucket[] = [
+  ...buckets.filter((b) => b.posts.length > 0),
+  ...(other.posts.length > 0 ? [other] : []),
+];
+
+const totalPosts = posts.length;
+const totalTopics = sections.length;
+
+// JSON-LD: a CollectionPage listing every post, so AI crawlers get a clean,
+// machine-readable index in addition to the semantic HTML below.
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Knowledge Base — theinvalid.me',
+  description:
+    'A topic-grouped master index of every build-log post: LLM serving, GPU/VRAM, creative AI, audio, containers, networking and ops.',
+  url: 'https://theinvalid.me/knowledge-base/',
+  hasPart: posts.map((p) => ({
+    '@type': 'TechArticle',
+    headline: p.data.title,
+    description: p.data.description,
+    datePublished: p.data.date.toISOString(),
+    keywords: (p.data.tags ?? []).join(', '),
+    url: `https://theinvalid.me/blog/${p.id}/`,
+  })),
+};
+---
+
+<Base
+  title="Knowledge Base — theinvalid.me"
+  description="A topic-grouped master index of the whole build log: LLM serving, GPU/VRAM, creative AI, audio, containers, networking and ops — every post by technology, with descriptions."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(itemList)} />
+
+  <h1>Knowledge Base</h1>
+  <p style="color: var(--muted)">
+    The whole build log, grouped by technology instead of by date — a map for
+    finding the post you need. {totalPosts} posts across {totalTopics} topics.
+    Filed automatically from each post's tags, so this page updates itself when a
+    new post ships. For chronological order, see the <a href="/blog">failure log</a>.
+  </p>
+
+  <nav aria-label="Topics" class="kb-toc">
+    <ul>
+      {sections.map((s) => (
+        <li><a href={`#${s.topic.id}`}>{s.topic.title}</a> <span class="kb-count">({s.posts.length})</span></li>
+      ))}
+    </ul>
+  </nav>
+
+  {sections.map((s) => (
+    <section id={s.topic.id} class="kb-topic">
+      <h2>{s.topic.title}</h2>
+      <p style="color: var(--muted); margin-top: -0.4rem">{s.topic.blurb}</p>
+      <ul class="postlist">
+        {s.posts.map((post) => (
+          <li>
+            <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
+            <span>
+              <a href={`/blog/${post.id}`}>{post.data.title}</a>
+              <br /><span style="color: var(--muted); font-size: 0.9rem">{post.data.description}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</Base>
+
+<style>
+  .kb-toc {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    margin: 1.5rem 0 2.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--line);
+    background: var(--bg-raise);
+    border-radius: 10px;
+  }
+  .kb-toc ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; }
+  .kb-toc a { color: var(--muted); }
+  .kb-toc a:hover { color: var(--fg); text-decoration: none; }
+  .kb-count { color: var(--dim); }
+  .kb-topic { scroll-margin-top: 1.5rem; }
+  .kb-topic h2 { border-top: 1px solid var(--line); padding-top: 1.6rem; }
+</style>
