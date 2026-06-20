@@ -21,7 +21,7 @@ Format rules: PIPELINE.md.
 **Sources:** Decision Log §12 (sequential workflow), §13 (iGPU switch), §7 (180K ctx math), README VRAM tables; backlog S-1..S-5.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
 
-## [queued] nightly-wheels-are-a-depreciating-asset
+## [published 2026-06-20] nightly-wheels-are-a-depreciating-asset
 **Angle:** Rebuilding a one-month-old Dockerfile failed twice because "install from the nightly index" instructions expire in weeks; the working container had silently drifted to stable torch. Pin what's proven; runtime pip installs rot.
 **Sources:** audio-stack repo LESSONS.md ("The June rebuild"); worker-pip-freeze-2026-06-10.txt; backlog I-4.
 **Targets:** linkedin, reddit:r/LocalLLaMA
