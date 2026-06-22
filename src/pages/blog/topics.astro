@@ -1,8 +1,8 @@
 ---
-import Base from '../layouts/Base.astro';
+import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 
-// Master Index / Knowledge Base.
+// Knowledge Base, now folded under the blog at /blog/topics.
 // Reads the blog content collection at BUILD time, so it auto-updates as posts
 // are added — no generator to run, no manual list to maintain. Group a post by
 // the FIRST of its tags that matches a topic's tag set; anything unmatched falls
@@ -29,7 +29,7 @@ const TOPICS: Topic[] = [
     id: 'llm-serving',
     title: 'LLM serving & inference',
     blurb: 'Running large language models locally — vLLM, quantisation, context length, throughput.',
-    tags: ['vllm', 'nemotron', 'nvfp4', 'fp8', 'inference', 'llm', 'quantization', 'quantisation', 'context', 'tokens-per-second', 'litellm'],
+    tags: ['vllm', 'nemotron', 'mamba', 'kv-cache', 'nvfp4', 'fp8', 'inference', 'llm', 'quantization', 'quantisation', 'context', 'tokens-per-second', 'litellm'],
   },
   {
     id: 'creative-ai',
@@ -107,10 +107,10 @@ const totalTopics = sections.length;
 const itemList = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  name: 'Knowledge Base — theinvalid.me',
+  name: 'Browse by topic — theinvalid.me blog',
   description:
     'A topic-grouped master index of every build-log post: LLM serving, GPU/VRAM, creative AI, audio, containers, networking and ops.',
-  url: 'https://theinvalid.me/knowledge-base/',
+  url: 'https://theinvalid.me/blog/topics/',
   hasPart: posts.map((p) => ({
     '@type': 'TechArticle',
     headline: p.data.title,
@@ -123,15 +123,19 @@ const itemList = {
 ---
 
 <Base
-  title="Knowledge Base — theinvalid.me"
-  description="A topic-grouped master index of the whole build log: LLM serving, GPU/VRAM, creative AI, audio, containers, networking and ops — every post by technology, with descriptions."
+  title="Browse by topic — theinvalid.me blog"
+  description="The whole build log, grouped by technology: LLM serving, GPU/VRAM, creative AI, audio, containers, networking and ops — every post by topic, with descriptions."
 >
   <script type="application/ld+json" set:html={JSON.stringify(itemList)} />
 
-  <h1>Knowledge Base</h1>
+  <p style="font-family: var(--mono); font-size: 0.85rem; color: var(--muted)">
+    <a href="/blog">← the failure log (chronological)</a>
+  </p>
+
+  <h1>Browse by topic</h1>
   <p style="color: var(--muted)">
-    The whole build log, grouped by technology instead of by date — a map for
-    finding the post you need. {totalPosts} posts across {totalTopics} topics.
+    The whole <a href="/blog">build log</a>, grouped by technology instead of by
+    date — a map for finding the post you need. {totalPosts} posts across {totalTopics} topics.
     Filed automatically from each post's tags, so this page updates itself when a
     new post ships. For chronological order, see the <a href="/blog">failure log</a>.
   </p>

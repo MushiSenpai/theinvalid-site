@@ -14,9 +14,9 @@ Here's what "treat it like money" actually means on my machine.
 
 The single highest-leverage change I made was unplugging the monitor from the GPU. The display now runs on the motherboard's integrated Radeon, BIOS Primary Display set to IGFX. The RTX 5090's idle baseline dropped from ~1GB to ~500 MiB.
 
-That sounds like nothing. It is nothing — until you do the FP8 KV-cache math. ~500 MiB of recovered VRAM is **~25,000 additional context tokens** on Nemotron. Free, no quality loss, one BIOS toggle.
+That sounds like nothing. It is nothing — until you're already past 28GB of allocated weights and buffers, where ~500 MiB back is the difference between a stack that fits and one that OOMs on its first big tensor. (An earlier version of this post sold that 500 MiB as "~25,000 more context tokens." That was wrong — Nemotron is a Mamba-hybrid and its attention-KV is far cheaper per token than I'd assumed, so KV isn't what 500 MiB buys you, and KV isn't the thing you're short of. The full correction is its own post: [I had my KV-cache math 14× wrong](/blog/i-had-my-kv-cache-math-14x-wrong).)
 
-I would never have prioritised this if I weren't already past 28GB of allocated weights and cache. At that pressure, 500 MiB is the difference between a context window that fits a long forensic document and one that doesn't.
+The honest framing: ~500 MiB is ~500 MiB back in the **total** VRAM budget — the budget that's actually tight on this card. Free, no quality loss, one BIOS toggle.
 
 ## Never co-load models
 
@@ -37,15 +37,15 @@ Mode-switch scripts are uglier than concurrent serving. They are also the only t
 
 The non-obvious quantization choice: NVFP4 for weights, not FP8 or BF16.
 
-The intuition you'd start with is "FP8 is smaller, FP8 is better." On paper, sure. In practice, FP8 weights leave you with ~2GB of KV-cache headroom on Nemotron at 32GB. Two concurrent long-context sessions push each other into system RAM and collapse the engine from ~45 tok/s down to 1–2 tok/s. The throughput cliff is sharp and surprising.
+The intuition you'd start with is "FP8 is smaller, FP8 is better." On paper, sure. In practice, FP8 weights leave you with only ~2GB of free VRAM on Nemotron at 32GB. Two concurrent long-context sessions exhaust that — between activations and each sequence's working set they push each other into system RAM and collapse the engine from ~45 tok/s down to 1–2 tok/s. The throughput cliff is sharp and surprising.
 
-NVFP4 weights at ~18GB give you ~4–14GB of KV-cache headroom depending on context length. That headroom is what lets multiple agentic sessions coexist, and what lets the context window go to 180K stable. Measured throughput on Nemotron NVFP4 via vLLM: **275 tok/s**.
+NVFP4 weights at ~18GB give you ~4–14GB of free VRAM depending on context length. That headroom is what lets multiple agentic sessions coexist, and what lets the context window go to 180K stable. Measured throughput on Nemotron NVFP4 via vLLM: **275 tok/s**.
 
-The lesson generalises: on a tight budget, the right quantization is whichever one leaves room for *the cache*, not whichever one shrinks the weights most.
+The lesson generalises: on a tight budget, the right quantization is whichever one leaves the most *total* VRAM free for everything that isn't weights — activations, buffers, per-sequence state — not whichever one shrinks the weights most. (On a Mamba-hybrid that "everything else" is the constraint; the attention-KV slice of it is tiny — [the correction](/blog/i-had-my-kv-cache-math-14x-wrong).)
 
 ## 180K context, not 256K
 
-The theoretical KV ceiling on Nemotron at FP8 KV cache, 32GB, NVFP4 weights, is about 228K tokens. I run 180K — roughly 25% headroom.
+Worth being precise about three numbers I used to collapse into one. **256K** is the model's `max_position_embeddings` — the theoretical architectural maximum, a position cap, not a memory statement. **~228K** is the practical ceiling: what actually fits once weights, CUDA graphs, multimodal buffers and per-sequence Mamba state are accounted for — a *total-VRAM* ceiling, **not** a KV ceiling (on a Mamba-hybrid, attention-KV is cheap enough that it's never the binding constraint — [see the correction](/blog/i-had-my-kv-cache-math-14x-wrong)). I run **180K** — roughly 25% headroom under that practical ceiling.
 
 The reason is operational, not architectural. Real workloads are not their stated context length. A "100K-token" forensic pass with three reference images and active reasoning will spike well above 100K of effective allocation. Without headroom you discover this via `OOM` mid-request, not in advance. I bump only when the workload actually shows context-full errors, never speculatively.
 
@@ -58,10 +58,12 @@ Forensic-mode VRAM allocation, measured:
 - Audio encoder (Parakeet-TDT-0.6B-v2): ~0.6 GB
 - CUDA graphs + activations: ~2 GB
 - Multimodal preprocessing buffers: ~1.5 GB
-- KV cache (FP8, 180K context): ~7–8 GB
-- Safety margin: ~1.5 GB
+- Attention-KV cache (FP8, 180K context): **under ~0.6 GB** — see note
+- Per-sequence Mamba state + concurrency working set + safety margin: the rest
 
 Total: ~28–30 GB. The remaining 2–4 GB is what disappears the moment you let a desktop environment, a stray Electron app, or a second model touch the card.
+
+> **The KV line used to read ~7–8 GB here. That was the dense-transformer overestimate.** Nemotron is a NemotronH Mamba-2/Transformer hybrid — only 6 of its 52 layers do attention, so attention-KV costs ~3 KB/token (~350K tokens per GiB). At 180K context that's roughly half a gigabyte, not 7–8. The lesson — that per-token KV is nearly negligible on a hybrid, and the 32GB limit is dominated by weights + CUDA graphs + multimodal buffers + Mamba per-sequence state rather than by KV — has [its own post](/blog/i-had-my-kv-cache-math-14x-wrong).
 
 ## What I'd tell you to check today
 
