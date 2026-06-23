@@ -1,17 +1,45 @@
 ---
 import Base from '../layouts/Base.astro';
 import { Content as Resume } from '../content/resume.md';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+// Build month — the download filename carries my name + when it was generated,
+// instead of a generic "resume.pdf".
+const stamp = new Date().toISOString().slice(0, 7); // YYYY-MM
+const pdfName = `Madhan-Kumar-Reddy-Resume-${stamp}.pdf`;
+const mdName = `Madhan-Kumar-Reddy-Resume-${stamp}.md`;
 ---
 
 <Base
   title="Resume — Madhan Kumar Reddy"
-  description="AI Infrastructure Operator — I spec, direct LLMs, and verify. Resume, honestly written."
+  description="AI Infrastructure Operator — I spec, direct LLMs, and verify. Resume, honestly written, with a live project list that stays current."
 >
   <Resume />
+
+  <h2 id="current-projects">Current projects</h2>
+  <p style="color: var(--muted); font-size: 0.9rem">
+    Generated from the live project list — current as of the last site build
+    ({stamp}). Statuses are honest: <code>building</code> means building.
+  </p>
+  <ul class="postlist">
+    {projects.map((p) => (
+      <li>
+        <span>
+          <a href={`/projects/${p.id}`}>{p.data.title}</a>
+          <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+          <br /><span style="color: var(--muted); font-size: 0.9rem">{p.data.oneliner}</span>
+        </span>
+      </li>
+    ))}
+  </ul>
+
   <hr />
   <p style="font-family: var(--mono); font-size: 0.85rem; color: var(--muted)">
-    Want this as a file? <a href="/resume.pdf" download>Download PDF</a> ·
-    <a href="/resume.md" download>markdown</a> —
+    Want this as a file? <a href="/resume.pdf" download={pdfName}>Download PDF</a> ·
+    <a href="/resume.md" download={mdName}>markdown</a> —
     same content either way, no tracking pixel, nothing hidden in the formatting.
   </p>
 </Base>

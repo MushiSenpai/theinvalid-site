@@ -5,10 +5,12 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://theinvalid.me',
-  // The Knowledge Base moved under the blog at /blog/topics (fewer top-nav tabs).
-  // Keep the old URL alive so existing links / crawler indexes don't 404.
+  // Knowledge base now lives at /blog (case studies + the failure log + the
+  // field guide). Case studies were merged in from the old standalone page.
+  // Keep the old URLs alive so existing links / crawler indexes don't 404.
   redirects: {
-    '/knowledge-base': '/blog/topics',
+    '/knowledge-base': '/blog',
+    '/case-studies': '/blog#case-studies',
   },
   integrations: [
     sitemap({

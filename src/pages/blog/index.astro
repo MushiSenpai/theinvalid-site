@@ -9,15 +9,65 @@ const fmt = (d: Date) =>
   d.toLocaleDateString('en-SG', { year: 'numeric', month: 'short', day: '2-digit' });
 ---
 
-<Base title="Blog — theinvalid.me" description="Failures, decisions, and what they cost — the build log of a sovereign AI stack.">
-  <h1>The failure log</h1>
+<Base
+  title="Knowledge base — case studies, the failure log & the field guide — theinvalid.me"
+  description="Case studies, the failure log (decisions and what they cost), and an interactive field guide to running LLMs locally — the build log of a sovereign AI stack, failures included."
+>
+  <h1>Knowledge base</h1>
   <p style="color: var(--muted)">
-    Why abandoned plans get written up: the dead ends were the expensive part,
-    so they're the valuable part. New posts as the work happens.
+    Everything I've learned building a sovereign AI stack, in public: the proof
+    (case studies), the failure log (why abandoned plans get written up — the
+    dead ends were the expensive part), and the interactive field guide.
   </p>
-  <p style="font-family: var(--mono); font-size: 0.9rem">
-    Looking for something specific? <a href="/blog/topics"><strong>Browse by topic →</strong></a>
-    <span style="color: var(--muted)"> — every post grouped by technology (LLM serving, GPU/VRAM, creative AI, audio, ops…).</span>
+
+  <article class="card" style="border-color: var(--accent)">
+    <h3>📐 <a href="/calculator">The local-AI field guide</a></h3>
+    <p class="oneliner">Interactive: what actually fits in your VRAM, what runs on each GPU tier, how many users one card serves, and when local beats cloud.</p>
+    <p class="meta">measured on an RTX 5090 · every number editable · <a href="/calculator">open the field guide →</a></p>
+  </article>
+
+  <h2 id="case-studies">Case studies</h2>
+  <p style="color:var(--muted)">
+    Problem → solution → outcome. Built and measured on my own stack — where a
+    number is from a real run I say so, and where something didn't work I say
+    that too. Client engagements get added here (with permission) as they happen.
+  </p>
+
+  <article class="card">
+    <h3>Comic page → narrated video, fully local</h3>
+    <p><strong>Problem.</strong> Turning static comic/manga pages into dramatized video normally means manual editing per panel, or cloud services that ingest the artwork. A webtoon creator wants automation <em>and</em> wants the unreleased art to never leave their machine.</p>
+    <p><strong>Solution.</strong> A pipeline (<a href="/projects/comic-narrator">Comic Narrator</a>) that detects panels with a vision LLM + OpenCV, voices each character with a local clone, narrates captions, and drives a Ken-Burns + 2.5D parallax camera — all on one RTX 5090, nothing cloud.</p>
+    <p><strong>Outcome.</strong> Page-to-video runs end to end and is in active hardening on real, full-length series pages. Honest status: the hard problems (panel-order logic, model output variance, VRAM co-residence of a 30B LLM + TTS) are documented as they're solved — see the failure log below.</p>
+    <p class="meta">local · vision LLM · voice clone · ffmpeg · zero cloud</p>
+  </article>
+
+  <article class="card">
+    <h3>Removing an object from production footage</h3>
+    <p><strong>Problem.</strong> A clip needs an object gone — cleanly, temporally stable, without shipping the footage to a cloud VFX tool.</p>
+    <p><strong>Solution.</strong> Netflix's VOID inpainting + SAM3 video-mask tracking, run locally (<a href="/projects/creative-stack">Creative Stack</a>), with a 4K finishing pass.</p>
+    <p><strong>Outcome.</strong> On representative footage: <strong>clean removal in 180 seconds, no ghost, background reconstructed perfectly</strong>. On a worst-case clip (subject behind glassware, low light) it leaves a residue — and I tell clients that up front, with a free sample frame before any quote. The <a href="/blog/object-removal-arc">full honest write-up</a> shows both.</p>
+    <p class="meta">VOID · SAM3 · SeedVR2 4K · 180s/clip · measured, failures included</p>
+  </article>
+
+  <article class="card">
+    <h3>A sovereign LLM that physically can't leak</h3>
+    <p><strong>Problem.</strong> A team wants an AI assistant but is bound by data rules — nothing sensitive may touch OpenAI or Anthropic.</p>
+    <p><strong>Solution.</strong> The <a href="/projects/sovereign-ai-stack">Sovereign Stack</a>: vLLM + Nemotron on local hardware with routing-enforced privacy tiers — the "client" profile <em>refuses to fall back to cloud at all</em>, failing loudly instead of degrading silently. Tailscale-only, default-deny firewall, monitored backups.</p>
+    <p><strong>Outcome.</strong> Daily-operated on my own machine at <strong>up to 268 tokens/sec</strong> (observed under real multimodal load), 180K context. The guarantee isn't a policy promise — it's enforced by the routing, and the whole thing is public so a client can audit exactly how before trusting it.</p>
+    <p class="meta">vLLM · Nemotron · routing-enforced privacy · 268 tok/s observed</p>
+  </article>
+
+  <p style="margin-top:1.5rem">
+    <a href="/services">→ What this costs and how to start</a>
+  </p>
+
+  <h2 id="failure-log">The failure log</h2>
+  <p style="color: var(--muted)">
+    New posts as the work happens.
+    <span style="font-family: var(--mono); font-size: 0.9rem">
+      Looking for something specific? <a href="/blog/topics"><strong>Browse by topic →</strong></a>
+      — every post grouped by technology (LLM serving, GPU/VRAM, creative AI, audio, ops…).
+    </span>
   </p>
   <ul class="postlist">
     {posts.map((post) => (
