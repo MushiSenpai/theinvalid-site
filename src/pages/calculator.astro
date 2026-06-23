@@ -3,68 +3,459 @@ import Base from '../layouts/Base.astro';
 ---
 
 <Base
-  title="Cloud vs local AI — break-even calculator — theinvalid.me"
-  description="Estimate when a local AI rig pays back versus monthly cloud API spend. Enter your usage; see the break-even month. Sovereign local inference is a capital cost that depreciates; cloud is a tax that never stops."
+  title="Local LLM field guide — what fits, what it costs — theinvalid.me"
+  description="An honest, interactive field guide to running LLMs on your own hardware: what actually fits in your VRAM (the math nobody tells you), what runs on each GPU tier, how many users one card serves, and when a local rig beats cloud API spend. Measured on an RTX 5090, every number editable."
 >
-  <h1>Cloud vs local: when does owning the rig pay off?</h1>
-  <p style="color:var(--muted)">
-    Cloud API spend is a tax that never stops. A local rig is a one-time cost
-    that depreciates — and your data never leaves the building. Enter your usage
-    to see roughly when local wins. <em>Estimates, not a quote — every number is
-    editable and the assumptions are shown.</em>
-  </p>
+  <!-- ── §0 hero ─────────────────────────────────────── -->
+  <header class="fg-hero">
+    <p class="prompt">$ how much AI fits on one machine<span class="cursor">_</span></p>
+    <h1>The local-AI field guide</h1>
+    <p class="lede">
+      Frontier names dominate the headlines. The model that actually <em>fits in
+      your box and answers in under a second</em> is a different question — and
+      it's mostly arithmetic nobody shows you. This guide does the subtraction,
+      then lets you poke it. Every number is editable; the measured ones are
+      badged <span class="badge measured">measured</span>, the rest
+      <span class="badge estimate">estimate</span>. Numbers come off one
+      <strong>RTX&nbsp;5090 (32&nbsp;GB)</strong> — no benchmarketing.
+    </p>
+    <nav class="fg-toc" aria-label="Sections">
+      <a href="#math">§01 the math</a>
+      <a href="#fits">§02 what fits</a>
+      <a href="#tiers">§03 tier map</a>
+      <a href="#users">§04 how many users</a>
+      <a href="#breakeven">§05 cloud vs local</a>
+    </nav>
+  </header>
 
-  <div style="display:grid; gap:0.9rem; max-width:34rem; margin:1.5rem 0;">
-    <label>Text tokens generated / month (millions)
-      <input id="tokens" type="number" value="20" min="0" step="1" />
-    </label>
-    <label>Cloud price per 1M output tokens (USD)
-      <input id="cloudprice" type="number" value="15" min="0" step="0.5" />
-    </label>
-    <label>Images generated / month
-      <input id="images" type="number" value="2000" min="0" step="100" />
-    </label>
-    <label>Cloud price per image (USD)
-      <input id="imgprice" type="number" value="0.04" min="0" step="0.01" />
-    </label>
-    <label>Local rig cost (USD)
-      <input id="rig" type="number" value="6000" min="0" step="500" />
-    </label>
-    <label>Your local electricity (USD per kWh)
-      <input id="kwh" type="number" value="0.22" min="0" step="0.01" />
-    </label>
-  </div>
+  <!-- ── §1 the math nobody tells you ────────────────── -->
+  <section id="math" class="fg-section">
+    <p class="sec-label">§01 — the math nobody tells you</p>
+    <h2>Your "32&nbsp;GB" is not 32&nbsp;GB.</h2>
+    <p>
+      VRAM is shared between the model's <strong>weights</strong>, the framework's
+      <strong>CUDA graphs</strong>, <strong>activation &amp; multimodal buffers</strong>,
+      per-sequence state, and the <strong>KV cache</strong> that grows with every
+      token of context. Before you pick a model, do the subtraction — here's a
+      32&nbsp;GB card serving a 30B model in <strong>NVFP4</strong> at long context:
+    </p>
 
-  <div id="out" class="card" style="font-size:1.05rem"></div>
+    <div class="vbar" aria-hidden="true">
+      <span style="flex-basis:49%;background:#e8a33d;flex-shrink:0"></span>
+      <span style="flex-basis:9%;background:#5b6270;flex-shrink:0"></span>
+      <span style="flex-basis:2%;background:#b07d2e;flex-shrink:0"></span>
+      <span style="flex-basis:40%;background:transparent;flex-shrink:0"></span>
+    </div>
+    <p class="barkey">
+      <span class="sw" style="background:#e8a33d"></span>weights
+      <span class="sw" style="background:#5b6270"></span>graphs&nbsp;+&nbsp;buffers
+      <span class="sw" style="background:#b07d2e"></span>KV
+      <span class="sw" style="background:transparent;border:1px solid var(--line)"></span>free
+    </p>
+    <p class="meta">
+      Two things that trip everyone up: <strong>weights-in-VRAM ≠ checkpoint-on-disk</strong>
+      (a "~18 GB" model loaded clocks ~21.5 GiB), and on a <strong>Mamba-hybrid</strong>
+      the KV cache is <em>not</em> the context bottleneck — only the few attending
+      layers cost KV, so the headline "256K context" is bounded by total VRAM, not
+      by KV. The same 30B in FP8 (~29 GiB of weights alone) wouldn't fit at all —
+      which is exactly why NVFP4 earns its place. I had this math
+      <strong>14× wrong</strong> once and wrote it down:
+      <a href="/blog/i-had-my-kv-cache-math-14x-wrong">the KV-cache correction</a>
+      and <a href="/blog/a-32gb-gpu-is-a-budget-not-a-suggestion">why 32 GB is a budget, not a suggestion</a>.
+    </p>
+  </section>
 
-  <p class="meta" style="margin-top:1rem">
-    Assumes the rig draws ~0.5 kW under sustained AI load and runs ~6 h/day of
-    actual inference. Local image/token costs are electricity only (machine cost
-    per job is cents — the rig is the real number). Doesn't price your time, or
-    the value of data never leaving your building, which for regulated work is
-    often the whole point. <a href="/services">Want this deployed?</a>
-  </p>
+  <!-- ── §2 what fits (interactive) ──────────────────── -->
+  <section id="fits" class="fg-section">
+    <p class="sec-label">§02 — what fits</p>
+    <h2>Will it fit? Do the subtraction.</h2>
+    <p style="color:var(--muted)">
+      Enter a card and a model. The verdict is honest about headroom — a model
+      that "fits" with nothing to spare will fragment, swap, and crawl under real
+      load.
+    </p>
+
+    <div class="grid">
+      <label>VRAM <span class="hint">GB (= GiB on GPUs)</span>
+        <input id="v-vram" type="number" value="32" min="1" step="1" />
+      </label>
+      <label>Model size <span class="hint">billions of params</span>
+        <input id="v-params" type="number" value="30" min="0.1" step="0.5" />
+      </label>
+      <label>Quantization
+        <select id="v-quant">
+          <option value="fp16">FP16 — 2 bytes/param</option>
+          <option value="fp8">FP8 — 1 byte/param</option>
+          <option value="nvfp4" selected>NVFP4 — ~0.5 byte/param</option>
+          <option value="int4">INT4 — ~0.5 byte/param</option>
+        </select>
+      </label>
+      <label>Architecture
+        <select id="v-arch">
+          <option value="hybrid" selected>Mamba/MoE hybrid (~3 KB/token KV)</option>
+          <option value="dense">Dense transformer (~128 KB/token KV)</option>
+        </select>
+      </label>
+      <label>Context <span class="hint">tokens</span>
+        <input id="v-ctx" type="number" value="180000" min="1024" step="1024" />
+      </label>
+      <label>Concurrent sequences
+        <input id="v-conc" type="number" value="1" min="1" step="1" />
+      </label>
+      <label>KV cost <span class="hint">KB / token · editable</span>
+        <input id="v-kvkb" type="number" value="3" min="0.1" step="0.5" />
+      </label>
+      <label>Overhead reserve <span class="hint">GiB · graphs+buffers</span>
+        <input id="v-ovh" type="number" value="3" min="0" step="0.5" />
+      </label>
+    </div>
+
+    <div id="v-bar" class="vbar" aria-hidden="true"></div>
+    <div id="v-out" class="card verdict"></div>
+    <p class="meta">
+      <code>weights = params × bytes/param × quant-overhead</code> ·
+      <code>KV = KB/token × context × sequences</code> ·
+      <code>total = weights + KV + overhead</code>.
+      Switching architecture changes KV by ~40× — that's the whole point of the
+      KV post. KV cost and overhead are pre-filled estimates; edit them for your
+      model.
+    </p>
+  </section>
+
+  <!-- ── §3 tier map ─────────────────────────────────── -->
+  <section id="tiers" class="fg-section">
+    <p class="sec-label">§03 — the memory tier map</p>
+    <h2>What runs where.</h2>
+    <p style="color:var(--muted)">
+      Usable VRAM by card, and the class of model it opens up. The jump from
+      16&nbsp;GB to 24&nbsp;GB is where local AI gets genuinely useful; 32&nbsp;GB
+      is where MoE models (only a few B active per token) start to shine.
+    </p>
+    <table class="tiers">
+      <thead>
+        <tr><th>VRAM</th><th>~usable</th><th>realistic model class</th><th>verdict</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>8 GB</td><td>~5 GiB</td><td>3–4B at INT4 (small assistants, autocomplete)</td><td class="t-dim">survival tier</td></tr>
+        <tr><td>12 GB</td><td>~8 GiB</td><td>7–8B at 4-bit, short context</td><td class="t-dim">hobby</td></tr>
+        <tr><td>16 GB</td><td>~11 GiB</td><td>7–9B comfortably, 13B tight</td><td class="t-warn">real AI starts</td></tr>
+        <tr><td>24 GB</td><td>~17 GiB</td><td>14B at 4-bit, vision models, longer context</td><td class="t-warn">the sweet spot</td></tr>
+        <tr><td>32 GB</td><td>~22 GiB</td><td>30B-A3B MoE, FP8 reasoning models, multimodal</td><td class="t-ok">my stack lives here</td></tr>
+        <tr><td>48–64 GB</td><td>~35–45 GiB</td><td>70B at 4-bit — frontier-adjacent</td><td class="t-dim">workstation</td></tr>
+      </tbody>
+    </table>
+    <p class="meta">
+      The 32&nbsp;GB row is measured: Nemotron (FP8 reasoning), a 20B image hero
+      at ~28 GiB peak, 30B-A3B MoE — all on one RTX 5090, sequentially, never
+      co-loaded. Smaller-card rows are estimates using the ~70% usable heuristic;
+      a unified-memory Mac is a different regime (the OS reserves a chunk and it's
+      shared with the display).
+    </p>
+  </section>
+
+  <!-- ── §4 how many users (interactive) ─────────────── -->
+  <section id="users" class="fg-section">
+    <p class="sec-label">§04 — how many users</p>
+    <h2>One card, how many people?</h2>
+    <p style="color:var(--muted)">
+      Continuous batching means throughput does <em>not</em> divide by user count —
+      but KV-cache memory caps how many sequences can generate at once. Measured
+      on the 5090: single stream <strong>~276 tok/s</strong>, 2 users ≈ 1.4×, 4 ≈
+      2.4×, and it <strong>knees at ~8 concurrent</strong>.
+    </p>
+    <div class="grid narrow">
+      <label>Concurrent users
+        <input id="c-users" type="number" value="4" min="1" max="64" step="1" />
+      </label>
+      <label>Single-stream throughput <span class="hint">tok/s · measured 276</span>
+        <input id="c-single" type="number" value="276" min="1" step="1" />
+      </label>
+    </div>
+    <div id="c-out" class="card verdict"></div>
+    <p class="meta">
+      Past the knee, aggregate throughput is flat and latency climbs — adding
+      users just makes everyone wait. Rule of thumb on 32&nbsp;GB: ~10–15 heavy or
+      ~30–40 light chat users, latency under ~2.5&nbsp;s. Your model, context, and
+      quant move the knee.
+    </p>
+  </section>
+
+  <!-- ── §5 cloud vs local (preserved) ───────────────── -->
+  <section id="breakeven" class="fg-section">
+    <p class="sec-label">§05 — cloud vs local</p>
+    <h2>When does owning the rig pay off?</h2>
+    <p style="color:var(--muted)">
+      Cloud API spend is a tax that never stops. A local rig is a one-time cost
+      that depreciates — and your data never leaves the building. Enter your usage
+      to see roughly when local wins. <em>Estimates, not a quote — every number is
+      editable and the assumptions are shown.</em>
+    </p>
+
+    <div class="grid">
+      <label>Text tokens / month <span class="hint">millions</span>
+        <input id="tokens" type="number" value="20" min="0" step="1" />
+      </label>
+      <label>Cloud price / 1M output tokens <span class="hint">USD</span>
+        <input id="cloudprice" type="number" value="15" min="0" step="0.5" />
+      </label>
+      <label>Images / month
+        <input id="images" type="number" value="2000" min="0" step="100" />
+      </label>
+      <label>Cloud price / image <span class="hint">USD</span>
+        <input id="imgprice" type="number" value="0.04" min="0" step="0.01" />
+      </label>
+      <label>Local rig cost <span class="hint">USD</span>
+        <input id="rig" type="number" value="6000" min="0" step="500" />
+      </label>
+      <label>Electricity <span class="hint">USD / kWh</span>
+        <input id="kwh" type="number" value="0.22" min="0" step="0.01" />
+      </label>
+    </div>
+
+    <div id="out" class="card verdict"></div>
+
+    <p class="meta">
+      Assumes the rig draws ~0.5 kW under sustained AI load and runs ~6 h/day of
+      actual inference. Local image/token costs are electricity only (machine cost
+      per job is cents — the rig is the real number). Doesn't price your time, or
+      the value of data never leaving your building, which for regulated work is
+      often the whole point. <a href="/services">Want this deployed?</a>
+    </p>
+  </section>
+
+  <!-- ── §6 sources ──────────────────────────────────── -->
+  <section class="fg-section sources">
+    <p class="sec-label">§ sources &amp; honesty</p>
+    <p class="meta">
+      Built from this site's own failure logs:
+      <a href="/blog/i-had-my-kv-cache-math-14x-wrong">i had my KV-cache math 14× wrong</a> ·
+      <a href="/blog/a-32gb-gpu-is-a-budget-not-a-suggestion">a 32 GB GPU is a budget, not a suggestion</a>.
+      Everything here is an estimate you can edit, not a quote — the assumptions
+      are on the page on purpose.
+    </p>
+  </section>
+
+  <style>
+    /* field-guide — scoped, compile-time. One accent, system fonts, no JS framework.
+       NOTE: anything injected at runtime via the inline script is styled INLINE,
+       because Astro's scoped-CSS attribute is only added to template elements. */
+    .fg-hero { padding: 3rem 0 1.5rem; }
+    .fg-hero .prompt {
+      font-family: var(--mono); color: var(--muted);
+      font-size: 1rem; margin: 0 0 0.4rem;
+    }
+    .cursor { color: var(--accent); animation: blink 1.1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+    .fg-hero h1 { font-size: clamp(2.1rem, 6vw, 3rem); margin: 0 0 1rem; letter-spacing: -0.02em; }
+    .fg-hero .lede { color: var(--muted); max-width: 40rem; font-size: 1.05rem; }
+    .fg-hero .lede strong, .fg-hero .lede em { color: var(--fg); }
+
+    .fg-toc {
+      display: flex; flex-wrap: wrap; gap: 0.3rem 1.3rem;
+      font-family: var(--mono); font-size: 0.82rem;
+      margin-top: 1.8rem; padding-top: 1.2rem; border-top: 1px solid var(--line);
+    }
+    .fg-toc a { color: var(--muted); }
+    .fg-toc a:hover { color: var(--accent); text-decoration: none; }
+
+    .fg-section { padding-top: 3rem; scroll-margin-top: 1rem; }
+    .sec-label {
+      font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent); margin: 0 0 0.3rem;
+    }
+    .fg-section h2 { margin-top: 0; }
+
+    /* badges reuse existing tokens — no new accent hue */
+    .badge.measured { color: var(--ok); }
+    .badge.estimate { color: var(--muted); }
+
+    /* inputs — thin ghost-boxes per the design language */
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem 1.1rem; margin: 1.4rem 0; }
+    .grid.narrow { grid-template-columns: repeat(2, minmax(0, 16rem)); }
+    .grid label {
+      display: flex; flex-direction: column; gap: 0.35rem;
+      font-size: 0.9rem; color: var(--fg);
+    }
+    .grid .hint { color: var(--muted); font-family: var(--mono); font-size: 0.72rem; }
+    .grid input, .grid select {
+      background: var(--bg-raise); color: var(--fg);
+      border: 1px solid var(--line); border-radius: 6px;
+      padding: 0.5rem 0.6rem; font-family: var(--mono); font-size: 0.95rem;
+      width: 100%; -webkit-appearance: none; appearance: none;
+    }
+    .grid input:focus, .grid select:focus { outline: none; border-color: var(--accent); }
+    .grid select {
+      background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                        linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+      background-position: calc(100% - 16px) 1.05rem, calc(100% - 11px) 1.05rem;
+      background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
+    }
+
+    /* segmented VRAM bar — segments are colored inline (static + injected) */
+    .vbar {
+      display: flex; height: 2.4rem; border-radius: 6px; overflow: hidden;
+      border: 1px solid var(--line); margin: 1.2rem 0 0.5rem; background: #0f1320;
+    }
+    .barkey {
+      font-family: var(--mono); font-size: 0.74rem; color: var(--muted);
+      display: flex; flex-wrap: wrap; gap: 0.3rem 1.1rem; margin: 0 0 0.4rem;
+    }
+    .barkey .sw {
+      display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 2px;
+      margin-right: 0.3rem; vertical-align: middle;
+    }
+
+    .verdict { font-size: 1.02rem; line-height: 1.5; }
+    .verdict.is-ok   { border-color: var(--ok); }
+    .verdict.is-warn { border-color: var(--accent); }
+    .verdict.is-bad  { border-color: var(--error); }
+
+    /* tier table — stripped, mono cells */
+    table.tiers { border-collapse: collapse; width: 100%; font-size: 0.9rem; margin: 1.3rem 0; }
+    table.tiers th, table.tiers td {
+      border: none; border-bottom: 1px solid var(--line);
+      padding: 0.55rem 0.7rem; text-align: left;
+    }
+    table.tiers thead th {
+      background: none; font-family: var(--mono); font-size: 0.72rem;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+    }
+    table.tiers td:first-child, table.tiers td:nth-child(2) { font-family: var(--mono); white-space: nowrap; }
+    table.tiers td:nth-child(4) { font-family: var(--mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .t-ok { color: var(--ok); } .t-warn { color: var(--accent); } .t-dim { color: var(--dim); }
+    table.tiers tbody tr:hover { background: var(--bg-raise); }
+
+    .sources { border-top: 1px solid var(--line); margin-top: 1rem; }
+
+    @media (max-width: 38rem) {
+      .grid, .grid.narrow { grid-template-columns: 1fr; }
+    }
+  </style>
 
   <script is:inline>
     const $ = (id) => document.getElementById(id);
-    const ids = ['tokens','cloudprice','images','imgprice','rig','kwh'];
+    const gib = (n) => n.toFixed(n < 10 ? 2 : 1);
+    // injected markup is styled inline (Astro scoping doesn't reach runtime nodes)
+    const BIG = (t) => `<span style="font-size:1.15rem;font-weight:650;color:var(--fg)">${t}</span>`;
+    const SEG = (pct, color) =>
+      `<span style="flex-basis:${pct}%;background:${color};flex-shrink:0;display:block;transition:flex-basis .18s ease"></span>`;
+    const SW = (c) =>
+      `<span style="display:inline-block;width:.6rem;height:.6rem;border-radius:2px;background:${c};margin-right:.3rem;vertical-align:middle"></span>`;
+
+    /* ── §2 what fits ─────────────────────────────── */
+    const BPP = { fp16: 2, fp8: 1, nvfp4: 0.5, int4: 0.5 };
+    const QOH = { fp16: 1.0, fp8: 1.05, nvfp4: 1.12, int4: 1.12 };
+    const KV_PRESET = { hybrid: 3, dense: 128 };
+    const COL = { w: '#e8a33d', k: '#b07d2e', o: '#5b6270', f: 'transparent', over: '#ff6b6b' };
+
+    function vram() {
+      const V = +$('v-vram').value;
+      const P = +$('v-params').value;
+      const q = $('v-quant').value;
+      const ctx = +$('v-ctx').value;
+      const cc = +$('v-conc').value;
+      const kvkb = +$('v-kvkb').value;
+      const ovh = +$('v-ovh').value;
+
+      const weights = (P * 1e9 * BPP[q] * QOH[q]) / 2 ** 30;
+      const kv = (kvkb * 1024 * ctx * cc) / 2 ** 30;
+      const total = weights + kv + ovh;
+      const free = V - total;
+      const denom = Math.max(V, total);
+      const pct = (x) => Math.max(0, (x / denom) * 100);
+
+      let bar = SEG(pct(weights), COL.w) + SEG(pct(kv), COL.k) + SEG(pct(ovh), COL.o);
+      bar += free >= 0 ? SEG(pct(free), COL.f) : SEG(pct(-free), COL.over);
+      $('v-bar').innerHTML = bar;
+
+      const legend =
+        `<div style="font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-top:.6rem;display:flex;flex-wrap:wrap;gap:.4rem 1.1rem">` +
+        `<span>${SW(COL.w)}weights <b style="color:var(--fg)">${gib(weights)} GiB</b></span>` +
+        `<span>${SW(COL.k)}KV <b style="color:var(--fg)">${gib(kv)} GiB</b></span>` +
+        `<span>${SW(COL.o)}overhead <b style="color:var(--fg)">${gib(ovh)} GiB</b></span>` +
+        `<span>total <b style="color:var(--fg)">${gib(total)} / ${V} GiB</b></span>` +
+        `</div>`;
+
+      const out = $('v-out');
+      out.classList.remove('is-ok', 'is-warn', 'is-bad');
+      if (free < 0) {
+        out.classList.add('is-bad');
+        out.innerHTML = `${BIG("Doesn't fit.")} Over by <strong>${gib(-free)} GiB</strong>. Drop a quant level, shrink context, or run fewer concurrent sequences.${legend}`;
+      } else if (free < V * 0.08) {
+        out.classList.add('is-warn');
+        out.innerHTML = `${BIG(`Fits — but only ${gib(free)} GiB headroom.`)} Under real load (CUDA graphs grow, memory fragments) this will OOM or swap. Treat it as <em>not safe</em>; leave ≥8%.${legend}`;
+      } else {
+        out.classList.add('is-ok');
+        out.innerHTML = `${BIG('Fits.')} ${gib(free)} GiB headroom (${Math.round((free / V) * 100)}% free).${legend}`;
+      }
+    }
+    $('v-arch').addEventListener('change', () => {
+      $('v-kvkb').value = KV_PRESET[$('v-arch').value];
+      vram();
+    });
+    ['v-vram', 'v-params', 'v-quant', 'v-ctx', 'v-conc', 'v-kvkb', 'v-ovh'].forEach(
+      (id) => $(id).addEventListener('input', vram)
+    );
+
+    /* ── §4 how many users ────────────────────────── */
+    // measured scaling points on a 32GB RTX 5090; interpolate, flatten past the knee.
+    const PTS = [[1, 1.0], [2, 1.4], [4, 2.4], [8, 2.65]];
+    const KNEE = 8;
+    function scaleAt(u) {
+      if (u >= KNEE) return PTS[PTS.length - 1][1];
+      for (let i = 1; i < PTS.length; i++) {
+        if (u <= PTS[i][0]) {
+          const [x0, y0] = PTS[i - 1], [x1, y1] = PTS[i];
+          return y0 + ((u - x0) / (x1 - x0)) * (y1 - y0);
+        }
+      }
+      return 1;
+    }
+    function users() {
+      const u = Math.max(1, +$('c-users').value);
+      const single = +$('c-single').value;
+      const agg = single * scaleAt(u);
+      const per = agg / u;
+      const out = $('c-out');
+      out.classList.remove('is-ok', 'is-warn', 'is-bad');
+      const head = `${BIG(`~${Math.round(agg)} tok/s aggregate`)} · ~${Math.round(per)} tok/s per user`;
+      if (u <= 4) {
+        out.classList.add('is-ok');
+        out.innerHTML = `${head}<br>Comfortable — per-user speed stays snappy.`;
+      } else if (u < KNEE) {
+        out.classList.add('is-warn');
+        out.innerHTML = `${head}<br>Approaching the knee (~${KNEE}). Per-user latency is starting to climb.`;
+      } else {
+        out.classList.add('is-bad');
+        out.innerHTML = `${head}<br>At/past the knee (~${KNEE} concurrent on 32 GB): aggregate throughput is flat — extra users just wait. KV-cache memory is the wall, not compute.`;
+      }
+    }
+    ['c-users', 'c-single'].forEach((id) => $(id).addEventListener('input', users));
+
+    /* ── §5 cloud vs local (preserved) ────────────── */
     function calc() {
       const tokensM = +$('tokens').value, cloudPrice = +$('cloudprice').value;
       const images = +$('images').value, imgPrice = +$('imgprice').value;
       const rig = +$('rig').value, kwh = +$('kwh').value;
       const cloudMonthly = tokensM * cloudPrice + images * imgPrice;
-      // local: electricity only. ~0.5kW * 6h/day * 30 days = 90 kWh/mo
-      const localMonthly = 90 * kwh;
+      const localMonthly = 90 * kwh; // ~0.5kW * 6h/day * 30d = 90 kWh/mo
       const saved = cloudMonthly - localMonthly;
       const out = $('out');
+      out.classList.remove('is-ok', 'is-warn', 'is-bad');
       if (saved <= 0) {
-        out.innerHTML = `<strong>Cloud is cheaper at this volume.</strong> Your usage (US$${cloudMonthly.toFixed(0)}/mo cloud vs ~US$${localMonthly.toFixed(0)}/mo local electricity) is low enough that a rig wouldn't pay back on cost alone. Local still wins if <em>data sovereignty</em> is the requirement — that's not a cost question.`;
+        out.classList.add('is-warn');
+        out.innerHTML = `${BIG('Cloud is cheaper at this volume.')} Your usage (US$${cloudMonthly.toFixed(0)}/mo cloud vs ~US$${localMonthly.toFixed(0)}/mo local electricity) is low enough that a rig wouldn't pay back on cost alone. Local still wins if <em>data sovereignty</em> is the requirement — that's not a cost question.`;
       } else {
         const months = rig / saved;
-        out.innerHTML = `Cloud: <strong>US$${cloudMonthly.toFixed(0)}/mo</strong> · Local: <strong>~US$${localMonthly.toFixed(0)}/mo</strong> electricity · Saving <strong>US$${saved.toFixed(0)}/mo</strong>.<br><br>The rig pays for itself in <strong>${months < 1 ? 'under 1 month' : Math.ceil(months) + ' month' + (Math.ceil(months) > 1 ? 's' : '')}</strong> — then it's ~US$${saved.toFixed(0)}/mo back in your pocket, every month, with your data never leaving the building.`;
+        out.classList.add('is-ok');
+        out.innerHTML = `Cloud: <strong>US$${cloudMonthly.toFixed(0)}/mo</strong> · Local: <strong>~US$${localMonthly.toFixed(0)}/mo</strong> electricity · Saving <strong>US$${saved.toFixed(0)}/mo</strong>.<br><br>The rig pays for itself in ${BIG(months < 1 ? 'under 1 month' : Math.ceil(months) + ' month' + (Math.ceil(months) > 1 ? 's' : ''))} — then it's ~US$${saved.toFixed(0)}/mo back in your pocket, every month, with your data never leaving the building.`;
       }
     }
-    ids.forEach((id) => $(id).addEventListener('input', calc));
-    calc();
+    ['tokens', 'cloudprice', 'images', 'imgprice', 'rig', 'kwh'].forEach(
+      (id) => $(id).addEventListener('input', calc)
+    );
+
+    vram(); users(); calc();
   </script>
 </Base>
