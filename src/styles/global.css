@@ -39,6 +39,21 @@ main {
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
+/* ── button (ghost, one accent, square-ish per the brand) ── */
+.btn {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--accent);
+  background: var(--bg-raise);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 0.45rem 0.9rem;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.btn:hover { background: var(--accent); color: var(--bg); text-decoration: none; }
+
 h1, h2, h3 { line-height: 1.25; font-weight: 650; }
 h1 { font-size: 2rem; }
 h2 { font-size: 1.3rem; margin-top: 2.5rem; }
@@ -84,12 +99,13 @@ nav.site {
   margin: 0 auto;
   padding: 1.5rem 1.25rem;
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 1.4rem;
+  gap: 0.4rem 1.05rem;
   font-family: var(--mono);
   font-size: 0.9rem;
 }
-nav.site .brand { color: var(--fg); font-weight: 700; margin-right: auto; }
+nav.site .brand { color: var(--fg); font-weight: 700; margin-right: 0.6rem; }
 nav.site .brand:hover { text-decoration: none; color: var(--accent); }
 nav.site a { color: var(--muted); }
 nav.site a:hover, nav.site a[aria-current="page"] { color: var(--fg); text-decoration: none; }

@@ -15,7 +15,10 @@ const gh = await repoStatuses(projects.map((p) => p.data.repo));
     Three infrastructure stacks and the products built on them. Every repo is
     public; statuses are honest — <code>building</code> means building.
   </p>
-  <p style="font-family:var(--mono);font-size:0.85rem"><a href="/workflow-catalogue.html">→ Live workflow catalogue</a> — every creative workflow with real measured benchmarks, auto-refreshed monthly.</p>
+  <p style="margin:1.3rem 0 0.4rem">
+    <a class="btn" href="/workflow-catalogue.html">Live workflow catalogue ↗</a>
+  </p>
+  <p class="meta" style="margin:0 0 1.6rem">Every creative workflow with real measured benchmarks, auto-refreshed monthly.</p>
   {projects.map((p) => (
     <article class="card">
       <h3>
