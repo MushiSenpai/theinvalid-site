@@ -170,3 +170,19 @@ footer.site {
 }
 footer.site a { color: var(--muted); }
 footer.site a:hover { color: var(--accent); }
+
+/* ── print / PDF ─────────────────────────────────────
+   The resume PDF is rendered from /resume via headless Chromium, which uses
+   print media. Flip to a clean light document; hide site chrome. */
+@media print {
+  html { background: #fff; color: #111; font-size: 10.5pt; line-height: 1.4; }
+  main { max-width: none; padding: 0; }
+  nav.site, footer.site, .no-print { display: none; }
+  a { color: #111; text-decoration: none; }
+  h1, h2, h3 { color: #000; }
+  .card, pre, code, blockquote, th, td {
+    background: #fff !important; border-color: #bbb !important; color: #111 !important;
+  }
+  .badge { border-color: #888 !important; color: #333 !important; }
+  .postlist li { border-bottom: 1px solid #ddd; }
+}

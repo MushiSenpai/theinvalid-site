@@ -51,10 +51,14 @@ fine-grained read-only `GITHUB_TOKEN` in the Cloudflare build environment
 (Workers & Pages → the project → Settings → Variables). `src/lib/github.js`
 picks it up from `process.env` automatically.
 
-## Still TODO (Phase 2b) — resume PDF auto-generation
-The `/resume` *page* is already current (its project list is generated from the
-projects collection). The downloadable **PDF** is still a hand-made file in
-`public/resume.pdf`. To make the PDF auto-current, add a step that renders the
-built `/resume` page to PDF with a headless browser (Playwright) and commits it —
-best run in CI (this workflow), not the Cloudflare build (no browser there).
-Left as a deliberate next step pending owner review.
+## Resume PDF auto-generation — implemented (in the daily workflow)
+The daily workflow renders the built `/resume` page to `dist/resume.pdf` with
+headless Chromium (`scripts/render-resume-pdf.mjs`) before deploying, so the
+downloadable PDF stays current with the live project list. The `@media print`
+block in `global.css` makes that PDF a clean light document (site chrome hidden).
+
+Caveat: only the daily workflow regenerates the PDF — a manual push redeploys via
+Cloudflare's git integration (which doesn't run the browser), so the downloadable
+PDF can lag a manual push by up to a day. The resume *page* is always current.
+(To make the PDF refresh on every push too, generation would have to move into
+the Cloudflare build, which has no browser — deliberately not done.)

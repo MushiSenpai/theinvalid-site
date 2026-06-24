@@ -1,16 +1,18 @@
-name: Scheduled rebuild
+name: Daily refresh
 
-# Re-deploys the site on a schedule so the build-time GitHub-status snapshot
-# ("updated X ago" on project cards + the resume's live project list) stays
-# fresh even on days nothing is pushed. The site is a static Cloudflare Workers
-# assets deployment (see wrangler.jsonc) — deploy = build ./dist + wrangler deploy.
+# Rebuilds the site, regenerates the resume PDF, and redeploys — daily — so the
+# build-time GitHub-status snapshot ("updated X ago" on project cards + the
+# resume's live project list) and the downloadable resume PDF stay current even
+# on days nothing is pushed. The site is Cloudflare Workers static-assets
+# (wrangler.jsonc); deploy = `wrangler deploy ./dist`.
 #
 # NOTE: normal pushes to main already redeploy via Cloudflare's git integration
-# (push = live), which also refreshes the snapshot. This cron only matters for
-# stretches with no pushes.
+# (push = live), refreshing the snapshot. They do NOT regenerate the PDF, so the
+# downloadable PDF can lag a manual push by up to a day — the resume *page* is
+# always current.
 #
 # SETUP (one-time, owner): add two repo secrets —
-#   CLOUDFLARE_API_TOKEN  (a token with the "Workers Scripts: Edit" permission)
+#   CLOUDFLARE_API_TOKEN  (a token with "Workers Scripts: Edit")
 #   CLOUDFLARE_ACCOUNT_ID
 # Until BOTH exist, this job no-ops safely. See docs/SCHEDULED-REBUILD.md.
 
@@ -23,11 +25,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: scheduled-rebuild
+  group: daily-refresh
   cancel-in-progress: false
 
 jobs:
-  rebuild:
+  refresh:
     runs-on: ubuntu-latest
     steps:
       - name: Check Cloudflare secrets
@@ -38,7 +40,7 @@ jobs:
         run: |
           if [ -z "$TOKEN" ] || [ -z "$ACCT" ]; then
             echo "Cloudflare secrets not set — skipping (no-op)."
-            echo "See docs/SCHEDULED-REBUILD.md to enable scheduled rebuilds."
+            echo "See docs/SCHEDULED-REBUILD.md to enable the daily refresh."
             echo "go=false" >> "$GITHUB_OUTPUT"
           else
             echo "go=true" >> "$GITHUB_OUTPUT"
@@ -50,12 +52,21 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - name: Build and deploy to Cloudflare Workers
+      - name: Install dependencies
+        if: steps.gate.outputs.go == 'true'
+        run: |
+          npm ci
+          npm i -D playwright@^1.49 --no-save
+          npx playwright install --with-deps chromium
+      - name: Build site
+        if: steps.gate.outputs.go == 'true'
+        run: npm run build
+      - name: Render resume PDF
+        if: steps.gate.outputs.go == 'true'
+        run: node scripts/render-resume-pdf.mjs
+      - name: Deploy to Cloudflare Workers
         if: steps.gate.outputs.go == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          npm ci
-          npm run build
-          npx wrangler deploy
+        run: npx wrangler deploy
