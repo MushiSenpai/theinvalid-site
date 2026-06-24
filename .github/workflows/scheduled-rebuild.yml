@@ -1,19 +1,23 @@
 name: Scheduled rebuild
 
 # Re-deploys the site on a schedule so the build-time GitHub-status snapshot
-# (project cards' "updated X ago", the resume's live project list) stays fresh.
-# The site is static, so "live status" = "as of the last build" — this is what
-# keeps that recent.
+# ("updated X ago" on project cards + the resume's live project list) stays
+# fresh even on days nothing is pushed. The site is a static Cloudflare Workers
+# assets deployment (see wrangler.jsonc) — deploy = build ./dist + wrangler deploy.
 #
-# SETUP (one-time, by the owner): create a Cloudflare Pages deploy hook
-# (Pages project → Settings → Builds & deployments → Deploy hooks) and add its
-# URL as the repo secret CF_DEPLOY_HOOK. Until then this job no-ops safely.
-# See docs/SCHEDULED-REBUILD.md.
+# NOTE: normal pushes to main already redeploy via Cloudflare's git integration
+# (push = live), which also refreshes the snapshot. This cron only matters for
+# stretches with no pushes.
+#
+# SETUP (one-time, owner): add two repo secrets —
+#   CLOUDFLARE_API_TOKEN  (a token with the "Workers Scripts: Edit" permission)
+#   CLOUDFLARE_ACCOUNT_ID
+# Until BOTH exist, this job no-ops safely. See docs/SCHEDULED-REBUILD.md.
 
 on:
   schedule:
     - cron: '0 6 * * *' # daily, 06:00 UTC
-  workflow_dispatch: {} # allow manual runs from the Actions tab
+  workflow_dispatch: {} # manual run from the Actions tab
 
 permissions:
   contents: read
@@ -26,13 +30,32 @@ jobs:
   rebuild:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Cloudflare Pages deploy
+      - name: Check Cloudflare secrets
+        id: gate
         env:
-          HOOK: ${{ secrets.CF_DEPLOY_HOOK }}
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -z "$HOOK" ]; then
-            echo "CF_DEPLOY_HOOK secret not set — skipping (no-op)."
+          if [ -z "$TOKEN" ] || [ -z "$ACCT" ]; then
+            echo "Cloudflare secrets not set — skipping (no-op)."
             echo "See docs/SCHEDULED-REBUILD.md to enable scheduled rebuilds."
-            exit 0
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
           fi
-          curl -fsS -X POST "$HOOK" >/dev/null && echo "Deploy hook triggered — Cloudflare will rebuild."
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.go == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.go == 'true'
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Build and deploy to Cloudflare Workers
+        if: steps.gate.outputs.go == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npm ci
+          npm run build
+          npx wrangler deploy

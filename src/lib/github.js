@@ -7,7 +7,11 @@
 // limits. Unauthenticated is fine for a handful of public repos per build.
 
 const cache = new Map();
-const TOKEN = import.meta.env.GITHUB_TOKEN;
+// Runs in Node at build (Astro SSG / CF Workers build / CI) — prefer process.env;
+// fall back to Vite's import.meta.env. Optional: omit it and run unauthenticated.
+const TOKEN =
+  (typeof process !== 'undefined' && process.env && process.env.GITHUB_TOKEN) ||
+  import.meta.env.GITHUB_TOKEN;
 
 function parseRepo(url) {
   try {
