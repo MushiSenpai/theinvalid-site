@@ -26,7 +26,7 @@ Format rules: PIPELINE.md.
 **Sources:** audio-stack repo LESSONS.md ("The June rebuild"); worker-pip-freeze-2026-06-10.txt; backlog I-4.
 **Targets:** linkedin, reddit:r/LocalLLaMA
 
-## [queued] moving-dockers-data-root-doesnt-move-containerd
+## [published 2026-06-24] moving-dockers-data-root-doesnt-move-containerd
 **Angle:** /var hit 99% weeks after I "moved Docker to the big disk" — image builds live in containerd's store, a different root. How the watchdog caught it day-1, finding the eater, the migration script.
 **Sources:** EXECUTION-PLAN 2026-06-11; scripts/move-containerd-root.sh; backlog I-3.
 **Targets:** linkedin, reddit:r/selfhosted, hn
