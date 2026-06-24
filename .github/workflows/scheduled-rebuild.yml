@@ -1,0 +1,38 @@
+name: Scheduled rebuild
+
+# Re-deploys the site on a schedule so the build-time GitHub-status snapshot
+# (project cards' "updated X ago", the resume's live project list) stays fresh.
+# The site is static, so "live status" = "as of the last build" — this is what
+# keeps that recent.
+#
+# SETUP (one-time, by the owner): create a Cloudflare Pages deploy hook
+# (Pages project → Settings → Builds & deployments → Deploy hooks) and add its
+# URL as the repo secret CF_DEPLOY_HOOK. Until then this job no-ops safely.
+# See docs/SCHEDULED-REBUILD.md.
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # daily, 06:00 UTC
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scheduled-rebuild
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare Pages deploy
+        env:
+          HOOK: ${{ secrets.CF_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "CF_DEPLOY_HOOK secret not set — skipping (no-op)."
+            echo "See docs/SCHEDULED-REBUILD.md to enable scheduled rebuilds."
+            exit 0
+          fi
+          curl -fsS -X POST "$HOOK" >/dev/null && echo "Deploy hook triggered — Cloudflare will rebuild."

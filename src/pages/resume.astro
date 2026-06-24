@@ -2,10 +2,12 @@
 import Base from '../layouts/Base.astro';
 import { Content as Resume } from '../content/resume.md';
 import { getCollection } from 'astro:content';
+import { repoStatuses, ago } from '../lib/github.js';
 
 const projects = (await getCollection('projects')).sort(
   (a, b) => a.data.order - b.data.order,
 );
+const gh = await repoStatuses(projects.map((p) => p.data.repo));
 // Build month — the download filename carries my name + when it was generated,
 // instead of a generic "resume.pdf".
 const stamp = new Date().toISOString().slice(0, 7); // YYYY-MM
@@ -30,6 +32,7 @@ const mdName = `Madhan-Kumar-Reddy-Resume-${stamp}.md`;
         <span>
           <a href={`/projects/${p.id}`}>{p.data.title}</a>
           <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+          {gh.get(p.data.repo)?.pushedAt && <span style="font-family: var(--mono); font-size: 0.75rem; color: var(--muted)"> · updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
           <br /><span style="color: var(--muted); font-size: 0.9rem">{p.data.oneliner}</span>
         </span>
       </li>

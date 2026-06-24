@@ -1,12 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import { repoStatuses, ago } from '../lib/github.js';
 
 const projects = (await getCollection('projects')).sort(
   (a, b) => a.data.order - b.data.order,
 );
 const building = projects.filter((p) => p.data.status === 'building');
 const shipped = projects.filter((p) => p.data.status === 'shipped');
+
+// Build-time GitHub snapshot (fail-soft); a scheduled rebuild keeps it fresh.
+const gh = await repoStatuses(projects.map((p) => p.data.repo));
 
 const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -47,6 +51,7 @@ const fmt = (d: Date) =>
       <p class="oneliner">{p.data.oneliner}</p>
       <p class="meta">
         <span>{p.data.stack.slice(0, 4).join(' · ')}</span>
+        {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
         <a href={p.data.repo}>repo ↗</a>
       </p>
     </article>
@@ -59,6 +64,7 @@ const fmt = (d: Date) =>
       <p class="oneliner">{p.data.oneliner}</p>
       <p class="meta">
         <span>{p.data.stack.slice(0, 4).join(' · ')}</span>
+        {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
         <a href={p.data.repo}>repo ↗</a>
       </p>
     </article>

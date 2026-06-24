@@ -66,21 +66,37 @@ src/
 │   └── resume.md             # canonical resume (rendered at /resume)
 ├── layouts/Base.astro        # head/nav/footer, the only layout
 ├── styles/global.css         # all design tokens, ~200 lines, no framework
+├── lib/github.js             # build-time repo status (fail-soft) → "updated X ago"
 └── pages/
     ├── index.astro           # hero + Now building + Operating daily + latest posts
-    ├── projects/index.astro  # all projects, status-badged
+    ├── start-here.astro      # plain-English intro (non-technical buyers)
+    ├── services.astro        # "Work with me" — the offer, pricing, contact
+    ├── projects/index.astro  # all projects, status-badged + "updated X ago"
     ├── projects/[slug].astro # project detail + auto-attached related posts
-    ├── blog/index.astro      # "The failure log"
+    ├── blog/index.astro      # "Knowledge base" — case studies + failure log + field guide
     ├── blog/[slug].astro     # post detail
-    ├── resume.astro          # renders content/resume.md (+ /resume.md download)
+    ├── blog/topics.astro     # posts grouped by topic
+    ├── calculator.astro      # "Field guide" — VRAM/fit/tier/concurrency + cloud-vs-local
+    ├── resume.astro          # content/resume.md + live project list + dated download
     └── rss.xml.js            # RSS feed
 public/resume.md              # downloadable copy — keep in sync with content/resume.md
+.github/workflows/scheduled-rebuild.yml  # daily redeploy → fresh GitHub-status snapshot
 ```
 
 **Key property:** pages are *generated from* the content folders. Statuses
 (`building` / `shipped` / `parked`) drive the homepage sections automatically.
 Posts link to projects via the `project:` frontmatter key matching the project
 filename.
+
+**Navigation — 5 tabs (since 2026-06-23):** `start here · work with me ·
+projects · field guide · knowledge base`. GitHub is a footer logo + username
+(not a tab); the resume is off-nav (linked from "Why me specifically" on
+Work-with-me + a dated download). Case studies were merged into the Knowledge
+base (`/blog`); `/case-studies` and `/knowledge-base` redirect there. The site
+also reflects live GitHub status: `src/lib/github.js` fetches each repo's last
+push at build (fail-soft, no client JS), shown as "updated X ago" on project
+cards and the resume, kept fresh by the scheduled rebuild (see
+`docs/SCHEDULED-REBUILD.md`). Rationale in `pipeline/queue.md` SITE-3.
 
 ## 6. Operating playbook
 
