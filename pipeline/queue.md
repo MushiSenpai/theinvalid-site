@@ -241,6 +241,7 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | I-12 | M | Backup coverage inventory question: "can I re-download this?" — everything answering no goes in | backup.sh history | unmined |
 | I-13 | M | Docs referenced a script (agent-mode.sh) that never existed — phantom-reference drift | 2026-06-10 | unmined |
 | I-14 | M | GUI mode-picker at login: zenity + autostart beats remembering mode scripts | mode-picker.sh | unmined |
+| I-15 | H | Headless `claude -p` in cron died silently: OAuth access token expired with an EMPTY refresh token (can't self-renew) AND the CLI prints the 401 but EXITS 0 — so the generic "did not publish" alert hid the cause for days. Fix = long-lived `claude setup-token` in a dedicated env file (decouples cron from the browser-refresh OAuth) + a preflight auth probe + a content-based (not exit-code) auth-fail alert + a proactive credential-expiry check in the watchdog. The I-1 lesson ("monitor outcomes, not exit codes") recurring in a new disguise. | 2026-06-24 blog-bot incident; blog-bot.sh/healthcheck.sh | unmined |
 
 ## Products (P) — komorebi, comic narrator, arena
 | id | pri | lesson / decision | source | status |
@@ -466,3 +467,9 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | NET-1 | H | Tailscale **tag-based ACLs are inert until the devices are tagged**. Applying the policy alone (tagOwners + tag-scoped accept rules) with untagged devices = every rule matches nothing = silent default-deny everywhere. "Apply the ACL" MUST include assigning each device its tag (admin console → Edit ACL tags, or `POST /api/v2/device/{id}/tags`). Symptom of the trap: even the explicitly-allowed ports are blocked while `tailscale ping` still works (ping is path-level, not ACL-gated). | BIZ-3 apply | unmined |
 | NET-2 | M | Verify a directional ACL from the RESTRICTED side against the TARGET's tailnet IP — not the tester's own. Easy footgun: running `nc <my-own-tailnet-ip> <port>` tests the box against itself (its own sshd open, nothing else), proving nothing about the peer→peer rule. Always nc the *other* device's IP. | BIZ-3 verify footgun | unmined |
 | NET-3 | M | Cloudflare's **Bot Management / rulesets / zone-settings APIs are paid-plan only** — on a Free zone, even a correctly-scoped Bot-Management token returns `9109`/`10000` "Unauthorized". The free "Block AI bots" feature is **dashboard-only**; there's no API to read/flip it on Free. Check actual bot access by behavior (curl with crawler UAs → 200/403) + robots.txt, not the API. | BIZ-12 | unmined |
+
+## smartd NVMe self-tests + ntfy alerts (2026-06-24)
+| id | pri | lesson / decision | source | status |
+|---|---|---|---|---|
+| DSK-1 | M | smartmontools default `DEVICESCAN -d removable` still *health-monitors* fixed NVMe drives (smartd reports "Monitoring N NVMe"), but runs **NO scheduled self-tests** and mails local root — on a box with no MTA that's a SILENT safety net. For real coverage add explicit per-device lines with `-s (S/../.././02|L/../../6/03)` (short daily/long weekly). Don't assume "smartd is running" = "drives are self-tested + you'll be told." | BIZ-5 | unmined |
+| DSK-2 | L | NVMe self-test (DST) support often isn't shown by `smartctl -c \| grep -i self-test` (ATA-phrased); detect it by probing `smartctl -t short` and checking the selftest log, or just trust modern NVMe (990 PRO supports it). And for alert delivery without a mailer, use smartd `-m <nomailer> -M exec <script>` to run only the exec hook (e.g. curl→ntfy). | BIZ-5 | unmined |
