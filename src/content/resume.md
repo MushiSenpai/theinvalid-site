@@ -3,13 +3,13 @@
 **AI Infrastructure Operator** — I spec, direct LLMs, and verify.
 
 Singapore | +65 8179 6884 | reddy.madhankumar.sg@gmail.com
-**Portfolio:** [theinvalid.me](https://theinvalid.me) | **GitHub:** [github.com/MushiSenpai](https://github.com/MushiSenpai) | **LinkedIn:** [linkedin.com/in/reddymk](https://www.linkedin.com/in/reddymk/)
+**Portfolio:** [theinvalid.me](https://theinvalid.me) | **GitHub:** [github.com/MushiSenpai](https://github.com/MushiSenpai) | **HuggingFace:** [huggingface.co/MushiSenpai](https://huggingface.co/MushiSenpai) | **LinkedIn:** [linkedin.com/in/reddymk](https://www.linkedin.com/in/reddymk/)
 
 ---
 
 ## HOW I WORK — READ THIS FIRST
 
-I don't hand-write production code, and I won't pretend otherwise. I have a B.E. in Computer Science — I read code fluently — but every system below was built by directing LLMs (Claude primarily; Gemini, Grok, and Kimi as a consultation council) against specifications I author. My work is everything around the code: architecture, tool evaluation, spec writing, debugging direction, verification gates, and day-2 operations. The proof is public: three documented repositories where the method, the failures, and the fixes are all visible.
+I don't hand-write production code, and I won't pretend otherwise. I have a B.E. in Computer Science — I read code fluently — but every system below was built by directing LLMs (Claude primarily; Gemini, Grok, and Kimi as a consultation council) against specifications I author. My work is everything around the code: architecture, tool evaluation, spec writing, debugging direction, verification gates, and day-2 operations. The proof is public: documented repositories where the method, the failures, and the fixes are all visible.
 
 If your role requires hand-written algorithms on a whiteboard, I'm the wrong hire — this paragraph just saved us both an interview. If your role requires someone who can take an idea to a running, secured, monitored system and operate it honestly, keep reading.
 
@@ -22,6 +22,13 @@ Ten+ years across quality control, security governance (GRC), and client service
 ---
 
 ## SELECTED WORK — public, verifiable, operating daily
+
+### SovereignSec-AI — Air-Gapped Code-Security Auditor → [github.com/MushiSenpai/SovereignSec-AI-Auditor](https://github.com/MushiSenpai/SovereignSec-AI-Auditor)
+A fully air-gapped AI code-security auditor for codebases that can't leave the network: **cross-file taint analysis + SAST + an LLM, hybridized**, finding vulnerabilities across files and returning deterministic, proof-carrying findings.
+- **0.97** on a hard 29-module / 6-CWE benchmark vs **0.90** for an LLM alone — the system beats the model; high-confidence findings carry `✔ PROVEN (taint)` evidence to triage first
+- Rigorously measured that **fine-tuning adds ~0 detection capability** (its real value is output schema + calibration) — the clean measurement caught **4 of my own eval bugs**; capability lives in the architecture, not the fine-tune
+- Trained **7B and 32B QLoRA adapters on a single RTX 5090**, published with honest model cards: [HF 7B](https://huggingface.co/MushiSenpai/SovereignSec-Auditor-LoRA-Qwen2.5-Coder-7B) · [HF 32B](https://huggingface.co/MushiSenpai/SovereignSec-Auditor-LoRA-Qwen2.5-Coder-32B)
+- Deterministic core runs with **no GPU and `--network=none`** (Docker) — air-gapped by construction; licensing constraints (CodeQL/Semgrep-Pro) drove the architecture, not the other way around
 
 ### Sovereign AI Stack → [github.com/MushiSenpai/mushishi-sovereign-ai-stack](https://github.com/MushiSenpai/mushishi-sovereign-ai-stack)
 Self-hosted multimodal LLM infrastructure with **routing-enforced privacy**: three fallback chains where "client data never touches a cloud API" is guaranteed by architecture, not policy — including a client profile that refuses to fall back, because failing loudly beats degrading silently.

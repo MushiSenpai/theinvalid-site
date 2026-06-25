@@ -57,6 +57,14 @@ const fmt = (d: Date) =>
     <p class="meta">vLLM · Nemotron · routing-enforced privacy · 268 tok/s observed</p>
   </article>
 
+  <article class="card">
+    <h3>Auditing a private codebase for vulnerabilities, fully air-gapped</h3>
+    <p><strong>Problem.</strong> Teams whose code legally can't leave the network — banks, hospitals, defense, anyone under NDA — get no help from cloud AI code-review, because it uploads the source. And the obvious in-house fix, "fine-tune a model into a security expert," is a trap: a model that already read most of GitHub doesn't learn to <em>see</em> new bug classes from a few hundred examples.</p>
+    <p><strong>Solution.</strong> <a href="/projects/sovereign-code-auditor">SovereignSec-AI</a>, built as a <em>system</em> rather than a model: a custom cross-file taint engine (tree-sitter), SAST (Semgrep OSS + Bandit + own rules), an agentic loop, and a validation oracle, with a local LLM as one noisy member. The deterministic core returns <strong>proof-carrying findings</strong> — a source→sink path you can verify — under <code>--network=none</code>, no GPU required. I trained 7B/32B QLoRA adapters on one RTX 5090 specifically to <em>measure</em> what the fine-tune adds.</p>
+    <p><strong>Outcome.</strong> On a hard 29-module / 6-CWE benchmark the hybrid (LLM ∪ system) scores <strong>0.97 vs 0.90</strong> for the LLM alone, and the cross-file taint engine hits <strong>1.00 precision/recall where a per-file LLM gets 0.25 precision</strong>. The honest headline I publish up front: the fine-tune adds <strong>~0 detection capability</strong> — its value is output schema and calibration, not smarter detection — and measuring that cleanly caught <strong>4 of my own eval bugs</strong>. Code, the full benchmark, and both adapters with honest cards are <a href="https://github.com/MushiSenpai/SovereignSec-AI-Auditor">public</a>.</p>
+    <p class="meta">local · cross-file taint · Semgrep OSS · Qwen2.5-Coder QLoRA · proof-carrying · 0.97 vs 0.90 measured</p>
+  </article>
+
   <p style="margin-top:1.5rem">
     <a href="/services">→ What this costs and how to start</a>
   </p>
