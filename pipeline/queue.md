@@ -31,7 +31,7 @@ Format rules: PIPELINE.md.
 **Sources:** EXECUTION-PLAN 2026-06-11; scripts/move-containerd-root.sh; backlog I-3.
 **Targets:** linkedin, reddit:r/selfhosted, hn
 
-## [queued] six-hours-in-tensorrt-llm-so-you-dont-have-to
+## [published 2026-06-27] six-hours-in-tensorrt-llm-so-you-dont-have-to
 **Angle:** Eight distinct failures ending at AutoDeploy's inability to trace multimodal-mandatory models; NVIDIA's own benchmark paper uses vLLM. How to recognize when to stop digging.
 **Sources:** Decision Log §3.1–3.8, §4; backlog S-9.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
