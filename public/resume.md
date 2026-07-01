@@ -78,16 +78,20 @@ A Studio Ghibli-inspired productivity suite in Flutter (tasks, kanban, calendar,
 
 ---
 
+<!-- oss-auto:start -->
 ## OPEN-SOURCE CONTRIBUTIONS
 
-Upstream fixes to the tools I run in production — public, verifiable, and spanning the embedding, vector-DB, ASR, video, lip-sync, and TTS layers of my own stacks. Each is a bug I hit, root-caused, and fixed at the source:
+Upstream fixes submitted to the tools I run in production — each links to the live PR.
 
 - **FlagEmbedding** (BGE-M3 / bge-reranker-v2-m3) — [#1584](https://github.com/FlagOpen/FlagEmbedding/pull/1584): `device=` was silently swallowed by `**kwargs`, loading the reranker across every visible GPU (OOM); aliased it to `devices=` with a regression test.
 - **qdrant-client** — [#1247](https://github.com/qdrant/qdrant-client/pull/1247): local mode runs exact search, so `search_params` is ignored — but silently, making `exact=True` look like a no-op. Added a one-time warning + batch-path coverage + regression tests.
 - **whisperX** — [#1442](https://github.com/m-bain/whisperX/pull/1442): a chunk mis-detected as a language with no alignment model crashed the *entire* transcription; made it warn and keep the segment-level result. Validated on real audio with a same-clip before/after.
 - **ComfyUI-WanVideoWrapper** — [#2041](https://github.com/kijai/ComfyUI-WanVideoWrapper/pull/2041): the VRAM-management node wrapped meta-device tensors before materializing them → `Cannot copy out of meta tensor` crash on no-LoRA VACE; materialize-before-wrap fix, validated end-to-end on a Wan-VACE run (live before/after traceback).
-- **MuseTalk** — [#419](https://github.com/TMElyralab/MuseTalk/pull/419), [#420](https://github.com/TMElyralab/MuseTalk/pull/420): a PyTorch 2.6 `weights_only` crash on the legacy face-parse checkpoints, and an `UnboundLocalError` on image input — two clean low-risk fixes.
-- **fish-speech** — [#1303](https://github.com/fishaudio/fish-speech/pull/1303): empty TTS text returned an HTTP 500 (which streaming clients wrote as a `.wav`); constrained the request schema to reject it with a clean 4xx (Fixes #946).
+- **MuseTalk** — [#419](https://github.com/TMElyralab/MuseTalk/pull/419), [#420](https://github.com/TMElyralab/MuseTalk/pull/420): a PyTorch 2.6 `weights_only` crash on the legacy face-parse checkpoints; an `UnboundLocalError` on image input — two clean, low-risk fixes.
+- **fish-speech** — [#1303](https://github.com/fishaudio/fish-speech/pull/1303), [#1304](https://github.com/fishaudio/fish-speech/pull/1304): empty TTS text returned an HTTP 500 (which streaming clients wrote as a `.wav`); constrained the request schema to reject it with a clean 4xx (Fixes #946); `pyaudio`'s hard PortAudio build dependency broke every headless / slim / API-only install; moved it to an optional `[client]` extra.
+- **colpali** (vision-document retrieval) — [#418](https://github.com/illuin-tech/colpali/pull/418): wired `fast-plaid` in as the `plaid` optional dependency — the maintainer-requested integration (#335) that a previous volunteer had left stalled.
+- **YuE** (music generation) — [#153](https://github.com/multimodal-art-projection/YuE/pull/153): the documented `git clone` of the codec checkpoints silently yields ~133-byte LFS pointer stubs when git-lfs is missing or the HF bandwidth quota is hit; added an `hf download` fallback + a stub warning (#118).
+<!-- oss-auto:end -->
 
 ---
 
