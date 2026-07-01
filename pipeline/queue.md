@@ -36,7 +36,7 @@ Format rules: PIPELINE.md.
 **Sources:** Decision Log §3.1–3.8, §4; backlog S-9.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
 
-## [queued] what-i-designed-in-may-vs-what-shipped-in-june
+## [published 2026-07-02] what-i-designed-in-may-vs-what-shipped-in-june
 **Angle:** The AI-generated architecture image (gorgeous, wrong in 7+ places within a month) vs the versioned Mermaid diagram. Plans are hypotheses; diagrams that can't be diffed will drift — and so do spec status lines (the audio spec said "Planned" for 3 weeks after the system was built).
 **Sources:** the v1.6.4 image; Decision Log §v1.6-1, §v1.7-1; backlog M-6, M-7.
 **Targets:** linkedin, hn
@@ -245,6 +245,7 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | I-13 | M | Docs referenced a script (agent-mode.sh) that never existed — phantom-reference drift | 2026-06-10 | unmined |
 | I-14 | M | GUI mode-picker at login: zenity + autostart beats remembering mode scripts | mode-picker.sh | unmined |
 | I-15 | H | Headless `claude -p` in cron died silently: OAuth access token expired with an EMPTY refresh token (can't self-renew) AND the CLI prints the 401 but EXITS 0 — so the generic "did not publish" alert hid the cause for days. Fix = long-lived `claude setup-token` in a dedicated env file (decouples cron from the browser-refresh OAuth) + a preflight auth probe + a content-based (not exit-code) auth-fail alert + a proactive credential-expiry check in the watchdog. The I-1 lesson ("monitor outcomes, not exit codes") recurring in a new disguise. Two follow-on traps when restoring: (a) a wrapped paste split the token across two lines → only a truncated prefix assigned → 401 + a bare-token "command not found" when sourced (tokens must be ONE line, no whitespace); (b) the CLI's persisted GLOBAL default model had drifted to the local LiteLLM alias `coding`, which a headless cloud run can't use → pin `--model` in the script, never trust the ambient default. | 2026-06-24 blog-bot incident; blog-bot.sh/healthcheck.sh | unmined |
+| I-17 | H | **A safety gate that conflicts with a mandatory convention doesn't fail loud — it deadlocks FOREVER.** blog-bot refused to publish unless the tree was clean (its prompt ran `git add -A`, and push = live deploy), but the repo's own rule makes every session dirty pipeline/queue.md with lesson rows while pushing stays owner-gated — so the tree is dirty most of the time BY DESIGN, and the gate silently froze 21 queued posts for 5 days (blog incident #3, after OAuth-expiry and the catalogue-mirror dirtying). Gate and convention were each individually correct and jointly a deadlock. Fix = remove the gate's REASON, not the convention: publish stages an explicit pathspec (the post + its public/ assets + queue.md, whose rows ride along — public by convention), unrelated dirt is left alone and reported in a non-blocking INFO, and a post-push allowlist check alerts loudly if a commit ever sweeps out-of-pathspec files. GIT-1 ("commit with explicit pathspec in any repo you didn't just clean") applied to the bot that violated it. | 2026-07-02 blog-bot incident #3; blog-bot.sh + weekly-draft.md step 7 | unmined |
 
 ## Products (P) — komorebi, comic narrator, arena
 | id | pri | lesson / decision | source | status |
