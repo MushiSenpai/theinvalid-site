@@ -25,6 +25,7 @@ import Base from '../layouts/Base.astro';
       <a href="#tiers">§03 tier map</a>
       <a href="#users">§04 how many users</a>
       <a href="#breakeven">§05 cloud vs local</a>
+      <a href="#clipcost">§06 what a clip costs</a>
     </nav>
   </header>
 
@@ -223,7 +224,63 @@ import Base from '../layouts/Base.astro';
     </p>
   </section>
 
-  <!-- ── §6 sources ──────────────────────────────────── -->
+  <!-- ── §6 what a clip costs (creative jobs) ────────── -->
+  <section id="clipcost" class="fg-section">
+    <p class="sec-label">§06 — what a clip actually costs</p>
+    <h2>The machine cost of a creative job is cents.</h2>
+    <p style="color:var(--muted)">
+      Every job below is a <span class="badge measured">measured</span> wall-clock
+      run from the <a href="/blog#case-studies">case studies</a> — a 34.5-second
+      avatar clip, a real object-removal shot. Pick one, and see what the
+      <em>machine</em> actually spends on it: electricity plus a fair share of
+      hardware depreciation. Spoiler: the GPU is never the expensive part.
+    </p>
+
+    <div class="grid">
+      <label>Job <span class="hint">measured on the RTX 5090</span>
+        <select id="j-job">
+          <option value="musetalk" selected>Avatar, draft — MuseTalk · 78 s</option>
+          <option value="latentsync">Avatar, production — LatentSync 1.6 · 242 s</option>
+          <option value="hallo2">Avatar, cinematic — Hallo2 · 1197 s</option>
+          <option value="removal">Object removal, representative clip — VOID · 180 s</option>
+          <option value="forensic">Forensic-bridge full pipeline · 203 s</option>
+          <option value="ace">30 s music clip — ACE-Step · 10 s</option>
+          <option value="yue">15 s song w/ vocals — YuE · 176 s</option>
+        </select>
+      </label>
+      <label>Power under load <span class="hint">kW · whole rig</span>
+        <input id="j-kw" type="number" value="0.5" min="0.05" step="0.05" />
+      </label>
+      <label>Electricity <span class="hint">$ / kWh</span>
+        <input id="j-kwh" type="number" value="0.30" min="0" step="0.01" />
+      </label>
+      <label>Rig cost <span class="hint">$ · mine was under 10k</span>
+        <input id="j-rig" type="number" value="9000" min="0" step="500" />
+      </label>
+      <label>Depreciate over <span class="hint">months</span>
+        <input id="j-months" type="number" value="36" min="1" step="1" />
+      </label>
+      <label>Rig utilisation <span class="hint">inference h / day</span>
+        <input id="j-hours" type="number" value="6" min="0.5" step="0.5" />
+      </label>
+    </div>
+
+    <div id="j-out" class="card verdict"></div>
+
+    <p class="meta">
+      That gap — cents of machine cost vs a <a href="/services">listed price</a> in
+      the tens or hundreds — is not margin on electricity. It's the operator:
+      quality tiers chosen honestly, a QA pass, the failure modes known in
+      advance, and a redo when the footage is hard. The other arithmetic worth
+      knowing: at this utilisation the machine's <em>entire</em> monthly cost —
+      depreciation and electricity together — is covered by roughly
+      <strong>ten billable hours of work a month</strong>, and a modest steady
+      workload pays the whole rig off in about <strong>13 months</strong>. Owning
+      the hardware is not the risky part of this business.
+    </p>
+  </section>
+
+  <!-- ── §7 sources ──────────────────────────────────── -->
   <section class="fg-section sources">
     <p class="sec-label">§ sources &amp; honesty</p>
     <p class="meta">
@@ -456,6 +513,42 @@ import Base from '../layouts/Base.astro';
       (id) => $(id).addEventListener('input', calc)
     );
 
-    vram(); users(); calc();
+    /* ── §6 what a clip costs ─────────────────────── */
+    // seconds = measured wall-clock; anchor = published /services price (SGD) or null
+    const JOBS = {
+      musetalk:   { s: 78,   anchor: 80,   label: 'a draft avatar (SGD 80 listed)' },
+      latentsync: { s: 242,  anchor: 150,  label: 'a production avatar (SGD 150 listed)' },
+      hallo2:     { s: 1197, anchor: null, label: 'a cinematic avatar (quoted per job)' },
+      removal:    { s: 180,  anchor: 150,  label: 'an object removal (from SGD 150 listed)' },
+      forensic:   { s: 203,  anchor: null, label: 'a forensic-bridge run' },
+      ace:        { s: 10,   anchor: null, label: 'a 30s music clip' },
+      yue:        { s: 176,  anchor: null, label: 'a 15s song' },
+    };
+    function clip() {
+      const job = JOBS[$('j-job').value];
+      const kw = +$('j-kw').value, kwh = +$('j-kwh').value;
+      const rig = +$('j-rig').value, months = +$('j-months').value, hpd = +$('j-hours').value;
+      const elec = (kw * job.s / 3600) * kwh;                 // $ electricity
+      const perHour = rig / (months * 30 * hpd);              // $ depreciation per inference-hour
+      const wear = perHour * (job.s / 3600);                  // $ hardware share
+      const total = elec + wear;
+      const cents = (x) => (x * 100).toFixed(x * 100 < 10 ? 1 : 0);
+      let cmp = '';
+      if (job.anchor) {
+        const pct = ((total / job.anchor) * 100).toFixed(2);
+        cmp = `<br>Against ${job.label}, the machine is <strong>${pct}%</strong> of the price. The other ${(100 - pct).toFixed(2)}% is the operator: judgment, QA, and owning the failure modes.`;
+      } else {
+        cmp = `<br>For ${job.label}, that's the entire marginal cost of pressing go.`;
+      }
+      const out = $('j-out');
+      out.classList.remove('is-ok', 'is-warn', 'is-bad');
+      out.classList.add('is-ok');
+      out.innerHTML = `${BIG(`~${cents(total)}¢ of machine cost`)} — ${cents(elec)}¢ electricity + ${cents(wear)}¢ hardware wear for ${job.s}s of GPU time.${cmp}`;
+    }
+    ['j-job', 'j-kw', 'j-kwh', 'j-rig', 'j-months', 'j-hours'].forEach(
+      (id) => $(id).addEventListener('input', clip)
+    );
+
+    vram(); users(); calc(); clip();
   </script>
 </Base>

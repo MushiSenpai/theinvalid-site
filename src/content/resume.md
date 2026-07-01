@@ -1,23 +1,36 @@
 # MADHAN KUMAR REDDY
 
-**AI Infrastructure Operator** — I spec, direct LLMs, and verify.
+**On-Premises AI Solutions Engineer · Sovereign / Self-Hosted LLM Deployment** — I spec, direct LLMs, and verify.
 
-Singapore | +65 8179 6884 | reddy.madhankumar.sg@gmail.com
+Singapore | reddy.madhankumar.sg@gmail.com
 **Portfolio:** [theinvalid.me](https://theinvalid.me) | **GitHub:** [github.com/MushiSenpai](https://github.com/MushiSenpai) | **HuggingFace:** [huggingface.co/MushiSenpai](https://huggingface.co/MushiSenpai) | **LinkedIn:** [linkedin.com/in/reddymk](https://www.linkedin.com/in/reddymk/)
 
 ---
 
 ## HOW I WORK — READ THIS FIRST
 
-I don't hand-write production code, and I won't pretend otherwise. I have a B.E. in Computer Science — I read code fluently — but every system below was built by directing LLMs (Claude primarily; Gemini, Grok, and Kimi as a consultation council) against specifications I author. My work is everything around the code: architecture, tool evaluation, spec writing, debugging direction, verification gates, and day-2 operations. The proof is public: documented repositories where the method, the failures, and the fixes are all visible.
+I work spec-first: I author the architecture and specifications, direct LLMs (Claude primarily; Gemini / Grok / Kimi / DeepSeek as a review council) to implement against them, and verify the result with benchmarks and gates. B.E. Computer Science — I read code fluently and own the parts that decide whether a system is trustworthy: design, tool evaluation, verification, and day-2 operations. The proof is public: documented repositories where the method, the failures, and the fixes are all visible.
 
-If your role requires hand-written algorithms on a whiteboard, I'm the wrong hire — this paragraph just saved us both an interview. If your role requires someone who can take an idea to a running, secured, monitored system and operate it honestly, keep reading.
+If a role needs hand-written algorithms on a whiteboard, I'm not the fit — this paragraph just saved us both an interview. If it needs someone who takes an idea to a running, secured, monitored, honestly-operated system, keep reading.
 
 ---
 
 ## SUMMARY
 
-Ten+ years across quality control, security governance (GRC), and client services — now applied to designing and operating **sovereign, self-hosted AI infrastructure**. Built and daily-operate a three-stack AI system on dedicated hardware (RTX 5090 32GB, 128GB DDR5, Ubuntu 24.04): multimodal LLM serving, generative video production, and a full local audio pipeline — all documented publicly with benchmarks and failure logs. Based in Singapore; **available for project-based travel** to client facilities, data centres, and secure sites worldwide.
+AI infrastructure engineer who designs, deploys, and operates **sovereign, on-premises LLM systems** on hardware the client controls — private RAG, local serving (vLLM), multi-agent pipelines, air-gapped where data never leaves the building. Ten+ years in quality control, security governance (GRC), and client services, now applied to **daily-operating** a documented three-stack AI system on a single RTX 5090 (32GB, 128GB DDR5, Ubuntu 24.04). Based in Singapore; **available for project-based travel** to client facilities, data centres, and secure sites worldwide.
+
+**Core:** Retrieval-Augmented Generation (RAG) · LLM serving (vLLM, llama.cpp, LiteLLM) · multi-agent / tool use · on-prem & air-gapped deployment · Docker · FastAPI · Python · Linux · security governance.
+
+---
+
+## SKILLS
+
+- **LLM & AI serving:** vLLM, Nemotron (NVFP4), llama.cpp, LiteLLM, OpenAI-compatible endpoints, quantization, GPU inference (RTX 5090 / Blackwell), KV-cache tuning
+- **RAG & retrieval:** BGE-M3 (dense + sparse), Qdrant, hybrid retrieval + reciprocal rank fusion, cross-encoder reranking, OCR ingestion, evaluation (recall@k / MRR / faithfulness)
+- **Multimodal:** ComfyUI, FLUX.2, Wan 2.2, HunyuanVideo, SAM3 / VACE, vision-LLM analysis, voice cloning / TTS / lip-sync
+- **Infrastructure & ops:** Docker, FastAPI, Redis/RQ, Ubuntu, systemd, UFW, Tailscale, restic (3-2-1 backups), monitoring & alerting, VRAM lifecycle orchestration
+- **Languages:** Python, Bash, Dart / Flutter
+- **Security / GRC:** SOP authoring, access-control / ethical-wall design, audit logging
 
 ---
 
@@ -49,6 +62,12 @@ Fully local voice cloning, TTS, lip-sync avatars (three quality tiers), music ge
 - **25+ documented install lessons** — every deviation between spec and working system, published so others don't pay the same cost
 - Verified rebuildable: fresh containers pass an end-to-end music-generation job with zero manual intervention
 
+### Sovereign Legal RAG → *private repo — live walkthrough on request*
+Private document intelligence for legal teams — production-grade retrieval, grounded answers with **pinpoint citations**, and a system that **refuses rather than invents**.
+- Multi-mode retrieval fused: BGE-M3 dense + sparse + cross-encoder rerank over Qdrant; side-by-side mode comparison in the UI
+- Matter-level **ethical walls** + append-only, hash-chained **audit log**; embeddings/reranker on CPU so they never contend with the serving GPU
+- **Measured:** labeled CUAD eval (recall@k / MRR / faithfulness), failures kept in; passed an adversarial multi-agent code audit (4 high-severity defects found + fixed)
+
 ### My infrastructure ships products
 
 **Comic Narrator** → [github.com/MushiSenpai/comic-manga-narrator](https://github.com/MushiSenpai/comic-manga-narrator)
@@ -56,6 +75,19 @@ A comic page goes in; a dramatized video comes out — panel detection (vision L
 
 **Komorebi** → [github.com/MushiSenpai/komorebi](https://github.com/MushiSenpai/komorebi)
 A Studio Ghibli-inspired productivity suite in Flutter (tasks, kanban, calendar, notes, pomodoro, and a physics tower-stacking break game with online leaderboards). Local-first SQLite; built with the same spec-driven, phase-gated method — visible in its public phase table.
+
+---
+
+## OPEN-SOURCE CONTRIBUTIONS
+
+Upstream fixes to the tools I run in production — public, verifiable, and spanning the embedding, vector-DB, ASR, video, lip-sync, and TTS layers of my own stacks. Each is a bug I hit, root-caused, and fixed at the source:
+
+- **FlagEmbedding** (BGE-M3 / bge-reranker-v2-m3) — [#1584](https://github.com/FlagOpen/FlagEmbedding/pull/1584): `device=` was silently swallowed by `**kwargs`, loading the reranker across every visible GPU (OOM); aliased it to `devices=` with a regression test.
+- **qdrant-client** — [#1247](https://github.com/qdrant/qdrant-client/pull/1247): local mode runs exact search, so `search_params` is ignored — but silently, making `exact=True` look like a no-op. Added a one-time warning + batch-path coverage + regression tests.
+- **whisperX** — [#1442](https://github.com/m-bain/whisperX/pull/1442): a chunk mis-detected as a language with no alignment model crashed the *entire* transcription; made it warn and keep the segment-level result. Validated on real audio with a same-clip before/after.
+- **ComfyUI-WanVideoWrapper** — [#2041](https://github.com/kijai/ComfyUI-WanVideoWrapper/pull/2041): the VRAM-management node wrapped meta-device tensors before materializing them → `Cannot copy out of meta tensor` crash on no-LoRA VACE; materialize-before-wrap fix, validated end-to-end on a Wan-VACE run (live before/after traceback).
+- **MuseTalk** — [#419](https://github.com/TMElyralab/MuseTalk/pull/419), [#420](https://github.com/TMElyralab/MuseTalk/pull/420): a PyTorch 2.6 `weights_only` crash on the legacy face-parse checkpoints, and an `UnboundLocalError` on image input — two clean low-risk fixes.
+- **fish-speech** — [#1303](https://github.com/fishaudio/fish-speech/pull/1303): empty TTS text returned an HTTP 500 (which streaming clients wrote as a `.wav`); constrained the request schema to reject it with a clean 4xx (Fixes #946).
 
 ---
 
@@ -113,9 +145,9 @@ Fast learner, comfortable in roles I haven't done before; equally at home as a o
 
 ---
 
-## WORK PASS
+## WORK PASS & AVAILABILITY
 
-Indian National | Singapore Dependent Pass (DP) | Employer sponsorship required
+Indian National | Singapore Dependant's Pass (DP). **Authorized for remote contract work with overseas clients** — no sponsorship needed for remote engagements; Singapore on-site employment requires employer sponsorship (EP). **Open to project-based travel** to client facilities and secure sites worldwide.
 
 ---
 

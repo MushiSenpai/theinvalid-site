@@ -42,6 +42,22 @@ const fmt = (d: Date) =>
   </article>
 
   <article class="card">
+    <h3>A talking-head avatar from a photo and a voice sample — three quality tiers, fully local</h3>
+    <p><strong>Problem.</strong> A speaking avatar is the most privacy-sensitive media job there is: the inputs are someone's face and someone's voice. Cloud avatar services ingest both. A marketing team (or a creator) wants ad-reads and narrated clips without either ever leaving the building — and wants honest quality tiers, not one-size-fits-all.</p>
+    <p><strong>Solution.</strong> The <a href="/projects/audio-stack">Audio Stack</a> avatar pipeline: clean the voice sample (Demucs), clone it (Fish Speech, 5s), synthesize the narration (25s for a 34.5s read), then lip-sync with one of <strong>three engines run as isolated, version-pinned services</strong> — MuseTalk for fast social drafts, LatentSync 1.6 for production blends, Hallo2 for cinematic head motion.</p>
+    <p><strong>Outcome.</strong> For a 34.5-second narration, measured: <strong>MuseTalk 78s</strong> (1024², ~7.7GB), <strong>LatentSync 242s</strong> (~20GB — cleaner lower-face blend, but its teeth are a tie with MuseTalk, so MuseTalk stays the default), <strong>Hallo2 1197s</strong> (~35× slower than realtime, earned only when you need real head-pose and expression). The honest ceiling: social-grade. Broadcast close-ups still go to a cloud path, and I say so up front. <a href="/blog/i-benchmarked-an-ai-avatar-pipeline-end-to-end">Full write-up with every number →</a></p>
+    <p class="meta">MuseTalk 78s · LatentSync 242s · Hallo2 1197s · 34.5s clip · measured, teeth-tie included · zero cloud</p>
+  </article>
+
+  <article class="card">
+    <h3>Starving a diffusion model of room to hallucinate</h3>
+    <p><strong>Problem.</strong> Inpainting models improvise: wrong-way shadows, changed materials, invented objects. For client edits on production footage, improvisation is a defect — but hand-writing dense scene constraints per shot doesn't scale.</p>
+    <p><strong>Solution.</strong> The forensic bridge (<a href="/projects/creative-stack">Creative Stack</a>): a local vision LLM runs a three-pass forensic scan — hero subjects, reflections and shadows as first-class dependents, atmospheric fields — and <em>writes the SAM3 mask prompts and fill constraints itself</em>, then drives the ComfyUI render. The generator gets specifications to obey, not space to confabulate.</p>
+    <p><strong>Outcome.</strong> End-to-end proof run: <strong>203 seconds</strong>, unattended — analysis, 16 mask targets (including 13 dependent reflections/shadows), auto-written fill prompt, VOID render. The honest half: the test target was a frying egg — a liquid, the known hard case — and it did not visibly disappear. Architecture proven, boundary named. <a href="/blog/the-forensic-bridge-measure-the-scene-before-diffusion-touches-it">The full case study →</a></p>
+    <p class="meta">Nemotron 3-pass · SAM3 video masks · VOID/VACE · 203s pipeline · failure stated up front</p>
+  </article>
+
+  <article class="card">
     <h3>Removing an object from production footage</h3>
     <p><strong>Problem.</strong> A clip needs an object gone — cleanly, temporally stable, without shipping the footage to a cloud VFX tool.</p>
     <p><strong>Solution.</strong> Netflix's VOID inpainting + SAM3 video-mask tracking, run locally (<a href="/projects/creative-stack">Creative Stack</a>), with a 4K finishing pass.</p>

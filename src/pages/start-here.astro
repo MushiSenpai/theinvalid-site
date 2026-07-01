@@ -8,9 +8,30 @@ import Base from '../layouts/Base.astro';
 >
   <h1>Start here</h1>
   <p style="font-size:1.15rem; color:var(--fg)">
-    If the rest of this site reads like a foreign language — that's fine. This
-    page is the plain version. No jargon, I promise.
+    Three kinds of people land on this site. Pick your door — or scroll on for
+    the plain-English version, no jargon, I promise.
   </p>
+
+  <div class="router">
+    <article class="card">
+      <h3>You're hiring</h3>
+      <p class="oneliner">Recruiter, hiring manager, or team lead sizing me up for a role.</p>
+      <p>Read the <a href="/resume">résumé</a> first — it opens with exactly how I work (spec-first, LLM-directed, verification-gated) so neither of us wastes an interview. Then the proof: <a href="/blog#case-studies">measured case studies</a> and upstream <a href="/resume">open-source fixes</a> to the tools I run.</p>
+      <p class="meta"><a href="/resume">résumé + dated PDF →</a></p>
+    </article>
+    <article class="card">
+      <h3>You have a problem to solve</h3>
+      <p class="oneliner">You need private AI in your business — or media work a cloud tool refuses or overprices.</p>
+      <p>See <a href="/services">what I offer and what it costs</a> — deployment, audit, creative pipelines, retainer, prices listed. The one-page <a href="/briefs/sovereign-stack-brief.pdf">stack briefs (PDF)</a> below are made for forwarding to whoever signs off.</p>
+      <p class="meta"><a href="/services">services + pricing →</a></p>
+    </article>
+    <article class="card">
+      <h3>You're an engineer</h3>
+      <p class="oneliner">You want the numbers, the failures, and the configs.</p>
+      <p>The <a href="/calculator">interactive field guide</a> (VRAM math, throughput knees, break-even), the <a href="/projects">projects</a> with public repos, and the <a href="/blog">failure log</a> — dead ends written up because they were the expensive part.</p>
+      <p class="meta"><a href="/calculator">open the field guide →</a></p>
+    </article>
+  </div>
 
   <h2>What I do, in one sentence</h2>
   <p style="font-size:1.1rem">
@@ -65,6 +86,25 @@ import Base from '../layouts/Base.astro';
     👉 <a href="/blog#case-studies">See real examples</a><br />
     👉 Or just email me: <a href="mailto:reddy.madhankumar.sg@gmail.com">reddy.madhankumar.sg@gmail.com</a>
   </p>
+
+  <h2>The one-page briefs</h2>
+  <p>
+    Each of the three systems I operate, as a downloadable one-page PDF — what
+    it does, the measured numbers, and what it honestly can't do yet. Made for
+    forwarding to a colleague or a boss:
+  </p>
+  <ul>
+    <li><a href="/briefs/sovereign-stack-brief.pdf">Sovereign AI Stack</a> — a private LLM that physically can't leak (PDF)</li>
+    <li><a href="/briefs/creative-stack-brief.pdf">Creative Stack</a> — local video generation, object removal, 4K finishing (PDF)</li>
+    <li><a href="/briefs/audio-stack-brief.pdf">Audio Stack</a> — voice cloning, avatars, music, dubbing (PDF)</li>
+  </ul>
+
+  <style>
+    .router { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; margin: 1.6rem 0 0.6rem; }
+    .router .card { margin: 0; }
+    .router h3 { margin-top: 0; }
+    @media (max-width: 44rem) { .router { grid-template-columns: 1fr; } }
+  </style>
 
   <p class="meta" style="margin-top:2rem">
     Based in Singapore · available to travel to client sites · the technical
