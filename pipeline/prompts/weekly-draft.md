@@ -63,7 +63,17 @@ Do exactly this, in order:
 6. Run: npm run build — it MUST pass. If it fails, fix your own markdown and
    retry; if still failing, print "BUILD-FAILED <slug>" and do NOT commit.
 
-7. git add -A && git commit -m "blog: <slug> (pipeline)" && git push
+7. Stage an EXPLICIT PATHSPEC — NEVER `git add -A` or `git add .`. The working
+   tree is often dirty BY DESIGN (every session appends lesson rows to
+   pipeline/queue.md, and unrelated work may be in progress), and push = live
+   deploy, so a blanket add would publish unrelated files. Stage ONLY:
+     - src/content/blog/<slug>.md              (the new post)
+     - any public/<slug>-*.png images you copied in step 3
+     - pipeline/queue.md                       (your status flip; unrelated
+       lesson rows already in the file ride along — they are public by
+       convention)
+   Then: git commit -m "blog: <slug> (pipeline)" && git push
+   Leave every other modified or untracked file exactly as it is.
 
 8. Print exactly one final line: "PUBLISHED <slug>" — this is parsed by the
    wrapper script for the phone notification.
