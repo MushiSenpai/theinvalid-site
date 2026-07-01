@@ -2,7 +2,7 @@
 
 **On-Premises AI Solutions Engineer · Sovereign / Self-Hosted LLM Deployment** — I spec, direct LLMs, and verify.
 
-Singapore | reddy.madhankumar.sg@gmail.com
+Singapore | +65 8179 6884 | reddy.madhankumar.sg@gmail.com
 **Portfolio:** [theinvalid.me](https://theinvalid.me) | **GitHub:** [github.com/MushiSenpai](https://github.com/MushiSenpai) | **HuggingFace:** [huggingface.co/MushiSenpai](https://huggingface.co/MushiSenpai) | **LinkedIn:** [linkedin.com/in/reddymk](https://www.linkedin.com/in/reddymk/)
 
 ---
