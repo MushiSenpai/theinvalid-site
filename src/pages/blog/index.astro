@@ -34,6 +34,14 @@ const fmt = (d: Date) =>
   </p>
 
   <article class="card">
+    <h3>One product photo → a marketplace-ready 3D model + a compliance report</h3>
+    <p><strong>Problem.</strong> E-commerce sellers need Amazon/Shopify-spec 3D models from flat listing photos, but raw image-to-3D tools hand back every result with equal confidence — including the broken ones — and no proof any of them meet a marketplace's published rules.</p>
+    <p><strong>Solution.</strong> The <a href="/projects/three-d-stack">3D Stack</a>: a photo drives generation (TRELLIS.2 / Hunyuan3D), then an automated headless-Blender mesh-ops chain — retopology to a triangle budget, UV unwrap, PBR bake, real-world rescale, KTX2 GLB export — and finally a compliance gate that checks each asset <em>mechanically</em> against the marketplace's spec and <strong>refuses to deliver the ones that fail</strong>.</p>
+    <p><strong>Outcome.</strong> On a real five-SKU batch, all local on one RTX 5090 (63–154s generation per SKU, delivered GLBs 0.76–1.33MB against a 4MB cap): three passed clean, <strong>one was refused</strong> (UV collapse + hallucinated depth) and <strong>one was flagged with the exact miss</strong> (703mm reconstructed vs 650mm listed). The gate stopping the bad assets is the product, not a caveat. <a href="/case-studies-product-photo-to-3d/">Full case study, failures included →</a> · <a href="/3d-catalogue">the live 3D catalogue →</a></p>
+    <p class="meta">TRELLIS.2 / Hunyuan3D · headless Blender · retopo + PBR bake · marketplace compliance gate · 5 real SKUs, 3 pass / 2 caught · zero cloud</p>
+  </article>
+
+  <article class="card">
     <h3>Comic page → narrated video, fully local</h3>
     <p><strong>Problem.</strong> Turning static comic/manga pages into dramatized video normally means manual editing per panel, or cloud services that ingest the artwork. A webtoon creator wants automation <em>and</em> wants the unreleased art to never leave their machine.</p>
     <p><strong>Solution.</strong> A pipeline (<a href="/projects/comic-narrator">Comic Narrator</a>) that detects panels with a vision LLM + OpenCV, voices each character with a local clone, narrates captions, and drives a Ken-Burns + 2.5D parallax camera — all on one RTX 5090, nothing cloud.</p>

@@ -12,13 +12,14 @@ const gh = await repoStatuses(projects.map((p) => p.data.repo));
 <Base title="Projects — theinvalid.me">
   <h1>Projects</h1>
   <p style="color: var(--muted)">
-    Three infrastructure stacks and the products built on them. Every repo is
+    Four infrastructure stacks and the products built on them. Every repo is
     public; statuses are honest — <code>building</code> means building.
   </p>
   <p style="margin:1.3rem 0 0.4rem">
     <a class="btn" href="/workflow-catalogue.html">Live workflow catalogue ↗</a>
+    <a class="btn" href="/3d-catalogue">3D asset catalogue ↗</a>
   </p>
-  <p class="meta" style="margin:0 0 1.6rem">Every creative workflow with real measured benchmarks, auto-refreshed monthly.</p>
+  <p class="meta" style="margin:0 0 1.6rem">Every creative workflow with real measured benchmarks, auto-refreshed monthly — plus the 3D asset foundry's own catalogue.</p>
   {projects.map((p) => (
     <article class="card">
       <h3>
