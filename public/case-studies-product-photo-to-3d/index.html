@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One product photo &rarr; marketplace-ready 3D model + compliance report &mdash; theinvalid.me</title>
+<meta name="description" content="Case study: turning a single listing photo into an Amazon/Shopify-spec 3D model, with a machine-checked compliance report shipped alongside every SKU. Real runs, real numbers, failures shown.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b0e14">
+<meta property="og:title" content="One product photo &rarr; marketplace-ready 3D model + compliance report">
+<meta property="og:description" content="A single listing photo becomes an Amazon/Shopify-spec 3D asset, with a machine-checked compliance report on every SKU. Real runs, failures included.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://theinvalid.me/case-studies/product-photo-to-3d/">
+<meta property="og:site_name" content="theinvalid.me">
+<style>
+:root{--bg:#0b0e14;--bg-raise:#11151f;--fg:#e6e1d7;--muted:#8a8f98;--line:#1e2430;--accent:#e8a33d;--ok:#4ade80;--warn:#e8a33d;--dim:#6b7280;--error:#ff6b6b;--mono:ui-monospace,"JetBrains Mono","Cascadia Code","SF Mono",Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box}
+html{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+body{margin:0}
+main{max-width:52rem;margin:0 auto;padding:0 1.25rem 5rem}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+h1,h2,h3{line-height:1.25;font-weight:650}
+h1{font-size:2.1rem;letter-spacing:-.01em;margin:.2rem 0 .4rem}
+h2{font-size:1.35rem;margin-top:3rem;padding-top:.3rem}
+h3{font-size:1.05rem;margin:1.6rem 0 .3rem}
+code{font-family:var(--mono);font-size:.86em;background:var(--bg-raise);padding:.12em .35em;border-radius:4px;border:1px solid var(--line)}
+hr{border:none;border-top:1px solid var(--line);margin:2.5rem 0}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:.6rem 0 .2rem}
+th,td{border:1px solid var(--line);padding:.42rem .65rem;text-align:left;vertical-align:top}
+th{background:var(--bg-raise);font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}
+td.mono,th.mono{font-family:var(--mono);font-size:.82rem}
+.pass{color:var(--ok);font-weight:650}
+.fail{color:var(--error);font-weight:650}
+.warn{color:var(--warn);font-weight:650}
+nav.site{max-width:52rem;margin:0 auto;padding:1.5rem 1.25rem;display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem 1.05rem;font-family:var(--mono);font-size:.9rem}
+nav.site .brand{color:var(--fg);font-weight:700;margin-right:.6rem}
+nav.site .brand:hover{text-decoration:none;color:var(--accent)}
+nav.site a{color:var(--muted)}
+nav.site a:hover{color:var(--fg);text-decoration:none}
+.kicker{font-family:var(--mono);color:var(--accent);font-size:.82rem;text-transform:uppercase;letter-spacing:.12em;margin:3rem 0 0}
+.lede{color:var(--muted);font-size:1.15rem;max-width:40rem;margin:.6rem 0 0}
+.meta{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin:1rem 0 0;display:flex;flex-wrap:wrap;gap:.9rem}
+figure{margin:1.4rem 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg-raise)}
+figure img{display:block;width:100%;height:auto;background:#0e1217}
+figure.contain img{aspect-ratio:16/10;object-fit:contain}
+figcaption{font-size:.82rem;color:var(--muted);padding:.55rem .85rem;border-top:1px solid var(--line);font-family:var(--mono)}
+figcaption b{color:var(--fg);font-weight:600}
+.flow{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media(max-width:640px){.flow{grid-template-columns:1fr}}
+.flow figure{margin:0}
+.callout{border:1px solid var(--line);background:var(--bg-raise);border-radius:10px;padding:1rem 1.2rem;margin:1.4rem 0}
+.callout.accent{border-color:var(--accent)}
+.callout .lbl{font-family:var(--mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);display:block;margin-bottom:.35rem}
+.callout p{margin:.3rem 0}
+.callout p:first-of-type{margin-top:0}
+.callout p:last-child{margin-bottom:0}
+blockquote{margin:1.5rem 0;padding:.1rem 1.25rem;border-left:3px solid var(--accent);background:var(--bg-raise);border-radius:0 8px 8px 0;color:var(--fg);font-size:1.02rem}
+ul.tight{margin:.5rem 0;padding-left:1.2rem}
+ul.tight li{margin:.3rem 0}
+.diff-card{border:1px solid var(--line);border-left:3px solid var(--error);background:var(--bg-raise);border-radius:10px;padding:1.1rem 1.3rem;margin:1.6rem 0}
+.diff-card.caught{border-left-color:var(--warn)}
+.diff-card.tier{border-left-color:var(--accent)}
+.diff-card h3{margin-top:0}
+.diff-card .verdict{font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cta{border:1px solid var(--accent);background:var(--bg-raise);border-radius:10px;padding:1.3rem 1.4rem;margin:2.5rem 0 0}
+.cta h2{margin-top:0}
+.btn{display:inline-block;font-family:var(--mono);font-size:.85rem;color:var(--accent);background:var(--bg);border:1px solid var(--accent);border-radius:4px;padding:.5rem 1rem;text-decoration:none;transition:background .15s,color .15s;margin:.3rem .4rem .3rem 0}
+.btn:hover{background:var(--accent);color:var(--bg);text-decoration:none}
+footer.site{max-width:52rem;margin:0 auto;padding:2rem 1.25rem 3rem;border-top:1px solid var(--line);color:var(--muted);font-family:var(--mono);font-size:.8rem}
+footer.site a{color:var(--muted)}footer.site a:hover{color:var(--accent)}
+.note{font-size:.82rem;color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+<nav class="site">
+  <a class="brand" href="/"><span style="color:var(--accent)">&gt;</span> theinvalid<span style="color:var(--accent)">.me</span></a>
+  <a href="/start-here">start here</a>
+  <a href="/services">work with me</a>
+  <a href="/projects">projects</a>
+  <a href="/calculator">field guide</a>
+  <a href="/blog">knowledge base</a>
+</nav>
+
+<main>
+
+<p class="kicker">Case study &middot; E-commerce 3D</p>
+<h1>One product photo &rarr; a marketplace-ready 3D model <span style="color:var(--accent)">and a compliance report</span></h1>
+<p class="lede">A single listing photo goes in. A spec-checked Amazon/Shopify 3D asset comes out &mdash; with a machine-generated report proving it meets the marketplace's published rules, before you ever see the file.</p>
+<p class="meta">
+  <span>5 real SKUs</span>
+  <span>real generation runs, no mock fixtures</span>
+  <span>measured on one RTX&nbsp;5090</span>
+  <span>failures shown, not hidden</span>
+</p>
+
+<hr>
+
+<h2>The problem</h2>
+<p>
+Amazon and Shopify both let sellers put a rotatable, AR-placeable 3D model on a product page &mdash; and both publish a strict spec for it: a triangle-count ceiling, allowed texture sizes, a required PBR material set, a file-size cap, and real-world scale so the AR view is life-size. Miss any one and the asset is rejected or, worse, silently renders wrong on a customer's phone.
+</p>
+<p>
+The usual options are both bad. A 3D agency is slow and priced per-asset for a hand-modelled result. A <code>$20/mo</code> "photo to 3D" web tool is fast but hands you a raw mesh with <em>no</em> guarantee it meets any marketplace spec &mdash; wrong scale, oversized textures, a broken material set &mdash; and no way to know until the upload bounces. For a catalogue of dozens or hundreds of SKUs, neither scales.
+</p>
+<blockquote>
+The model isn't the deliverable. The <em>proof it will pass</em> is the deliverable &mdash; and that's the part nothing on the market ships.
+</blockquote>
+
+<h2>The run: one photo &rarr; a passing SKU</h2>
+<p>
+Here is the pipeline end-to-end on a real SKU &mdash; a knit runner sneaker, <b>Tier&nbsp;B</b> intake (one existing listing photo, the honest common case). Nothing was hand-modelled.
+</p>
+
+<h3>1 &mdash; The input</h3>
+<p>A single product photo. Neutral light, no baked-in key or hard shadow &mdash; the same shot you'd already have for a listing.</p>
+<figure class="contain">
+  <img src="img/sneaker-input.png" alt="Input listing photo of a white knit runner sneaker on a neutral background">
+  <figcaption><b>Input</b> &mdash; one listing photo. <code>SNK-102 / knit runner</code></figcaption>
+</figure>
+
+<h3>2 &mdash; The generated, textured model</h3>
+<p>
+The photo drives a generation model, then an automated mesh-ops chain: retopology to a clean triangle budget, UV unwrap, a PBR texture bake, real-world rescale to the listed dimensions, and a KTX2-compressed GLB export. Below is a render of the actual delivered asset &mdash; color-true, under a neutral view transform (not the grey-clay preview an early pipeline would show).
+</p>
+<figure class="contain">
+  <img src="img/sneaker-tierB.png" alt="Color render of the reconstructed sneaker: white knit upper, grey suede, white EVA sole">
+  <figcaption><b>Delivered model</b> &mdash; textured GLB, 20,000 tris, 1.21&nbsp;MB. White knit upper, grey suede toe/heel, white EVA sole &mdash; matched to the input.</figcaption>
+</figure>
+
+<h3>3 &mdash; The compliance report</h3>
+<p>
+Every SKU ships with this. Each line is checked <em>mechanically</em> against the marketplace's published specification &mdash; not eyeballed. This is the sneaker's actual report, both marketplaces, verbatim:
+</p>
+
+<table>
+  <thead><tr><th>Amazon 3D requirement</th><th>Result</th><th>Shopify 3D requirement</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>tris &le; 200k</td><td class="pass">&#10003; PASS</td><td>tris &le; 100k</td><td class="pass">&#10003; PASS</td></tr>
+    <tr><td>texture 2048&ndash;4096px</td><td class="pass">&#10003; PASS</td><td>texture &le; 2048px</td><td class="pass">&#10003; PASS</td></tr>
+    <tr><td>PBR metal-rough present</td><td class="pass">&#10003; PASS</td><td>full PBR set</td><td class="pass">&#10003; PASS</td></tr>
+    <tr><td>bounding box = listed &plusmn;2%</td><td class="pass">&#10003; PASS</td><td>GLB &le; 4&nbsp;MB</td><td class="pass">&#10003; PASS</td></tr>
+    <tr><td></td><td></td><td>real-world scale</td><td class="pass">&#10003; PASS</td></tr>
+  </tbody>
+</table>
+<p style="margin-top:.9rem"><b>Verdict: <span class="pass">PASS &mdash; both marketplaces.</span></b></p>
+
+<div class="callout">
+<span class="lbl">What the report contains</span>
+<p>Beyond the pass/fail grid: a per-axis dimension check against the listed size, a full texture &amp; PBR inventory (channels present, max texture dimension, map count and sizes), and the final GLB size. For <code>SNK-102</code>: PBR channels <code>basecolor&nbsp;/&nbsp;metallic-roughness&nbsp;/&nbsp;normal&nbsp;/&nbsp;occlusion</code>, four 2048&times;2048 maps, <b>1.214&nbsp;MB</b> against the 4&nbsp;MB cap.</p>
+</div>
+
+<h3>4 &mdash; What's delivered</h3>
+<p>The compressed marketplace GLB per target (Amazon-3D and/or Shopify-3D profiles), a USDZ for Apple/AR Quick Look on request, and the compliance report itself &mdash; the artifact that says <em>why</em> this asset is safe to upload.</p>
+
+<div class="callout accent">
+<span class="lbl">Batch reality &mdash; 5 SKUs, one run</span>
+<p>The sneaker wasn't cherry-picked. The same run put four more real products through: over-ear headphones, a brass table lamp, a mesh office chair, and a waxed-canvas backpack. Every delivered Shopify GLB measured <b>0.76&ndash;1.33&nbsp;MB</b> against the 4&nbsp;MB cap; generation ran 63&ndash;154&nbsp;s per SKU on a shared card. Three of the five passed clean. <b>Two did not &mdash; and that's the interesting part.</b></p>
+</div>
+
+<h2>The honest differentiator: the gate is the product</h2>
+<p>
+Anyone can show you their best render. The reason a compliance report is worth paying for is what it does on the <em>bad</em> days &mdash; the assets it stops. Here are the two SKUs from this run that didn't pass, and the one that upgrades from "good" to "guaranteed."
+</p>
+
+<div class="diff-card">
+<p class="verdict">Exhibit A &mdash; <span class="fail">refused to ship</span></p>
+<h3>The backpack the gate refused to deliver</h3>
+<div class="flow">
+  <figure><img src="img/backpack.png" alt="Broken 3D reconstruction of a backpack: shredded, torn texture over a hollow wireframe-like mesh"></figure>
+  <div>
+    <p>The waxed-canvas backpack came out of generation with an unusable result: the UV layout collapsed (texture utilization <code>0.39</code>, below the <code>0.40</code> floor), so the texture shredded across the surface, and the model hallucinated depth &mdash; <b>258&nbsp;mm</b> reconstructed where the listing says <b>160&nbsp;mm</b>.</p>
+    <p>The automated gates caught all of it and marked the SKU <span class="fail">FAIL</span>. <b>You never receive this file.</b> It becomes a re-shoot request or a Tier&nbsp;A upgrade &mdash; not a broken asset that silently reaches a customer's phone.</p>
+  </div>
+</div>
+<p class="verdict" style="margin-top:.6rem">Verdict on record: <span class="fail">FAIL</span> &mdash; UV utilization below floor; bounding-box depth hallucinated (258&nbsp;mm vs listed 160&nbsp;mm).</p>
+</div>
+
+<div class="diff-card caught">
+<p class="verdict">Exhibit B &mdash; <span class="warn">caught &amp; annotated</span></p>
+<h3>The chair's dimension miss, flagged before delivery</h3>
+<div class="flow">
+  <figure><img src="img/chair.png" alt="Render of a reconstructed mesh office chair; thin legs and casters resolved, mesh-weave back shows small reconstruction holes"></figure>
+  <div>
+    <p>The mesh office chair reconstructed <em>visually</em> well &mdash; thin legs and five casters recovered, the mesh-weave back present (with a few honest voxel holes visible in the weave). Triangles, textures and the PBR set all passed.</p>
+    <p>But its bounding box came out <b>703&nbsp;mm</b> on the axis the listing puts at <b>650&nbsp;mm</b> &mdash; outside the &plusmn;2% tolerance. Cause: from a single photo the generator can't pin the unseen width, so it guessed. The gate <span class="warn">flagged it</span> and the report says exactly which dimension and by how much &mdash; a known, annotated miss, not a surprise.</p>
+  </div>
+</div>
+<p class="verdict" style="margin-top:.6rem">Verdict on record: <span class="fail">FAIL</span> (Amazon &plusmn;2% bbox) &mdash; reconstructed 703&nbsp;mm vs listed 650&nbsp;mm. Single-photo width ambiguity, named in the report.</p>
+</div>
+
+<div class="diff-card tier">
+<p class="verdict">Exhibit C &mdash; <span style="color:var(--accent)">the upgrade path</span></p>
+<h3>Tier A: capture photos pin the geometry a single photo can only guess</h3>
+<figure class="contain" style="margin:1rem 0"><img src="img/sneaker-tier-ab.png" alt="Side-by-side of the same sneaker: Tier B single-photo textured model (left) vs Tier A capture-set geometry (right), the Tier A silhouette visibly crisper"></figure>
+<p>
+Both of the failures above share one root cause: <b>a single photo can't see the dimension it doesn't show.</b> Tier&nbsp;B ships a client-grade textured model today, but on this sneaker the unseen mid-axis was off by <b>+13%</b> &mdash; and on the backpack, depth was off by <b>+61%</b>. That error class is exactly what a capture set eliminates.
+</p>
+<p>
+<b>Tier&nbsp;A</b> takes a short client-shot photo protocol (6&ndash;8 angles), builds an orthographic turnaround, and conditions the generator on multiple views. The result (right, above &mdash; shown as raw geometry) has visibly crisper laces, pull-tab, and tread, and the listed dimensions hold to <b>0.0% on every axis</b>. Machine-verified:
+</p>
+<table>
+  <thead><tr><th>Axis</th><th class="mono">Listed</th><th class="mono">Tier B (1 photo)</th><th class="mono">Tier A (capture set)</th></tr></thead>
+  <tbody>
+    <tr><td>length</td><td class="mono">300&nbsp;mm</td><td class="mono">300&nbsp;mm &middot; 0%</td><td class="mono">300&nbsp;mm &middot; <span class="pass">0%</span></td></tr>
+    <tr><td>height</td><td class="mono">110&nbsp;mm</td><td class="mono">unseen-axis guess</td><td class="mono">110&nbsp;mm &middot; <span class="pass">0%</span></td></tr>
+    <tr><td>width</td><td class="mono">120&nbsp;mm</td><td class="mono">unseen-axis guess</td><td class="mono">120&nbsp;mm &middot; <span class="pass">0%</span></td></tr>
+  </tbody>
+</table>
+<p class="note" style="margin-top:.7rem">
+Honest limit, stated up front: today Tier&nbsp;A is a <b>geometry-truth</b> premium &mdash; it pins the shape, but its dedicated texture pass is still in development, so a Tier&nbsp;A delivery currently pairs pinned geometry with a Tier&nbsp;B texture. When exact dimensions matter more than a hand-tuned finish, it's the right call. When they don't, Tier&nbsp;B ships today. The premium multi-view tier isn't offered for EU / UK / South-Korea-market deliverables (upstream model licence).
+</p>
+</div>
+
+<div class="callout accent">
+<span class="lbl">The point</span>
+<p>Three SKUs passed. One was refused. One was flagged with the exact number. That's not a weakness in the demo &mdash; <b>that discrimination is the service.</b> A raw-generation tool would have handed you all five, including the shredded backpack and the wrong-sized chair, with equal confidence and no report. Machine-checked quality is a product, not a promise.</p>
+</div>
+
+<h2>What a delivery contains</h2>
+<p>Public-safe summary of the delivery profile. Exact scope is quoted per job.</p>
+<table>
+  <thead><tr><th>Item</th><th>Amazon-3D profile</th><th>Shopify-3D profile</th></tr></thead>
+  <tbody>
+    <tr><td>Geometry</td><td class="mono">&le; 200k tris</td><td class="mono">&le; 100k tris</td></tr>
+    <tr><td>Textures</td><td class="mono">2048&ndash;4096px PBR</td><td class="mono">&le; 2048px PBR</td></tr>
+    <tr><td>Material set</td><td class="mono">metal-rough + normal + AO</td><td class="mono">full PBR set</td></tr>
+    <tr><td>File</td><td class="mono">KTX2-compressed GLB</td><td class="mono">GLB &le; 4&nbsp;MB</td></tr>
+    <tr><td>Scale</td><td colspan="2" class="mono">real-world mm, from your listed dimensions (AR-accurate)</td></tr>
+    <tr><td>Also on request</td><td colspan="2" class="mono">USDZ (Apple AR Quick Look) &middot; turntable render</td></tr>
+    <tr><td>Every SKU ships</td><td colspan="2"><b>the compliance report</b> &mdash; per-spec pass/fail, dimension check, texture &amp; PBR inventory</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+<span class="lbl">Get the dimensions right &mdash; capture guide</span>
+<p>Most single-photo misses are the unseen axis. A short capture protocol (6&ndash;8 angles, even light, a scale reference in frame) removes that entire failure class and unlocks the geometry-truth tier. A one-page capture guide is included with any Tier&nbsp;A engagement.</p>
+</div>
+
+<div class="cta">
+<h2 style="border:none">Have a catalogue to convert?</h2>
+<p>Send one product photo per SKU. You get back a marketplace-spec 3D model and the report that proves it &mdash; or an honest "this one needs a re-shoot" before you spend a cent on a broken asset. Batch-priced; every job scoped and quoted.</p>
+<p style="margin-top:1rem">
+  <a class="btn" href="mailto:{{LINK: contact email}}">Contact for a quote &rarr;</a>
+  <a class="btn" href="{{LINK: work catalogue}}">See the full 3D catalogue</a>
+  <a class="btn" href="{{LINK: showcase repo}}">The engineering &amp; honest benchmarks</a>
+</p>
+<p class="note" style="margin-top:1rem">There is no pricing on this page on purpose &mdash; scope drives the estimate, and every job is quoted. The stack, the honest benchmarks (failures included), and the open-source licence chain live in the documentation repo.</p>
+</div>
+
+</main>
+
+<footer class="site">
+  <p>Built and measured on a sovereign AI stack &mdash; one RTX 5090, fully local, open-source models. Where a number is from a real run, it's a real run; where something failed, it says so. &middot; <a href="/">theinvalid.me</a></p>
+</footer>
+
+</body>
+</html>

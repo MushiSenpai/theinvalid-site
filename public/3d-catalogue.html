@@ -1,0 +1,166 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Asset Catalogue — theinvalid.me</title>
+<style>
+ *{margin:0;padding:0;box-sizing:border-box}
+ body{font-family:system-ui,sans-serif;background:#0b0d10;color:#d8dde2;padding:32px 24px 80px;line-height:1.5}
+ .wrap{max-width:1180px;margin:0 auto}
+ .brand{display:inline-block;font-family:ui-monospace,monospace;font-weight:700;font-size:15px;color:#f2f5f8;text-decoration:none;margin-bottom:18px}
+ .brand:hover{color:#e8a33d}
+ .brand .a{color:#e8a33d}
+ h1{font-size:28px;font-weight:800;color:#f2f5f8} h1 .a{color:#e8a33d}
+ .sub{font-family:ui-monospace,monospace;font-size:12.5px;color:#7d858e;margin:8px 0}
+ .status{padding:10px 14px;background:#101e12;border:1px solid #244029;border-radius:9px;margin:14px 0 18px;font-size:13px;color:#86d692}
+ .controls{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:0 0 8px;font-size:12.5px}
+ .controls label{font-family:ui-monospace,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:#5f6b78;margin-right:7px}
+ .controls select{background:#14181e;color:#d8dde2;border:1px solid #2a333d;border-radius:7px;padding:6px 10px;font-size:12.5px;font-family:inherit;cursor:pointer}
+ .controls select:hover{border-color:#3a4654}
+ .tier-row{font-family:ui-monospace,monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:#5f6b78;margin:28px 0 14px;padding-bottom:7px;border-bottom:1px solid #1c222a}
+ .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(345px,1fr));gap:16px}
+ .card{background:linear-gradient(160deg,#14181e,#10141a);border:1px solid #222a33;border-left-width:3px;border-radius:11px;padding:0 0 16px;overflow:hidden}
+ .game{border-left-color:#e8a33d}.print{border-left-color:#14b8a6}.ecom{border-left-color:#378ADD}.char{border-left-color:#ec4899}.sim{border-left-color:#9F7AEA}.util{border-left-color:#6b7480}
+ .thumb{display:block;width:100%;aspect-ratio:16/10;object-fit:contain;background:#0e1217;border-bottom:1px solid #1c222a}
+ .body{padding:14px 18px 0}
+ .ch{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+ .emoji{font-size:18px}
+ .cn{font-size:16px;font-weight:700;color:#f2f5f8}
+ .badge{font-family:ui-monospace,monospace;font-size:10px;padding:2px 7px;border-radius:5px;margin-left:auto;font-weight:700;white-space:nowrap;background:#0d2a1a;color:#4ade80}
+ .badge.qgate{background:#2a220d;color:#e8a33d}
+ .tagline{font-size:13px;color:#aeb6bf;margin-bottom:9px}
+ .io{display:flex;gap:14px;font-size:12px;color:#c4ccd4;margin-bottom:9px;flex-wrap:wrap}
+ .io b{color:#7d858e;font-weight:700;margin-right:4px;font-family:ui-monospace,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px}
+ .diff{font-size:12.5px;color:#9aa3ad;background:#0e1217;border:1px solid #1c222a;border-radius:7px;padding:8px 10px;margin-bottom:11px}
+ .diff b{color:#c4ccd4}
+ .rows{display:flex;flex-direction:column;gap:5px;font-size:12.5px}
+ .r{display:grid;grid-template-columns:96px 1fr;gap:10px}
+ .rl{font-family:ui-monospace,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:#5f6b78}
+ .rv{color:#c4ccd4}
+ .empty{color:#5f6b78;font-size:13px;padding:20px 4px}
+ .foot{margin-top:36px;padding:16px;background:#10141a;border:1px solid #1c222a;border-radius:10px;font-size:12.5px;color:#8893a0}
+ .foot a{color:#e8a33d;text-decoration:none} .foot a:hover{text-decoration:underline}
+ .cta{margin:18px 0 4px;padding:14px 18px;background:#1a1408;border:1px solid #3a2c10;border-radius:10px;font-size:13.5px;color:#e8d3ac}
+ .cta b{color:#e8a33d}
+</style></head>
+<body><div class="wrap">
+<a class="brand" href="/">the<span class="a">invalid</span>.me</a>
+<h1>3D Asset <span class="a">Catalogue</span></h1>
+<p class="sub">image / text brief → validated, engine-ready or print-ready 3D asset · local on one RTX 5090 · fully open-source models</p>
+<div class="status" id="status">● 6 named workflows · photo → clean, retopologised, QA-gated 3D — the mesh-ops + gate layer, not raw generation</div>
+
+<div class="cta">Every asset ships with a <b>QA report, a manifest, and a turntable</b> — the automated gate wall is the difference between raw AI generation and a deliverable. <b>Contact for a quote</b> — turnaround classes below are measured on-box; scope drives the estimate.</div>
+
+<div class="controls">
+  <span><label>Group by</label>
+    <select id="group">
+      <option value="cat">Deliverable</option>
+      <option value="none">Flat</option>
+    </select></span>
+  <span><label>Show</label>
+    <select id="filter">
+      <option value="all">All workflows</option>
+      <option value="game">Game / hero</option>
+      <option value="ecom">E-commerce / AR</option>
+      <option value="print">3D print</option>
+      <option value="char">Characters</option>
+      <option value="sim">Simulation</option>
+      <option value="util">Utility</option>
+    </select></span>
+</div>
+
+<div id="out"></div>
+
+<div class="foot">
+ <b style="color:#c4ccd4">How to read this.</b> Turnaround classes are measured on-box (RTX 5090 32GB) and are indicative, not guaranteed — the input drives the cost (a reflective or highly detailed subject is the worst case). There is <b>no pricing here on purpose</b>; every job is scoped and quoted. The engineering, honest benchmarks (including the failures), and the license chain live in the stack's documentation repo. Companion to the <a href="/workflow-catalogue.html">2D / video Workflow Catalogue</a>.
+</div>
+</div>
+
+<script>
+const CAT = {game:"Game & hero assets", ecom:"E-commerce & AR", print:"3D print", char:"Characters", sim:"Simulation (SimReady)", util:"Utility"};
+const CATORDER = ["game","ecom","print","char","sim","util"];
+const TILES = [
+ {cat:"game", emoji:"🏺", name:"Potter", thumb:"thumbs/potter.png",
+  tag:"Production static prop — full game-ready delivery.",
+  inp:"One product/concept image", out:"GLB + FBX · LOD ladder · 2K PBR set",
+  why:"The standard static asset: cleaned, retopologised, UV-unwrapped, baked, and format-validated. Any polygon budget from 50 to 20,000. Every LOD is Hausdorff-checked against the source.",
+  turn:"Tens of minutes", extra:"Any engine · web-AR pair on request"},
+ {cat:"game", emoji:"⚔️", name:"Swordsmith", thumb:"thumbs/swordsmith.png",
+  tag:"Hero asset — Unreal Nanite lane + 4K PBR.",
+  inp:"Hero reference image", out:"Game-universal + Unreal-Nanite · 4K textures",
+  why:"Geometry-first hero prop generated at 1536³, 4K bakes, per-channel texture upscale, and a dense Nanite delivery alongside the LOD ladder. Built for the piece the camera lingers on.",
+  turn:"Hour-class", extra:"Nanite FBX/USD + game-universal GLB"},
+ {cat:"ecom", emoji:"🛒", name:"Shopkeeper", thumb:"thumbs/shopkeeper.png",
+  tag:"E-commerce SKU line with marketplace spec-compliance.",
+  inp:"Product photos (or capture set)", out:"Amazon-3D / Shopify-3D GLB + USDZ",
+  why:"Per-SKU photo→3D, batched, checked against the published Amazon and Shopify specs (tri caps, texture sizes, PBR channels, real-world scale, ≤4MB) — and it ships a client-facing compliance report per SKU. Wrong-scale or unsealed models are rejected before you ever see them.",
+  turn:"Per-SKU minutes at batch scale", extra:"Real-world scale from listed dimensions · sample SKU set: sneaker / headphones / chair / lamp (thumbs/shopkeeper-*.png)"},
+ {cat:"print", emoji:"🖨️", name:"Moldmaker", thumb:"thumbs/moldmaker.png",
+  tag:"Print lane — watertight, mm-scaled, sliceable.",
+  inp:"Image + target dimensions (mm)", out:"STL / 3MF + sliced gcode + printability report",
+  why:"Voxel-remeshed to a guaranteed-watertight body, asserted to real millimetre scale (STL is unitless — this stack enforces the convention), then checked for wall thickness and overhangs and pre-sliced for your printer profile.",
+  turn:"Tens of minutes", extra:"FDM / resin · printability report included"},
+ {cat:"char", emoji:"🧍", name:"Golem", thumb:"thumbs/golem.png",
+  tag:"Rigged character — auto-rig + human deform review.",
+  inp:"Character image / turnaround", out:"Rigged GLB / FBX + rig QA report",
+  why:"Pose-locked generation, deform-aware retopology with joint-region density, and a UniRig skeleton + skinning. Character topology is reviewed, not blind-automated — a 3-pose deform set is signed off by a human before delivery.",
+  turn:"Hours + human review gate", extra:"Static faces in v1 · honest expectation-setting"},
+ {cat:"sim", emoji:"🏗️", name:"Simwright", thumb:"thumbs/simwright.png",
+  tag:"SimReady USD packs for Isaac Sim / Omniverse.",
+  inp:"Object image / object set", out:"SimReady OpenUSD (physics + collision + semantics)",
+  why:"Objects converted to the NVIDIA SimReady spec — meters, Z-up, grounded pivot, single material, convex-decomposed collision mesh, mass/physics attributes, semantic labels — then validated with usdchecker. Pilot warehouse pack passed 16/16 with zero validator errors.",
+  turn:"Per-object minutes", extra:"Domain-randomisation object libraries"},
+ // ── utility / supporting workflows ──
+ {cat:"util", emoji:"🗿", name:"Stonecut", thumb:"",
+  tag:"Fast draft mesh for preview / composition check.",
+  inp:"One image", out:"Draft GLB + turntable",
+  why:"A minutes-fast draft to check silhouette and composition before committing to a full production run.",
+  turn:"Minutes", extra:"Client preview"},
+ {cat:"util", emoji:"🎨", name:"Glazier", thumb:"",
+  tag:"Re-texture a mesh you already have.",
+  inp:"Your mesh (+ style ref)", out:"Re-textured GLB with fresh PBR",
+  why:"Bring your own geometry; get a clean UV set and a fresh PBR texture pass. Texture-only service.",
+  turn:"Fast", extra:"Validate-only on your geometry"},
+ {cat:"util", emoji:"🔁", name:"Turnwright", thumb:"",
+  tag:"3D → 2D control maps for perspective-locked art.",
+  inp:"One image", out:"Depth / normal / curvature control maps",
+  why:"Generate clean geometry, then render depth/normal/curvature maps from it to drive perspective-locked 2D art in the creative stack. Not a 3D deliverable — a control input.",
+  turn:"Fast", extra:"Feeds the 2D pipeline"}
+];
+
+function card(t){
+ const thumb = t.thumb ? `<img class="thumb" src="${t.thumb}" alt="${t.name} — sample render" loading="lazy">` : "";
+ return `<div class="card ${t.cat}" data-cat="${t.cat}">
+   ${thumb}
+   <div class="body">
+     <div class="ch"><span class="emoji">${t.emoji}</span><span class="cn">${t.name}</span>
+       <span class="badge qgate">QA-gated</span></div>
+     <div class="tagline">${t.tag}</div>
+     <div class="io"><span><b>In</b>${t.inp}</span><span><b>Out</b>${t.out}</span></div>
+     <div class="diff"><b>What it delivers →</b> ${t.why}</div>
+     <div class="rows">
+       <div class="r"><span class="rl">Turnaround</span><span class="rv">${t.turn}</span></div>
+       <div class="r"><span class="rl">Notes</span><span class="rv">${t.extra}</span></div>
+     </div>
+   </div>
+ </div>`;
+}
+
+function render(){
+ const g = document.getElementById('group').value;
+ const f = document.getElementById('filter').value;
+ const rows = TILES.filter(t => f==="all" || t.cat===f);
+ const out = document.getElementById('out');
+ if(!rows.length){ out.innerHTML = '<div class="empty">No workflows match that filter.</div>'; return; }
+ if(g==="none"){ out.innerHTML = `<div class="grid">${rows.map(card).join("")}</div>`; return; }
+ let html = "";
+ for(const c of CATORDER){
+   const inC = rows.filter(t => t.cat===c);
+   if(!inC.length) continue;
+   html += `<div class="tier-row">${CAT[c]}</div><div class="grid">${inC.map(card).join("")}</div>`;
+ }
+ out.innerHTML = html;
+}
+document.getElementById('group').addEventListener('change', render);
+document.getElementById('filter').addEventListener('change', render);
+render();
+</script>
+</body></html>
