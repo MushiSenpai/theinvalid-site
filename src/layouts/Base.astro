@@ -24,6 +24,12 @@ const current = (p: string) =>
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#0b0e14" />
     <link rel="alternate" type="application/rss+xml" title="theinvalid blog" href="/rss.xml" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -38,7 +44,7 @@ const current = (p: string) =>
   </head>
   <body>
     <nav class="site">
-      <a class="brand" href="/">theinvalid<span style="color: var(--accent)">.me</span></a>
+      <a class="brand" href="/"><span style="color: var(--accent)">&gt;</span> theinvalid<span style="color: var(--accent)">.me</span></a>
       <a href="/start-here" aria-current={current('/start-here')}>start here</a>
       <a href="/services" aria-current={current('/services')}>work with me</a>
       <a href="/projects" aria-current={current('/projects')}>projects</a>
