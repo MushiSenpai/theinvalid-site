@@ -112,6 +112,12 @@ nav.site a:hover, nav.site a[aria-current="page"] { color: var(--fg); text-decor
 
 /* ── hero ────────────────────────────────────────── */
 .hero { padding: 4.5rem 0 2.5rem; }
+.hero .hero-mark {
+  display: block;
+  width: clamp(72px, 11vw, 96px);
+  height: auto;
+  margin: 0 0 1.4rem;
+}
 .hero .called {
   font-family: var(--mono);
   color: var(--muted);
