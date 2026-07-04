@@ -38,7 +38,8 @@ Reasons, in order:
 Distinctiveness comes from craft instead: dark terminal-inflected palette
 (bg `#0b0e14`, warm off-white text, one **lantern-gold accent `#e8a33d`**),
 monospace flourishes, honest status badges, and signature content (the
-"failure log" framing) no template has.
+"failure log" framing) no template has. Full brand/visual-identity spec — logo,
+wordmark, favicon, tokens, usage rules — in **§10**.
 
 ## 4. Stack & hosting decisions
 
@@ -154,3 +155,73 @@ Every push to `main` deploys. No CI config needed — Pages detects Astro.
    SEO credit while borrowing their distribution).
 5. Cadence: one promoted post per week beats five in one day. The RSS feed
    exists for the people who come back.
+
+## 10. Brand & visual identity — logo, favicon, tokens
+
+The brand is deliberately minimal: a dark terminal surface, one warm accent, and
+system monospace. The constraints in §3 ARE the identity — the discipline is not
+adding to them. Any visual change must hold all of these.
+
+### 10.1 Design tokens — source of truth is `src/styles/global.css :root`
+Never hardcode a new hex or font; use the CSS variable. Current values:
+
+| token | value | use |
+|---|---|---|
+| `--bg` | `#0b0e14` | page background |
+| `--bg-raise` | `#11151f` | panels, cards, icon tiles |
+| `--fg` | `#e6e1d7` | body text, the wordmark name |
+| `--muted` | `#8a8f98` | secondary text, taglines |
+| `--line` | `#1e2430` | hairlines, dividers |
+| `--accent` | `#e8a33d` | **the lantern gold — the ONLY accent, ever** |
+| `--mono` | system mono stack | all UI + the wordmark |
+| `--sans` | system sans stack | headings / long-form |
+
+`--ok / --warn / --dim / --error` are **semantic status colors** (badges), not brand
+accents — don't repurpose them decoratively. **One accent rule:** if a design needs
+a second color to work, the design is wrong. No gradients, shadows, or webfonts.
+
+### 10.2 The mark — empty set ∅
+The logo is the **empty-set glyph ∅** ("invalid / null / void" — the technical double
+meaning of the name, §2): a gold circle + a rising slash (lower-left → upper-right)
+with round caps, on a dark panel.
+- Used **only** as favicon / app icon / social-card mark. It is deliberately **not**
+  placed in the page body — it was tried in the hero and removed because it competed
+  with the wordmark. On-page identity is the wordmark, not the mark.
+- Clear space ≥ the height of the ∅. Never recolor, add a second accent, or apply a
+  gradient/shadow.
+
+### 10.3 The wordmark — terminal prompt
+On-page identity is the nav brand: **`>theinvalid.me`** — a gold `>` prompt (the
+`.brand .prompt` span), cream `theinvalid`, gold `.me`. It mirrors the hero's
+`$ they called me invalid_` line.
+- The nav is fixed `max-width: 46rem` and the 6 items sit right at the edge, so the
+  brand must stay tight (no extra spacing around `>`) or a tab wraps to a second line
+  (queue.md OPS-63 / the `> `-prefix incident).
+
+### 10.4 Favicon system & the cache-busting rule
+Assets in `public/`, wired in `src/layouts/Base.astro` `<head>`: `favicon.svg` (∅),
+`favicon.ico` (multi-res), `favicon-16/32.png`, `apple-touch-icon.png` (180, opaque),
+`icon-192/512.png` (PWA), `site.webmanifest`, `theme-color #0b0e14`.
+- **Cache-bust every icon URL with `?v=<token>` (currently `?v=nullset`).** Browsers
+  cache favicons by URL far harder than pages — reusing a filename means the old icon
+  sticks even after a hard refresh. **On ANY favicon change, bump the token** in
+  Base.astro *and* everywhere below.
+- Served bytes are authoritative: verify a favicon with `curl` (render the `.ico`),
+  then it's a browser cache — incognito confirms instantly.
+
+### 10.5 Standalone pages do NOT inherit Base.astro
+`public/*-catalogue.html` and hand-authored case studies carry their **own** `<head>`,
+so a brand/favicon change must be applied to each one **and to what generates them**,
+or it silently reverts:
+- `workflow-catalogue.html` ← `generate-catalogue.py` (real file in the
+  `mushishi-creative-stack` repo; regenerated monthly). Fix the template, not the copy.
+- `3d-catalogue.html` ← deployed by **`scripts/deploy-3d-catalogue.sh`** (run it; never
+  hand-edit the deployed copy — it bakes in the `thumbs/`→`3d-thumbs/` repoint + a
+  broken-image guard). Source draft: `drafts/mushishi-3d-catalogue/` (git-ignored).
+
+### 10.6 Canonical logo assets
+Master SVG source, all raster exports, `site.webmanifest`, a usage README, and the
+`gen_logo.py` regen script live at **`~/Documents/design/theinvalid-logo/`** (private
+working dir). The `public/` copies here are the deployed subset. This machine has **no
+SVG rasterizer** (no rsvg/inkscape/cairosvg) — regenerate rasters with Pillow via
+`gen_logo.py`, not an SVG renderer.
