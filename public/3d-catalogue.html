@@ -24,7 +24,7 @@
  .tier-row{font-family:ui-monospace,monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:#5f6b78;margin:28px 0 14px;padding-bottom:7px;border-bottom:1px solid #1c222a}
  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(345px,1fr));gap:16px}
  .card{background:linear-gradient(160deg,#14181e,#10141a);border:1px solid #222a33;border-left-width:3px;border-radius:11px;padding:0 0 16px;overflow:hidden}
- .game{border-left-color:#e8a33d}.print{border-left-color:#14b8a6}.ecom{border-left-color:#378ADD}.char{border-left-color:#ec4899}.sim{border-left-color:#9F7AEA}.util{border-left-color:#6b7480}
+ .game{border-left-color:#e8a33d}.print{border-left-color:#14b8a6}.ecom{border-left-color:#378ADD}.char{border-left-color:#ec4899}.sim{border-left-color:#9F7AEA}.film{border-left-color:#d97757}.util{border-left-color:#6b7480}
  .thumb{display:block;width:100%;aspect-ratio:16/10;object-fit:contain;background:#0e1217;border-bottom:1px solid #1c222a}
  .body{padding:14px 18px 0}
  .ch{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
@@ -51,7 +51,7 @@
 <a class="brand" href="/">the<span class="a">invalid</span>.me</a>
 <h1>3D Asset <span class="a">Catalogue</span></h1>
 <p class="sub">image / text brief → validated, engine-ready or print-ready 3D asset · local on one RTX 5090 · fully open-source models</p>
-<div class="status" id="status">● 6 named workflows · photo → clean, retopologised, QA-gated 3D — the mesh-ops + gate layer, not raw generation</div>
+<div class="status" id="status">● 7 named workflows · photo / text brief → clean, retopologised, QA-gated 3D — the mesh-ops + gate layer, not raw generation</div>
 
 <div class="cta">Every asset ships with a <b>QA report, a manifest, and a turntable</b> — the automated gate wall is the difference between raw AI generation and a deliverable. <b>Contact for a quote</b> — turnaround classes below are measured on-box; scope drives the estimate.</div>
 
@@ -68,6 +68,7 @@
       <option value="ecom">E-commerce / AR</option>
       <option value="print">3D print</option>
       <option value="char">Characters</option>
+      <option value="film">Film / previs</option>
       <option value="sim">Simulation</option>
       <option value="util">Utility</option>
     </select></span>
@@ -81,8 +82,8 @@
 </div>
 
 <script>
-const CAT = {game:"Game & hero assets", ecom:"E-commerce & AR", print:"3D print", char:"Characters", sim:"Simulation (SimReady)", util:"Utility"};
-const CATORDER = ["game","ecom","print","char","sim","util"];
+const CAT = {game:"Game & hero assets", ecom:"E-commerce & AR", print:"3D print", char:"Characters", film:"Film pre-visualization", sim:"Simulation (SimReady)", util:"Utility"};
+const CATORDER = ["game","ecom","print","char","film","sim","util"];
 const TILES = [
  {cat:"game", emoji:"🏺", name:"Potter", thumb:"3d-thumbs/potter.png",
   tag:"Production static prop — full game-ready delivery.",
@@ -114,6 +115,11 @@ const TILES = [
   inp:"Object image / object set", out:"SimReady OpenUSD (physics + collision + semantics)",
   why:"Objects converted to the NVIDIA SimReady spec — meters, Z-up, grounded pivot, single material, convex-decomposed collision mesh, mass/physics attributes, semantic labels — then validated with usdchecker. Pilot warehouse pack passed 16/16 with zero validator errors.",
   turn:"Per-object minutes", extra:"Domain-randomisation object libraries"},
+ {cat:"film", emoji:"🎬", name:"Stagehand", thumb:"3d-thumbs/stagehand.png",
+  tag:"Pre-visualization shot-pack — a whole set dressed for the camera.",
+  inp:"A shot-pack list (photos or text briefs)", out:"Unreal previs pack + contact sheet",
+  why:"Give us a shot list — a mix of reference photos and text briefs — and get back one Unreal-ready pack: per-asset FBX + GLB, a single batch import script (Nanite on the hero pieces), and a contact sheet of textured turntables so the director sees the set at a glance. Every prop is routed by how much the camera lingers on it — draft blocking, dressed mid-ground, or a dense hero — so the whole pack lands fast. A prop that can't be resolved is shown on the sheet with the reason, not quietly dropped — the sample sheet above is a real run, honest refusal included.",
+  turn:"A shot-pack in under half an hour (measured: 6 props, 15 min warm)", extra:"Batched · draft / dressing / hero tiers · one Unreal import script per set · measured on-box: 5/6 delivered, the 6th honestly refused with the reason on the sheet"},
  // ── utility / supporting workflows ──
  {cat:"util", emoji:"🗿", name:"Stonecut", thumb:"",
   tag:"Fast draft mesh for preview / composition check.",
