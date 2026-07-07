@@ -60,7 +60,7 @@ render sovereign-stack-brief <<EOF
 <h2>Engagement</h2>
 <ul>
   <li><b>AI Readiness Audit</b> — SGD 500–1,000: two hours + a written gap analysis and roadmap. The low-commitment first step.</li>
-  <li><b>Deployment</b> — SGD 3,000–8,000 by scope: ~2 weeks spec + staging, 1 week on-site if needed. Hardware spec'd to buy or deployed on yours.</li>
+  <li><b>Deployment</b> — SGD 3,000–8,000 by scope: ~2 weeks spec + staging, delivered remotely onto your hardware; on-site sprints available for overseas engagements. Hardware spec'd to buy or deployed on yours.</li>
   <li><b>Health retainer</b> — SGD 800–1,500/mo: backups verified, watchdog reviewed, dependencies current.</li>
 </ul>
 $FOOT
