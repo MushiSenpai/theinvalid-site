@@ -26,7 +26,7 @@ Every high-signal false positive traced back to one of five reproducible rule bu
 
 **1. The SSRF rule flagged every `requests.get(...).json()` — a 100% FP generator.** The rule's taint sources included the bare attributes `$REQ.json` and `$REQ.data`, meant to catch Flask's `request.json`. But they also matched the ubiquitous `.json()` accessor on a `requests` *response* object. So `requests.get(url)` — the very call whose `.json` gets read — became a taint source, and it is *also* the SSRF sink. The call self-taints and fires. Minimal repro: `requests.get("https://example.com", timeout=3)` → 0 findings; append `.json()` → 1 finding. Every flagged URL in the wild was a hardcoded vendor endpoint, an env var, or an admin-configured backend.
 
-**2. The deserialization sink matched any `.loads` tail.** `json.loads`, a Rison decoder's `.loads`, an HMAC-signed `itsdangerous` serializer's `.loads` — all flagged as CWE-502 as if they were `pickle`. Only `pickle`/`cPickle`/`marshal`/unsafe `yaml.load` deserve that sink. Match the receiver module, not the method name.
+**2. The deserialization sink matched any `.loads` tail.** `json.loads`, a URL-safe query-string decoder's `.loads`, an HMAC-signed serializer's `.loads` — all flagged as CWE-502 as if they were `pickle`. Only `pickle`/`cPickle`/`marshal`/unsafe `yaml.load` deserve that sink. Match the receiver module, not the method name.
 
 **3. Sink arg-focus was positional-only.** The engine flagged `cursor.execute(sql, params)` where the user value was in the *bound params* — the safe part — and flagged `send_file(BytesIO(...))` as path traversal when the "path" was an in-memory buffer. It couldn't tell a string-built query from a parameterized one, or a filename from a buffer.
 
