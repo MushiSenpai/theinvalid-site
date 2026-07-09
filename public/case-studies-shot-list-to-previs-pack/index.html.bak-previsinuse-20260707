@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One shot list &rarr; an Unreal-ready previs pack in 15 minutes &mdash; theinvalid.me</title>
+<meta name="description" content="Case study: a mixed shot list of reference photos and one-line text briefs becomes an Unreal-ready pre-visualization pack — per-prop FBX+GLB, one batch import script, Nanite on the heroes — in 15 minutes. Real run, measured numbers, honest refusals shown.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=nullset">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=nullset">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=nullset">
+<link rel="icon" href="/favicon.ico?v=nullset" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=nullset">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b0e14">
+<meta property="og:title" content="One shot list &rarr; an Unreal-ready previs pack in 15 minutes">
+<meta property="og:description" content="A mixed shot list — reference photos and one-line text briefs — becomes an Unreal-ready previs pack in 15 minutes: per-prop FBX+GLB, one batch import script, Nanite on the heroes. Real run, failures included.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://theinvalid.me/case-studies-shot-list-to-previs-pack/">
+<meta property="og:site_name" content="theinvalid.me">
+<style>
+:root{--bg:#0b0e14;--bg-raise:#11151f;--fg:#e6e1d7;--muted:#8a8f98;--line:#1e2430;--accent:#e8a33d;--ok:#4ade80;--warn:#e8a33d;--dim:#6b7280;--error:#ff6b6b;--mono:ui-monospace,"JetBrains Mono","Cascadia Code","SF Mono",Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box}
+html{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+body{margin:0}
+main{max-width:52rem;margin:0 auto;padding:0 1.25rem 5rem}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+h1,h2,h3{line-height:1.25;font-weight:650}
+h1{font-size:2.1rem;letter-spacing:-.01em;margin:.2rem 0 .4rem}
+h2{font-size:1.35rem;margin-top:3rem;padding-top:.3rem}
+h3{font-size:1.05rem;margin:1.6rem 0 .3rem}
+code{font-family:var(--mono);font-size:.86em;background:var(--bg-raise);padding:.12em .35em;border-radius:4px;border:1px solid var(--line)}
+pre{background:var(--bg-raise);border:1px solid var(--line);border-radius:10px;padding:1rem 1.1rem;overflow-x:auto;font-family:var(--mono);font-size:.8rem;line-height:1.55;margin:1.2rem 0}
+pre code{background:none;border:none;padding:0;font-size:inherit}
+hr{border:none;border-top:1px solid var(--line);margin:2.5rem 0}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:.6rem 0 .2rem}
+th,td{border:1px solid var(--line);padding:.42rem .65rem;text-align:left;vertical-align:top}
+th{background:var(--bg-raise);font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}
+td.mono,th.mono{font-family:var(--mono);font-size:.82rem}
+.pass{color:var(--ok);font-weight:650}
+.fail{color:var(--error);font-weight:650}
+.warn{color:var(--warn);font-weight:650}
+nav.site{max-width:52rem;margin:0 auto;padding:1.5rem 1.25rem;display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem 1.05rem;font-family:var(--mono);font-size:.9rem}
+nav.site .brand{color:var(--fg);font-weight:700;margin-right:.6rem}
+nav.site .brand:hover{text-decoration:none;color:var(--accent)}
+nav.site a{color:var(--muted)}
+nav.site a:hover{color:var(--fg);text-decoration:none}
+.kicker{font-family:var(--mono);color:var(--accent);font-size:.82rem;text-transform:uppercase;letter-spacing:.12em;margin:3rem 0 0}
+.lede{color:var(--muted);font-size:1.15rem;max-width:40rem;margin:.6rem 0 0}
+.meta{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin:1rem 0 0;display:flex;flex-wrap:wrap;gap:.9rem}
+figure{margin:1.4rem 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg-raise)}
+figure img{display:block;width:100%;height:auto;background:#0e1217}
+figure.contain img{aspect-ratio:16/10;object-fit:contain}
+figcaption{font-size:.82rem;color:var(--muted);padding:.55rem .85rem;border-top:1px solid var(--line);font-family:var(--mono)}
+figcaption b{color:var(--fg);font-weight:600}
+.flow{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media(max-width:640px){.flow{grid-template-columns:1fr}}
+.flow figure{margin:0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem;margin:1.4rem 0}
+@media(max-width:640px){.grid3{grid-template-columns:1fr}}
+.grid3 figure{margin:0}
+.callout{border:1px solid var(--line);background:var(--bg-raise);border-radius:10px;padding:1rem 1.2rem;margin:1.4rem 0}
+.callout.accent{border-color:var(--accent)}
+.callout .lbl{font-family:var(--mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);display:block;margin-bottom:.35rem}
+.callout p{margin:.3rem 0}
+.callout p:first-of-type{margin-top:0}
+.callout p:last-child{margin-bottom:0}
+blockquote{margin:1.5rem 0;padding:.1rem 1.25rem;border-left:3px solid var(--accent);background:var(--bg-raise);border-radius:0 8px 8px 0;color:var(--fg);font-size:1.02rem}
+ul.tight{margin:.5rem 0;padding-left:1.2rem}
+ul.tight li{margin:.3rem 0}
+.diff-card{border:1px solid var(--line);border-left:3px solid var(--error);background:var(--bg-raise);border-radius:10px;padding:1.1rem 1.3rem;margin:1.6rem 0}
+.diff-card.caught{border-left-color:var(--warn)}
+.diff-card.tier{border-left-color:var(--accent)}
+.diff-card h3{margin-top:0}
+.diff-card .verdict{font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cta{border:1px solid var(--accent);background:var(--bg-raise);border-radius:10px;padding:1.3rem 1.4rem;margin:2.5rem 0 0}
+.cta h2{margin-top:0}
+.btn{display:inline-block;font-family:var(--mono);font-size:.85rem;color:var(--accent);background:var(--bg);border:1px solid var(--accent);border-radius:4px;padding:.5rem 1rem;text-decoration:none;transition:background .15s,color .15s;margin:.3rem .4rem .3rem 0}
+.btn:hover{background:var(--accent);color:var(--bg);text-decoration:none}
+footer.site{max-width:52rem;margin:0 auto;padding:2rem 1.25rem 3rem;border-top:1px solid var(--line);color:var(--muted);font-family:var(--mono);font-size:.8rem}
+footer.site a{color:var(--muted)}footer.site a:hover{color:var(--accent)}
+.note{font-size:.82rem;color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+<nav class="site">
+  <a class="brand" href="/"><span style="color:var(--accent)">&gt;</span> theinvalid<span style="color:var(--accent)">.me</span></a>
+  <a href="/start-here">start here</a>
+  <a href="/services">work with me</a>
+  <a href="/projects">projects</a>
+  <a href="/calculator">field guide</a>
+  <a href="/blog">knowledge base</a>
+</nav>
+
+<main>
+
+<p class="kicker">Case study &middot; Film previs 3D</p>
+<h1>One shot list &rarr; an Unreal-ready previs pack <span style="color:var(--accent)">in 15 minutes</span></h1>
+<p class="lede">A mixed shot list goes in &mdash; some reference photos, some one-line text briefs. An Unreal-ready pre-visualization pack comes out: a prop per line, FBX and GLB each, one batch import script, Nanite on the heroes. Fifteen minutes, not three days.</p>
+<p class="meta">
+  <span>6 real props, one run</span>
+  <span>4 reference photos + 2 text briefs</span>
+  <span>measured on one RTX&nbsp;5090</span>
+  <span>refusals shown, not hidden</span>
+</p>
+
+<hr>
+
+<h2>The problem</h2>
+<p>
+To block a sequence a director needs the set standing in the engine &mdash; the hero the camera lingers on, the mid-ground it dresses past, the crowd it never focuses on. Dozens of props, and their only jobs are to <em>import clean</em> and <em>read at a glance</em>. They are throwaway by design; they will be replaced before the shot is final.
+</p>
+<p>
+The usual options are both bad. Asset libraries never have <em>your</em> props &mdash; the specific field cannon, the specific brick facade, the crowd that fits this world &mdash; so you end up kitbashing approximations. Outsourcing each prop is per-asset and takes days, which is absurd for geometry you're going to throw away. And a raw <code>text&#8209;to&#8209;3D</code> tool hands you a mesh with no guarantee it will even open in Unreal &mdash; a broken UV, a non-manifold shell, an invalid glTF that the importer silently mangles.
+</p>
+<blockquote>
+For a blocking asset, the render isn't the deliverable. <em>It importing clean, every time, on the first try</em> &mdash; that's the deliverable. A pack you have to hand-repair before you can block is worse than no pack.
+</blockquote>
+
+<h2>The run: one shot list &rarr; a set you can block in</h2>
+<p>
+Here is a real run end-to-end &mdash; a six-prop shot list, deliberately mixed the way a real one is: four reference photos and two one-line text briefs, spread across three quality tiers. Nothing was hand-modelled; every number below is from this run.
+</p>
+
+<figure>
+  <img src="img/contact-sheet.png" alt="Contact sheet of the previs pack: field cannon hero, a parked brick-facade tile marked with an X, a glass bottle, a street lamp, a wild-boar dressing prop, and a white draft-clay crowd figure">
+  <figcaption><b>The contact sheet</b> &mdash; the whole set at a glance, the director's index. Five props textured and turntabled; the sixth shown with the reason it was refused, not quietly dropped.</figcaption>
+</figure>
+
+<h3>1 &mdash; The shot list</h3>
+<p>Six lines. Each line names a prop, its source (a photo or a one-line brief), how many copies the set needs, and the tier &mdash; how much camera time it earns.</p>
+<table>
+  <thead><tr><th>Prop</th><th>Source</th><th class="mono">Copies</th><th>Tier</th></tr></thead>
+  <tbody>
+    <tr><td>Field cannon</td><td>reference photo</td><td class="mono">1</td><td>hero</td></tr>
+    <tr><td>Brick building facade</td><td>text brief</td><td class="mono">1</td><td>dressing</td></tr>
+    <tr><td>Glass bottle</td><td>reference photo</td><td class="mono">12</td><td>dressing</td></tr>
+    <tr><td>Street lamp</td><td>text brief</td><td class="mono">8</td><td>dressing</td></tr>
+    <tr><td>Wild boar</td><td>reference photo</td><td class="mono">4</td><td>dressing</td></tr>
+    <tr><td>Crowd figure</td><td>reference photo</td><td class="mono">40</td><td>draft</td></tr>
+  </tbody>
+</table>
+
+<h3>2 &mdash; The delivered props</h3>
+<p>
+Each line drives a generation model, then an automated mesh chain sized to its tier: retopology to the tier's face budget, UV, a texture pass, and export to both FBX and GLB. Below are renders of the actual delivered assets &mdash; color-true, under a neutral view transform (not the grey-clay preview an early pipeline would show).
+</p>
+<div class="grid3">
+  <figure class="contain"><img src="img/hero-field-cannon.png" alt="Textured render of the field cannon hero prop: dark weathered metal with a teal barrel accent on a heavy base"><figcaption><b>Hero</b> &mdash; field cannon</figcaption></figure>
+  <figure class="contain"><img src="img/dressing-bottle.png" alt="Textured render of a teal glass bottle with a tan cork"><figcaption><b>Dressing</b> &mdash; glass bottle &times;12</figcaption></figure>
+  <figure class="contain"><img src="img/dressing-lamp.png" alt="Textured render of a tall rust-and-black street lamp"><figcaption><b>Dressing</b> &mdash; street lamp &times;8</figcaption></figure>
+</div>
+<figure class="contain">
+  <img src="img/draft-crowd.png" alt="White draft-clay render of a crowd figure — rough untextured blocking geometry">
+  <figcaption><b>Draft</b> &mdash; crowd figure &times;40, shipped as fast blocking clay. It never faces the camera; it doesn't earn a texture pass, and it doesn't wait for one.</figcaption>
+</figure>
+
+<h3>3 &mdash; The measured numbers</h3>
+<p>
+This is the whole point &mdash; the wall-clock cost, per prop, from this run. Time follows the tier: a crowd body in seconds, dressing props in a couple of minutes, the hero in six. The pack total is what a director actually waits.
+</p>
+<table>
+  <thead><tr><th>Prop</th><th>Tier</th><th class="mono">Wall</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>Crowd figure</td><td>draft</td><td class="mono">15&nbsp;s</td><td class="pass">&#10003; delivered</td></tr>
+    <tr><td>Street lamp</td><td>dressing</td><td class="mono">1m58s</td><td class="pass">&#10003; delivered</td></tr>
+    <tr><td>Wild boar</td><td>dressing</td><td class="mono">2m09s</td><td class="pass">&#10003; delivered</td></tr>
+    <tr><td>Glass bottle</td><td>dressing</td><td class="mono">2m41s</td><td class="pass">&#10003; delivered</td></tr>
+    <tr><td>Field cannon</td><td>hero</td><td class="mono">5m53s</td><td class="pass">&#10003; delivered</td></tr>
+    <tr><td>Brick facade</td><td>dressing</td><td class="mono">1m37s</td><td class="fail">refused &mdash; see below</td></tr>
+    <tr><td><b>Whole pack</b></td><td></td><td class="mono"><b>15m12s</b></td><td><b>5 of 6 delivered</b></td></tr>
+  </tbody>
+</table>
+<p class="note" style="margin-top:.7rem">
+15m12s is a warm run &mdash; the stack already resident. From a cold start the same pack lands in roughly 22 minutes; the extra time is the model weights loading once, not per-prop. Either way it's a shot list in under half an hour.
+</p>
+
+<h3>4 &mdash; The Unreal import</h3>
+<p>
+The pack ships with one script. You run it in Unreal's Python console and the whole set imports under <code>/Game/Previs/&lt;pack&gt;/</code> in one pass &mdash; the right file per prop, materials attached, and Nanite switched on <em>only</em> for the heroes (previs wants dense heroes and light dressing the DP can instance freely). It reads the pack's own manifest, so it skips anything that was refused and never half-imports a broken prop:
+</p>
+<pre><code>for asset in PACK["assets"]:
+    if asset.get("status") != "delivered":
+        print("skip (not delivered):", asset["prop_id"])
+        continue                       # refused props are never imported
+    ...
+    opts.static_mesh_import_data.build_nanite = bool(asset.get("nanite"))
+    tools.import_asset_tasks([task])   # Nanite auto-on for heroes only</code></pre>
+<p>
+It's idempotent &mdash; re-export the pack, re-run, and it replaces in place. No per-prop clicking, no picking through a folder deciding which files are safe to import.
+</p>
+
+<h2>The honest differentiator: the gate refuses the broken import</h2>
+<p>
+Anyone can show you the props that worked. The reason this pack is worth paying for is the prop it <em>stopped</em> &mdash; and the calibration decision that let the other five through fast without letting a broken one slip.
+</p>
+
+<div class="diff-card">
+<p class="verdict">Exhibit A &mdash; <span class="fail">refused to ship</span></p>
+<h3>The brick facade the gates refused</h3>
+<div class="flow">
+  <figure><img src="img/refused-facade-concept.png" alt="A photoreal concept image of a red-brick building facade with arched windows — the front-end concept that looked perfect before 3D reconstruction failed"></figure>
+  <div>
+    <p>The brick facade came from a one-line text brief, and the front-end concept looked <em>perfect</em> &mdash; the image on the left is what the pipeline generated before it touched geometry. Then the 3D reconstruction collapsed: the UV layout came out degenerate, <b>texture utilization <code>0.00</code></b> against a <code>0.40</code> floor. On a flat, planar facade the unwrap folded to nothing &mdash; a mesh that would import into Unreal as an untextured, un-materialisable shell.</p>
+    <p>The gate caught it at the UV stage and marked the prop <span class="fail">refused</span>. <b>You never receive this file.</b> It shows on the contact sheet with the exact reason &mdash; a re-brief or a hero-tier retry, not a broken prop you discover only when it imports blank in front of the director.</p>
+  </div>
+</div>
+<p class="verdict" style="margin-top:.6rem">Verdict on record: <span class="fail">parked at S6</span> &mdash; UV utilization 0.00 below the 0.40 floor. A perfect concept is not a valid mesh; the gate checks the mesh.</p>
+</div>
+
+<div class="diff-card tier">
+<p class="verdict">Exhibit B &mdash; <span style="color:var(--accent)">the tuning decision</span></p>
+<h3>Fit-for-purpose gates: import-ability stays non-negotiable, production precision doesn't block a blocking asset</h3>
+<p>
+Here's the part that took real calibration. Run this <em>same</em> six-prop pack under the gate profile built for finished <b>production</b> props, and it parks <b>four of six</b> &mdash; not because the props were unusable, but because production gates measure a different thing:
+</p>
+<table>
+  <thead><tr><th>Prop</th><th>Under production gates</th><th>Why it parked</th></tr></thead>
+  <tbody>
+    <tr><td>Street lamp</td><td class="fail">parked</td><td class="mono">6,758 faces vs a 7,200 floor &mdash; 6% under budget</td></tr>
+    <tr><td>Brick facade</td><td class="fail">parked</td><td class="mono">41,677 faces vs an 8,000 target</td></tr>
+    <tr><td>Wild boar</td><td class="fail">parked</td><td class="mono">basecolor luma 29 vs a 30 dielectric floor</td></tr>
+    <tr><td>Field cannon</td><td class="fail">parked</td><td class="mono">glTF-Validator: 4 tangent errors</td></tr>
+  </tbody>
+</table>
+<p style="margin-top:.9rem">
+A street lamp 6% under a face budget and a boar one luminance point below a material floor are <em>real</em> production findings &mdash; on props a DP looks at for composition, never for a close-up. A gate wall calibrated for marketplace-grade finish was parking product that, for blocking, was <b>done</b>.
+</p>
+<p>
+So previs gets its own gate profile. The precision gates widen or drop to advisory for draft and dressing tiers &mdash; but the gates that decide whether the prop <em>imports at all</em> stay hard everywhere. A pack that won't open is worthless at any speed; that line does not move.
+</p>
+<table>
+  <thead><tr><th>Gate</th><th>Checks</th><th>Production</th><th>Previs (draft/dressing)</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">manifold / glTF-Validator</td><td>will it import clean</td><td class="pass">HARD</td><td class="pass">HARD &mdash; never relaxed</td></tr>
+    <tr><td class="mono">face budget</td><td>exact poly count</td><td class="mono">&plusmn;10%</td><td class="mono">&plusmn;50%</td></tr>
+    <tr><td class="mono">material luma band</td><td>texture precision</td><td class="fail">blocking</td><td class="warn">advisory &mdash; recorded, ships</td></tr>
+  </tbody>
+</table>
+<p style="margin-top:.7rem">
+Advisory doesn't mean ignored. The boar's luma-29 finding is written into the pack's gate summary verbatim &mdash; a paying client can still ask for it. It just doesn't park a blocking asset over one luminance point. And the two fixes those parks surfaced &mdash; a face-budget escape hatch that used to stall far above target, and invalid tangents on degenerate-UV geometry &mdash; were root-caused and closed, so the delivered run above hits neither.
+</p>
+</div>
+
+<div class="diff-card tier">
+<p class="verdict">Exhibit C &mdash; <span style="color:var(--accent)">tier routing</span></p>
+<h3>Money follows camera time</h3>
+<p>
+The reason 15 minutes is possible at all is that not every prop earns the same work. Each line is routed by how much the camera lingers on it, and the budget &mdash; time, polygons, texture effort &mdash; follows:
+</p>
+<ul class="tight">
+  <li><b>Draft</b> &mdash; blocking clay, seconds each. The crowd of 40 the camera never focuses on. No texture pass; it doesn't need one and doesn't wait for one <span class="note">(15&nbsp;s)</span>.</li>
+  <li><b>Dressing</b> &mdash; textured mid-ground, a couple of minutes each. The bottles, lamps, and boar the shot dresses past <span class="note">(~2&ndash;3&nbsp;min)</span>.</li>
+  <li><b>Hero</b> &mdash; the dense piece the camera holds on, Nanite-on. Full retopo ladder, strict gates, six minutes of real work <span class="note">(5m53s)</span>. The hero deliberately keeps the production gate wall &mdash; the prop the camera lingers on is the prop that earns the strict check.</li>
+</ul>
+<p>
+Spend the render budget where the lens is. A flat rate per prop would either bankrupt the crowd or under-build the hero; tier routing is what lets one run serve all three.
+</p>
+</div>
+
+<div class="callout accent">
+<span class="lbl">The point</span>
+<p>Five props delivered, import-ready. One was refused with the exact reason on the sheet. That refusal isn't a hole in the demo &mdash; <b>it's the service.</b> A raw text-to-3D tool would have handed you all six, including the facade that imports as a blank shell, with equal confidence and no warning. The gate that says <em>"this one won't import &mdash; here's why"</em> is worth more on a blocking day than one more mediocre mesh.</p>
+</div>
+
+<h2>What a delivery contains</h2>
+<p>Public-safe summary of the delivery profile. Exact scope is quoted per job.</p>
+<table>
+  <thead><tr><th>Item</th><th>What ships</th></tr></thead>
+  <tbody>
+    <tr><td>Per prop</td><td class="mono">FBX + GLB, tier-appropriate topology &amp; textures</td></tr>
+    <tr><td>Import</td><td class="mono">one Unreal batch import script (Nanite auto-on for heroes, idempotent)</td></tr>
+    <tr><td>Index</td><td class="mono">contact sheet &mdash; textured turntables, the director's index of the set</td></tr>
+    <tr><td>Provenance</td><td><b>per-prop verdicts</b> &mdash; delivered / refused, with the gate reason for anything that didn't ship</td></tr>
+    <tr><td>Tiers</td><td class="mono">draft (blocking) &middot; dressing (mid-ground) &middot; hero (Nanite, strict gates)</td></tr>
+    <tr><td>Honesty</td><td>the pack ships <b>N-of-M</b> &mdash; a refused prop is shown with its reason, never silently dropped</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+<span class="lbl">One number that stays hard, everywhere</span>
+<p>Whatever the tier, the import-ability gates &mdash; manifold geometry and a clean glTF-Validator pass &mdash; are never relaxed. A previs pack's entire value is that it drops into your scene on the first try. Speed is negotiable prop by prop; opening in the engine is not.</p>
+</div>
+
+<div class="cta">
+<h2 style="border:none">Have a sequence to block?</h2>
+<p>Send a shot list &mdash; reference photos, one-line briefs, or a mix &mdash; with a tier per prop. You get back one Unreal-ready pack and a contact sheet of the whole set, or an honest "this one won't import cleanly, here's why" before it wastes a review. Batch-priced; every job scoped and quoted.</p>
+<p style="margin-top:1rem">
+  <a class="btn" href="mailto:reddy.madhankumar.sg@gmail.com">Contact for a quote &rarr;</a>
+  <a class="btn" href="https://theinvalid.me/3d-catalogue">See the full 3D catalogue</a>
+  <a class="btn" href="/case-studies-product-photo-to-3d/">The e-commerce case study</a>
+  <a class="btn" href="https://github.com/MushiSenpai/mushishi-3d-stack">The engineering &amp; honest benchmarks</a>
+</p>
+<p class="note" style="margin-top:1rem">There is no pricing on this page on purpose &mdash; scope drives the estimate, and every job is quoted. The stack, the honest benchmarks (refusals included), and the open-source licence chain live in the documentation repo.</p>
+</div>
+
+</main>
+
+<footer class="site">
+  <p>Built and measured on a sovereign AI stack &mdash; one RTX 5090, fully local, open-source models. Where a number is from a real run, it's a real run; where something was refused, it says so. &middot; <a href="/">theinvalid.me</a></p>
+</footer>
+
+</body>
+</html>
