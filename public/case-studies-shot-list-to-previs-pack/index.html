@@ -187,14 +187,18 @@ The pack ships with one script. You run it in Unreal's Python console and the wh
         continue                       # refused props are never imported
     ...
     opts.static_mesh_import_data.build_nanite = bool(asset.get("nanite"))
+    opts.static_mesh_import_data.import_uniform_scale = 0.1  # mm -> cm: land at true size
     tools.import_asset_tasks([task])   # Nanite auto-on for heroes only</code></pre>
 <p>
 It's idempotent &mdash; re-export the pack, re-run, and it replaces in place. No per-prop clicking, no picking through a folder deciding which files are safe to import.
 </p>
+<p class="note">
+Scale is handled for you: the meshes are authored at their real millimetre dimensions, and the import scales them to Unreal's centimetre units (<code>import_uniform_scale = 0.1</code>) so a 4.2&nbsp;m field cannon and a 1.8&nbsp;m crowd figure land at true size next to each other &mdash; not ten times too large. We caught and fixed that unit mismatch by validating the import contract directly (2026&#8209;07&#8209;09); an automated pass that imports each pack into a headless Unreal project, checks scale and Nanite, and screenshots the result is being wired into the delivery gate.
+</p>
 
 <h2>What you do with it</h2>
 <p>
-The pack isn't the product &mdash; the <em>afternoon</em> is. Here are the five delivered props dropped into one set and shot with a director's dolly-in, straight in the engine-agnostic viewport. No modelling, no sourcing, no waiting on a vendor: a shot list at breakfast, a blockable set to point a camera at by lunch.
+The pack isn't the product &mdash; the <em>afternoon</em> is. Here are the five delivered props dropped into one set and shot with a director's dolly-in &mdash; a blocking preview rendered from the delivered meshes. No modelling, no sourcing, no waiting on a vendor: a shot list at breakfast, a blockable set to point a camera at by lunch.
 </p>
 <figure class="clip">
   <video src="img/previs-in-use.mp4" poster="img/previs-in-use-poster.jpg"
@@ -202,7 +206,7 @@ The pack isn't the product &mdash; the <em>afternoon</em> is. Here are the five 
          aria-label="A previs blocking scene: the five delivered props arranged as a street-corner set, with a slow dolly-in from a wide shot to a medium on the field-cannon hero, past a street lamp, and a closing cut to the pack's contact sheet.">
     <img src="img/previs-in-use.gif" alt="Looping previs blocking clip: the delivered props in a set with a dolly-in on the field cannon.">
   </video>
-  <figcaption>Five delivered props, blocked and shot in the engine-agnostic viewport &mdash; this is the afternoon the pack replaces. <b>Draft-tier clay stays clay</b>; the camera never focuses on the crowd, so it never waits on their textures.</figcaption>
+  <figcaption>Five delivered props, blocked as a set and shot with a director's dolly &mdash; a neutral blocking preview of the afternoon the pack replaces (rendered offline from the same delivered meshes, not an in-engine capture). <b>Draft-tier clay stays clay</b>; the camera never focuses on the crowd, so it never waits on their textures.</figcaption>
 </figure>
 
 <h2>The honest differentiator: the gate refuses the broken import</h2>

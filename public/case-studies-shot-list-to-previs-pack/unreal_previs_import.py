@@ -3,6 +3,10 @@
 # enabled ONLY on the hero pieces (previs wants dense heroes + light dressing that
 # the DP can instance freely). Pack layout: assets/<prop_id>/model.(fbx|glb).
 #
+# SCALE: meshes are authored at the mm spec (1 unit = 1 mm); this import scales
+# mm->cm (import_uniform_scale = 0.1) so props land at true real-world size in UE
+# (1 uu = 1 cm). Without it, everything imports 10x too large (F93, 2026-07-09).
+#
 # This script is generated from pack_manifest.json — edit the pack, re-export, and
 # re-run; it is idempotent (replace_existing=True).
 import unreal, os, json
@@ -36,6 +40,7 @@ for asset in PACK["assets"]:
         opts.import_materials = True
         opts.static_mesh_import_data.build_nanite = bool(asset.get("nanite"))
         opts.static_mesh_import_data.generate_lightmap_u_vs = False
+        opts.static_mesh_import_data.import_uniform_scale = 0.1  # mm->cm (F93)
         task.options = opts
     tools.import_asset_tasks([task])
     for a in task.imported_object_paths:
