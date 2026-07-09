@@ -42,6 +42,14 @@ const fmt = (d: Date) =>
   </article>
 
   <article class="card">
+    <h3>One shot list → an Unreal-ready previs pack in 15 minutes</h3>
+    <p><strong>Problem.</strong> To block a sequence a director needs the set standing in the engine — dozens of throwaway props whose only jobs are to import clean and read at a glance. Asset libraries never have <em>your</em> props, outsourcing each one takes days, and a raw text-to-3D tool hands back meshes with no guarantee they'll even open in Unreal (broken UVs, non-manifold shells, invalid glTF). For a blocking asset the deliverable isn't the render — it's importing clean, first try, every time.</p>
+    <p><strong>Solution.</strong> The <a href="/projects/three-d-stack">3D Stack</a> takes a mixed shot list — reference photos and one-line text briefs — and drives a per-prop mesh chain sized to each prop's tier (retopo to a face budget, UV, texture pass, FBX + GLB export), then ships one idempotent Unreal import script that reads the pack's own manifest, attaches materials, switches Nanite on for heroes only, and <strong>skips anything the pipeline refused</strong> so a broken prop never half-imports.</p>
+    <p><strong>Outcome.</strong> On a real six-prop list (4 photos + 2 text briefs, three quality tiers), all local on one RTX 5090: <strong>five delivered in 15m12s warm</strong> (crowd body 15s → hero field cannon 5m53s; ~22 min from a cold start, the difference is weights loading once), and <strong>one facade was refused</strong> with its reason shown, not quietly dropped. A shot list at breakfast, a blockable set by lunch. <a href="/case-studies-shot-list-to-previs-pack/">Full case study, the refusal included →</a> · <a href="/3d-catalogue">the live 3D catalogue →</a></p>
+    <p class="meta">text/photo → 3D · headless Blender per-tier chain · FBX + GLB · one-script Unreal import, Nanite on heroes · 6 props, 5 delivered / 1 refused · zero cloud</p>
+  </article>
+
+  <article class="card">
     <h3>Comic page → narrated video, fully local</h3>
     <p><strong>Problem.</strong> Turning static comic/manga pages into dramatized video normally means manual editing per panel, or cloud services that ingest the artwork. A webtoon creator wants automation <em>and</em> wants the unreleased art to never leave their machine.</p>
     <p><strong>Solution.</strong> A pipeline (<a href="/projects/comic-narrator">Comic Narrator</a>) that detects panels with a vision LLM + OpenCV, voices each character with a local clone, narrates captions, and drives a Ken-Burns + 2.5D parallax camera — all on one RTX 5090, nothing cloud.</p>
