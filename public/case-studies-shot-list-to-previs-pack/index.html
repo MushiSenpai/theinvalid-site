@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>One shot list &rarr; an Unreal-ready previs pack in 15 minutes &mdash; theinvalid.me</title>
-<meta name="description" content="Case study: a mixed shot list of reference photos and one-line text briefs becomes an Unreal-ready pre-visualization pack — per-prop FBX+GLB, one batch import script, Nanite on the heroes — in 15 minutes. Real run, measured numbers, honest refusals shown.">
+<meta name="description" content="Case study: a mixed shot list of reference photos and one-line text briefs becomes an Unreal-ready pre-visualization pack — per-prop FBX+GLB, one batch import script, Nanite on the heroes — in 15 minutes. Import contract tested in Unreal Engine 5.8. Real run, measured numbers, honest refusals shown.">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=nullset">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=nullset">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=nullset">
@@ -13,7 +13,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#0b0e14">
 <meta property="og:title" content="One shot list &rarr; an Unreal-ready previs pack in 15 minutes">
-<meta property="og:description" content="A mixed shot list — reference photos and one-line text briefs — becomes an Unreal-ready previs pack in 15 minutes: per-prop FBX+GLB, one batch import script, Nanite on the heroes. Real run, failures included.">
+<meta property="og:description" content="A mixed shot list — reference photos and one-line text briefs — becomes an Unreal-ready previs pack in 15 minutes: per-prop FBX+GLB, one batch import script, Nanite on the heroes. Tested in Unreal Engine 5.8. Real run, failures included.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://theinvalid.me/case-studies-shot-list-to-previs-pack/">
 <meta property="og:site_name" content="theinvalid.me">
@@ -187,14 +187,28 @@ The pack ships with one script. You run it in Unreal's Python console and the wh
         continue                       # refused props are never imported
     ...
     opts.static_mesh_import_data.build_nanite = bool(asset.get("nanite"))
-    opts.static_mesh_import_data.import_uniform_scale = 0.1  # mm -> cm: land at true size
+    opts.static_mesh_import_data.import_uniform_scale = 0.001   # land at true size
+    if asset.get("import_rotation"):   # stand up props the generator laid down
+        opts.static_mesh_import_data.import_rotation = ...
     tools.import_asset_tasks([task])   # Nanite auto-on for heroes only</code></pre>
 <p>
 It's idempotent &mdash; re-export the pack, re-run, and it replaces in place. No per-prop clicking, no picking through a folder deciding which files are safe to import.
 </p>
 <p class="note">
-Scale is handled for you: the meshes are authored at their real millimetre dimensions, and the import scales them to Unreal's centimetre units (<code>import_uniform_scale = 0.1</code>) so a 4.2&nbsp;m field cannon and a 1.8&nbsp;m crowd figure land at true size next to each other &mdash; not ten times too large. We caught and fixed that unit mismatch by validating the import contract directly (2026&#8209;07&#8209;09); an automated pass that imports each pack into a headless Unreal project, checks scale and Nanite, and screenshots the result is being wired into the delivery gate.
+Scale and orientation are handled for you &mdash; and <b>tested in Unreal Engine 5.8</b>, not assumed. When we ran this pack's own import script inside UE&nbsp;5.8.0 for the first time (2026&#8209;07&#8209;10), the engine caught what file inspection alone had mis-measured: the exported FBX declared the wrong unit, so every prop landed a thousand times too large, and one prop imported lying on its side. The import contract above is the corrected, engine-verified version &mdash; the automated pass now imports the pack into a headless UE&nbsp;5.8 project, measures every prop's bounds against the shot list's real-world dimensions, checks the Nanite build, and screenshots the result. The screenshot below is that pass's actual output: a 4.2&nbsp;m field cannon, a 3.2&nbsp;m street lamp, a 60&nbsp;cm bottle and a 1.8&nbsp;m crowd figure, at true relative scale on the engine's own grid.
 </p>
+<figure class="clip">
+  <img src="img/ue58-true-scale-row.jpg"
+       alt="Unreal Engine 5.8 viewport render: the delivered previs props at true relative scale — field cannon, glass bottle, street lamp and crowd figure standing on a grid floor."
+       style="width:100%;height:auto">
+  <figcaption><b>Rendered in Unreal Engine 5.8.0</b> by the automated validation pass (2026&#8209;07&#8209;10): the spec-correct props at true relative scale &mdash; cannon 4.2&nbsp;m, lamp 3.2&nbsp;m, crowd figure 1.8&nbsp;m (standing), bottle 60&nbsp;cm. One dressing stand-in (the boar) ships with a known generator-scale outlier, recorded in the validation report &mdash; its edge is the dark shape entering frame right. Honest N-of-M, as always.</figcaption>
+</figure>
+<figure class="clip">
+  <img src="img/ue58-nanite-hero.jpg"
+       alt="Unreal Engine 5.8 close-up render of the dense Nanite hero mesh, a knight-helmet-class prop, untextured geometry lane."
+       style="width:100%;height:auto">
+  <figcaption>The dense Nanite hero lane, in-engine: Nanite enabled and built on import (57k source triangles), untextured geometry as this lane ships it.</figcaption>
+</figure>
 
 <h2>What you do with it</h2>
 <p>

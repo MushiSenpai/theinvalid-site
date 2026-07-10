@@ -3,9 +3,14 @@
 # enabled ONLY on the hero pieces (previs wants dense heroes + light dressing that
 # the DP can instance freely). Pack layout: assets/<prop_id>/model.(fbx|glb).
 #
-# SCALE: meshes are authored at the mm spec (1 unit = 1 mm); this import scales
-# mm->cm (import_uniform_scale = 0.1) so props land at true real-world size in UE
-# (1 uu = 1 cm). Without it, everything imports 10x too large (F93, 2026-07-09).
+# SCALE (F93, ENGINE-VERIFIED in UE 5.8, 2026-07-10): the shipped FBX declares
+# METERS (UnitScaleFactor=100) while vertex magnitudes are mm, so UE's default
+# import lands every prop 1000x oversized (a 4.2 m cannon imports at 4.2 km).
+# import_uniform_scale = 0.001 corrects to true real-world size (1 uu = 1 cm).
+# ORIENTATION (F97): props whose source mesh lies down carry a per-asset
+# "import_rotation" [roll,pitch,yaw] in the manifest; applied at import.
+# Root fix (export true-cm, upright-baked FBX) queued — this contract makes the
+# CURRENT exports land correctly.
 #
 # This script is generated from pack_manifest.json — edit the pack, re-export, and
 # re-run; it is idempotent (replace_existing=True).
@@ -40,7 +45,13 @@ for asset in PACK["assets"]:
         opts.import_materials = True
         opts.static_mesh_import_data.build_nanite = bool(asset.get("nanite"))
         opts.static_mesh_import_data.generate_lightmap_u_vs = False
-        opts.static_mesh_import_data.import_uniform_scale = 0.1  # mm->cm (F93)
+        # F93 (UE-5.8-verified): FBX declares meters but verts are mm-magnitude ->
+        # default import is 1000x oversized; 0.001 lands true size (1 uu = 1 cm).
+        opts.static_mesh_import_data.import_uniform_scale = 0.001
+        rot = asset.get("import_rotation")
+        if rot:  # F97: stand up lying source meshes (manifest-driven)
+            opts.static_mesh_import_data.import_rotation = unreal.Rotator(
+                roll=float(rot[0]), pitch=float(rot[1]), yaw=float(rot[2]))
         task.options = opts
     tools.import_asset_tasks([task])
     for a in task.imported_object_paths:
