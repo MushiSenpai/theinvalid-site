@@ -9,6 +9,8 @@ include the losses, case studies include the dead ends.
 
 **Live: [theinvalid.me](https://theinvalid.me)**
 
+![theinvalid.me homepage](docs/site-screenshot.png)
+
 ## What this repo is
 
 - **Astro 6, content-as-files, zero JS frameworks, system fonts only.** Posts and
