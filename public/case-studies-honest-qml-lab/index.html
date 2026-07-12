@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I built a quantum ML lab and the honest answer is: quantum mostly ties or loses &mdash; and I can prove it &mdash; theinvalid.me</title>
+<meta name="description" content="Case study: a local-first quantum machine-learning lab where every quantum model is raced against a classical baseline and run on two real quantum computers. Eleven findings, all quantum-ties-or-loses, reported proudly — including reproducing a published quantum advantage and erasing it three ways. Five state-of-the-art techniques, one wall. This sells judgment, not a capability.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=nullset">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=nullset">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=nullset">
+<link rel="icon" href="/favicon.ico?v=nullset" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=nullset">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b0e14">
+<meta property="og:title" content="I built a quantum ML lab and the honest answer is: quantum mostly ties or loses">
+<meta property="og:description" content="Every quantum model raced against a classical baseline, run on two real quantum computers. Eleven honest ties-or-losses — including a published quantum advantage reproduced and erased three ways. Five SOTA techniques, one wall. Judgment, not a capability.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://theinvalid.me/case-studies/honest-qml-lab/">
+<meta property="og:site_name" content="theinvalid.me">
+<style>
+:root{--bg:#0b0e14;--bg-raise:#11151f;--fg:#e6e1d7;--muted:#8a8f98;--line:#1e2430;--accent:#e8a33d;--ok:#4ade80;--warn:#e8a33d;--dim:#6b7280;--error:#ff6b6b;--mono:ui-monospace,"JetBrains Mono","Cascadia Code","SF Mono",Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box}
+html{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+body{margin:0}
+main{max-width:52rem;margin:0 auto;padding:0 1.25rem 5rem}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+h1,h2,h3{line-height:1.25;font-weight:650}
+h1{font-size:2.1rem;letter-spacing:-.01em;margin:.2rem 0 .4rem}
+h2{font-size:1.35rem;margin-top:3rem;padding-top:.3rem}
+h3{font-size:1.05rem;margin:1.6rem 0 .3rem}
+code{font-family:var(--mono);font-size:.86em;background:var(--bg-raise);padding:.12em .35em;border-radius:4px;border:1px solid var(--line)}
+hr{border:none;border-top:1px solid var(--line);margin:2.5rem 0}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:.6rem 0 .2rem}
+th,td{border:1px solid var(--line);padding:.42rem .65rem;text-align:left;vertical-align:top}
+th{background:var(--bg-raise);font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}
+td.mono,th.mono{font-family:var(--mono);font-size:.82rem}
+.pass{color:var(--ok);font-weight:650}
+.fail{color:var(--error);font-weight:650}
+.warn{color:var(--warn);font-weight:650}
+nav.site{max-width:52rem;margin:0 auto;padding:1.5rem 1.25rem;display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem 1.05rem;font-family:var(--mono);font-size:.9rem}
+nav.site .brand{color:var(--fg);font-weight:700;margin-right:.6rem}
+nav.site .brand:hover{text-decoration:none;color:var(--accent)}
+nav.site a{color:var(--muted)}
+nav.site a:hover{color:var(--fg);text-decoration:none}
+.kicker{font-family:var(--mono);color:var(--accent);font-size:.82rem;text-transform:uppercase;letter-spacing:.12em;margin:3rem 0 0}
+.lede{color:var(--muted);font-size:1.15rem;max-width:40rem;margin:.6rem 0 0}
+.meta{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin:1rem 0 0;display:flex;flex-wrap:wrap;gap:.9rem}
+figure{margin:1.4rem 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg-raise)}
+figure img{display:block;width:100%;height:auto;background:#0e1217}
+figure.contain img{aspect-ratio:16/10;object-fit:contain}
+figcaption{font-size:.82rem;color:var(--muted);padding:.55rem .85rem;border-top:1px solid var(--line);font-family:var(--mono)}
+figcaption b{color:var(--fg);font-weight:600}
+.flow{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media(max-width:640px){.flow{grid-template-columns:1fr}}
+.flow figure{margin:0}
+.callout{border:1px solid var(--line);background:var(--bg-raise);border-radius:10px;padding:1rem 1.2rem;margin:1.4rem 0}
+.callout.accent{border-color:var(--accent)}
+.callout .lbl{font-family:var(--mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);display:block;margin-bottom:.35rem}
+.callout p{margin:.3rem 0}
+.callout p:first-of-type{margin-top:0}
+.callout p:last-child{margin-bottom:0}
+blockquote{margin:1.5rem 0;padding:.1rem 1.25rem;border-left:3px solid var(--accent);background:var(--bg-raise);border-radius:0 8px 8px 0;color:var(--fg);font-size:1.02rem}
+ul.tight{margin:.5rem 0;padding-left:1.2rem}
+ul.tight li{margin:.3rem 0}
+.diff-card{border:1px solid var(--line);border-left:3px solid var(--error);background:var(--bg-raise);border-radius:10px;padding:1.1rem 1.3rem;margin:1.6rem 0}
+.diff-card.caught{border-left-color:var(--warn)}
+.diff-card.tier{border-left-color:var(--accent)}
+.diff-card h3{margin-top:0}
+.diff-card .verdict{font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.finding{border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--bg-raise);border-radius:10px;padding:1.1rem 1.3rem;margin:1.4rem 0}
+.finding h3{margin-top:0}
+.finding .tag{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:block;margin-bottom:.35rem}
+.finding .num{color:var(--accent);font-weight:650}
+.finding .readmore{font-family:var(--mono);font-size:.8rem;margin-top:.7rem}
+.cta{border:1px solid var(--accent);background:var(--bg-raise);border-radius:10px;padding:1.3rem 1.4rem;margin:2.5rem 0 0}
+.cta h2{margin-top:0}
+.btn{display:inline-block;font-family:var(--mono);font-size:.85rem;color:var(--accent);background:var(--bg);border:1px solid var(--accent);border-radius:4px;padding:.5rem 1rem;text-decoration:none;transition:background .15s,color .15s;margin:.3rem .4rem .3rem 0}
+.btn:hover{background:var(--accent);color:var(--bg);text-decoration:none}
+footer.site{max-width:52rem;margin:0 auto;padding:2rem 1.25rem 3rem;border-top:1px solid var(--line);color:var(--muted);font-family:var(--mono);font-size:.8rem}
+footer.site a{color:var(--muted)}footer.site a:hover{color:var(--accent)}
+.note{font-size:.82rem;color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+<nav class="site">
+  <a class="brand" href="/"><span style="color:var(--accent)">&gt;</span> theinvalid<span style="color:var(--accent)">.me</span></a>
+  <a href="/start-here">start here</a>
+  <a href="/services">work with me</a>
+  <a href="/projects">projects</a>
+  <a href="/calculator">field guide</a>
+  <a href="/blog">knowledge base</a>
+</nav>
+
+<main>
+
+<p class="kicker">Case study &middot; Quantum machine learning</p>
+<h1>I built a quantum ML lab and the honest answer is: <span style="color:var(--accent)">quantum mostly ties or loses today</span> &mdash; and I can prove it</h1>
+<p class="lede">Every quantum model raced against an ordinary classical one on the same data. Two of them flown to two <em>real</em> quantum computers. Then I pushed on the state of the art &mdash; and reproduced a <em>published</em> quantum advantage, only to erase it three separate ways. Eleven experiments, every one an honest tie-or-loss, reported proudly. This case study doesn't sell you quantum. It sells the person who will tell you the truth about whether quantum helps you.</p>
+<p class="meta">
+  <span>11 experiments, each vs a classical baseline</span>
+  <span>5 state-of-the-art techniques, all tested honestly</span>
+  <span>2 real QPUs (superconducting + trapped-ion)</span>
+  <span>local-first on one RTX&nbsp;5090</span>
+  <span>every number reproducible from a job id</span>
+</p>
+
+<div class="callout accent">
+<span class="lbl">The one-line finding &mdash; the strongest version</span>
+<p><b>Five independent state-of-the-art techniques, each tested honestly, all hit the same wall:</b> whatever makes a quantum ML model <em>usable</em> &mdash; trainable, non-concentrated, plateau-free &mdash; tends to be exactly what makes it <em>classically reproducible</em>. The single most compelling proof: I reproduced a published quantum-kernel advantage (<span class="num">0.900</span> vs a weak classical <span class="num">0.730</span>) &mdash; then a fairly-tuned classical model <em>beat</em> it (0.910), a classical dequantization <em>matched</em> it (0.900), and device noise erased the rest. Same wall, five different roads to it.</p>
+</div>
+
+<hr>
+
+<h2>The problem</h2>
+<p>
+Quantum computing is the most over-marketed idea in tech. Vendors publish the cherry-picked win, the pretty error-mitigated bar, the "quantum advantage" headline &mdash; and almost nobody publishes the honest baseline sitting next to it. So a founder, a fund, or a lab lead who is asked <em>"should we invest in quantum for this?"</em> has no neutral read to go on. The demos all say yes. The physics, quietly, mostly says <em>not yet</em>.
+</p>
+<p>
+The usual sources are both compromised. A vendor sells you a machine. A consultant bills by the roadmap slide. Neither is incentivised to say the one sentence that saves you the most money: <em>"for your problem, a classical computer still wins &mdash; here's the measurement."</em>
+</p>
+<blockquote>
+The quantum result is not the deliverable. The <em>classical baseline standing beside it</em> is the deliverable &mdash; and that's the part the whole industry leaves out.
+</blockquote>
+
+<h2>The approach: a lab built to disprove its own hype</h2>
+<p>
+I built <b>QLAB</b> &mdash; a local-first quantum-ML lab whose core rule is <em>a quantum number is never shown alone</em>. Every quantum model is raced against ordinary classical methods (logistic regression, an MLP, an RBF-SVM) on the <em>identical</em> data split. Two trained circuits were sent to real quantum hardware over the internet. Everything runs on one RTX&nbsp;5090; the only thing that ever leaves the machine is a circuit small enough to fit on a real QPU. And every single number on this page traces back to a saved run you can reproduce.
+</p>
+
+<figure class="contain">
+  <img src="img/a-quantum-classifier-that-ties-a-neural-net-and-why-thats-the-honest-result__qlab-pipeline.svg" alt="QLAB publishing pipeline: an experiment folder becomes an honest, visual, reproducible result with a classical baseline beside every quantum number">
+  <figcaption><b>How every QLAB result is built</b> &mdash; an experiment folder becomes an honest, visual, reproducible finding: a classical baseline beside every quantum number, caveats auto-included, a job id you can re-run.</figcaption>
+</figure>
+
+<div class="callout accent">
+<span class="lbl">The one rule that makes this trustworthy</span>
+<p>Design constraint <code>D1</code>: <b>a quantum-advantage claim is permanently out of scope.</b> Design constraint <code>D2</code>: <b>the classical baseline is mandatory on every experiment.</b> Those two rules are why the findings below are believable &mdash; the lab is structurally incapable of quietly hiding a loss.</p>
+</div>
+
+<h2>The evidence: seven honest findings</h2>
+<p>
+Here is the foundational arc, sharpest first. Every one is a quantum-ties-or-loses result &mdash; and stating that plainly, with the number, is the entire point. Each links its full write-up (with the reproduce-it job id). Then, below these, comes the harder test: the four state-of-the-art techniques &mdash; capped by reproducing a <em>published</em> quantum advantage and erasing it.
+</p>
+
+<!-- Finding 1 — the deepest one -->
+<div class="finding">
+<span class="tag">Finding 1 &middot; the dilemma at the heart of QML</span>
+<h3>I watched a quantum model become untrainable &mdash; the barren plateau, measured</h3>
+<p>
+A quantum model trains by feeling which way is downhill. A <b>barren plateau</b> is when the landscape flattens into a featureless desert &mdash; and it gets <em>exponentially</em> flatter as the circuit grows. I measured the gradient variance of a hardware-efficient circuit from 2 to 14 qubits: the global-cost signal collapsed <span class="num">1,436&times;</span> (clean exponential fit, &alpha;&nbsp;&approx;&nbsp;0.64, r&sup2;&nbsp;=&nbsp;0.99). A local cost decayed <span class="num">7.1&times; slower</span> &mdash; the known escape, quantified.
+</p>
+<figure class="contain" style="margin:1rem 0">
+  <img src="img/i-watched-a-quantum-model-become-untrainable-the-barren-plateau-measured__barren-plateau-decay.svg" alt="Gradient variance vs qubit count on a log axis: the global cost plunges 1436x (barren plateau), the local cost barely moves (the escape)">
+  <figcaption><b>The flat desert</b> &mdash; gradient variance vs qubits (log axis). Global cost (gold) plunges 1,436&times;; local cost (green) barely moves.</figcaption>
+</figure>
+<p>
+The sting is the honest 2025 dilemma, measured on my own machine: <b>the <em>trainable</em> (shallow, plateau-free) regime is exactly the one a classical computer can cheaply copy.</b> Trainable&nbsp;&rArr;&nbsp;not special; special&nbsp;&rArr;&nbsp;not trainable. That is the real reason "just scale it up" doesn't work yet &mdash; and almost no marketing deck will tell you.
+</p>
+<p class="readmore">&rarr; <a href="/blog/i-watched-a-quantum-model-become-untrainable-the-barren-plateau-measured">Full post: the barren plateau, measured</a></p>
+</div>
+
+<!-- Finding 2 — two real quantum computers -->
+<div class="finding">
+<span class="tag">Finding 2 &middot; two real quantum computers</span>
+<h3>Superconducting vs trapped-ion: the same circuit on two machines &mdash; and a mitigation that backfired</h3>
+<p>
+I took one trained circuit and ran it on two physically different quantum computers: IBM's superconducting <code>ibm_fez</code> and IonQ's trapped-ion <code>forte-1</code>. Against the perfect simulator answer (&#10216;Z&#8320;&#10217; = +0.724), the <b>trapped-ion raw result landed closer to the truth</b> (<span class="num">+0.60</span>, off by 0.124) than superconducting (+0.49, off by 0.238) &mdash; on <em>far</em> fewer shots (100 vs 2048).
+</p>
+<figure class="contain" style="margin:1rem 0">
+  <img src="img/superconducting-vs-trapped-ion-same-circuit-two-quantum-computers__cross-hardware-bars.svg" alt="Grouped bars: simulator truth line, then raw and mitigated Z0 for superconducting and trapped-ion; the trapped-ion mitigated bar overshoots past the truth line">
+  <figcaption><b>Same circuit, two machines</b> &mdash; the shared simulator truth (gold line), then each backend's raw and error-mitigated &#10216;Z&#8320;&#10217;. The trapped-ion raw sits closest; its mitigated bar overshoots <em>past</em> the truth.</figcaption>
+</figure>
+<p>
+Then the honest twist: the same cheap error-mitigation trick that <em>helped</em> on superconducting <b>backfired</b> on trapped-ion &mdash; at 100 shots the noise-scaled points came out non-monotonic, so the extrapolation ran the wrong way and pushed the answer to +0.32, <em>further</em> from truth. Mitigation is a tool with a failure mode, not a free "make it better" button. Most write-ups only show you the run where it worked.
+</p>
+<p class="readmore">&rarr; <a href="/blog/superconducting-vs-trapped-ion-same-circuit-two-quantum-computers">Full post: two quantum computers, one circuit</a></p>
+</div>
+
+<!-- Finding 3 — GPU 60x slower -->
+<div class="finding">
+<span class="tag">Finding 3 &middot; the counter-intuitive engineering result</span>
+<h3>How many qubits fit in 32&nbsp;GB? I simulated until the GPU refused &mdash; and it was 60&times; <em>slower</em></h3>
+<p>
+Two surprises from throwing a GPU at simulating a quantum computer. First, the memory wall: the statevector doubles every qubit, so a 32&nbsp;GB card holds the simulation to <b>28 qubits</b>, and at 30 the over-commit guard <em>refused</em> the run rather than crash. Second, and more useful: for the small circuits this lab actually trains, the GPU was about <span class="num">60&times; slower</span> than the CPU &mdash; kernel-launch overhead dominates, and the card only earns its keep near the memory wall.
+</p>
+<figure class="contain" style="margin:1rem 0">
+  <img src="img/how-many-qubits-fit-in-32gb-i-simulated-until-the-gpu-refused__gpu-memory-wall.svg" alt="Statevector VRAM vs qubit count on a log axis, climbing a straight line until the 30-qubit run is refused past the 32GB ceiling">
+  <figcaption><b>Where the 5090 dies</b> &mdash; statevector VRAM doubles every qubit, a straight line on the log axis until the 30-qubit run is refused past the 32&nbsp;GB ceiling.</figcaption>
+</figure>
+<p>
+The model itself &mdash; a hybrid net telling a handwritten 0 from a 1 &mdash; landed at <b>99.5%</b>, a hair <em>behind</em> logistic regression's 99.6%. The expected, spec-sanctioned loss, reported straight. The "just use the GPU" instinct is wrong at this scale, and knowing that saves real money.
+</p>
+<p class="readmore">&rarr; <a href="/blog/how-many-qubits-fit-in-32gb-i-simulated-until-the-gpu-refused">Full post: the memory wall &amp; the GPU surprise</a></p>
+</div>
+
+<!-- Finding 4 — the tie -->
+<div class="finding">
+<span class="tag">Finding 4 &middot; the honest tie</span>
+<h3>A quantum classifier that ties a neural net &mdash; and why that's the honest result</h3>
+<p>
+A re-uploading quantum classifier hit <span class="num">97.8%</span> on the two-moons test &mdash; dead even with a small neural net (97.8%) and well above logistic regression (85.3%). The framework genuinely trains. But nobody won: it <em>ties</em> the classical net, and I show that side by side rather than quoting the quantum number alone. A tie, stated as a tie, is a more useful data point than a manufactured win.
+</p>
+<div class="flow">
+  <figure><img src="img/a-quantum-classifier-that-ties-a-neural-net-and-why-thats-the-honest-result__vqc_boundary.png" alt="The quantum classifier's learned decision boundary carving the two interleaving crescents of two-moons apart"></figure>
+  <figure><img src="img/a-quantum-classifier-that-ties-a-neural-net-and-why-thats-the-honest-result__training_curve.png" alt="Training curve: loss falling as the quantum circuit's parameters are tuned over epochs"></figure>
+</div>
+<p class="readmore">&rarr; <a href="/blog/a-quantum-classifier-that-ties-a-neural-net-and-why-thats-the-honest-result">Full post: the honest tie</a></p>
+</div>
+
+<!-- Finding 5 — the loss -->
+<div class="finding">
+<span class="tag">Finding 5 &middot; the honest loss</span>
+<h3>The quantum kernel that got worse as I added qubits</h3>
+<p>
+A quantum kernel measures "how similar do these two things look through a quantum lens?" It <b>lost to a classical RBF-SVM on every dataset</b> here (0.787 vs 0.973 on two-moons). Worse, its off-diagonal similarities <em>concentrated</em> <span class="num">64&times;</span> as qubits grew &mdash; the kernel version of the barren plateau, where everything starts looking equally similar so it can no longer tell points apart. Adding qubits made it <em>worse</em>. A clean negative result, reported plainly.
+</p>
+<figure class="contain" style="margin:1rem 0">
+  <img src="img/the-quantum-kernel-that-got-worse-as-i-added-qubits__kernel-concentration.svg" alt="Off-diagonal Gram-matrix variance collapsing 64x as qubits grow — the kernel analogue of the barren plateau">
+  <figcaption><b>Everything starts to look the same</b> &mdash; off-diagonal kernel-similarity spread collapsing 64&times; as qubits grow.</figcaption>
+</figure>
+<p class="readmore">&rarr; <a href="/blog/the-quantum-kernel-that-got-worse-as-i-added-qubits">Full post: the kernel that got worse</a></p>
+</div>
+
+<!-- Finding 6 — real hardware noise -->
+<div class="finding">
+<span class="tag">Finding 6 &middot; real hardware, honestly costed</span>
+<h3>I ran a trained circuit on a real IBM quantum computer &mdash; here's the noise</h3>
+<p>
+A simulator-trained circuit, run on real superconducting silicon (<code>ibm_fez</code>). The clean value (+0.72) got dragged to <span class="num">+0.49</span> by hardware noise, then error-mitigation pulled it back to +0.87 &mdash; but that cleanup <b>cost 3&times; the shots</b>, and I report the cost, not just the prettier point estimate. The whole job used <b>5&nbsp;s</b> of QPU time against a hard 240&nbsp;s budget cap that can't be overridden, so it's structurally impossible to overspend.
+</p>
+<figure class="contain" style="margin:1rem 0">
+  <img src="img/i-ran-a-trained-circuit-on-a-real-ibm-quantum-computer-heres-the-noise__hardware-bars.svg" alt="Bar chart: simulator clean Z0, noise-dragged raw hardware value, and error-mitigated value pulled back near clean, at the cost of 3x the shots">
+  <figcaption><b>Noise, then cleanup</b> &mdash; the simulator's clean &#10216;Z&#8320;&#10217;, the hardware's noise-dragged value, and where mitigation pulls it back, bought with 3&times; the shots.</figcaption>
+</figure>
+<p class="readmore">&rarr; <a href="/blog/i-ran-a-trained-circuit-on-a-real-ibm-quantum-computer-heres-the-noise">Full post: real hardware noise, honestly costed</a></p>
+</div>
+
+<!-- Finding 7 — the agent -->
+<div class="finding">
+<span class="tag">Finding 7 &middot; autonomy under a hard sandbox</span>
+<h3>I let an LLM agent design quantum circuits in a sandbox for 10 cycles</h3>
+<p>
+An LLM proposed circuit variants and ran each one &mdash; inside a locked, no-network sandbox that structurally can't touch real hardware or overspend the QPU budget (every denial proven <em>before</em> any model-written code runs; the loop fails closed). Over 10 cycles it explored, hit a collapse (a bad ansatz cratered to 0.48), recovered, and edged the baseline by <span class="num">+0.0044</span> &mdash; which is <em>within its own seed-to-seed noise</em>. So the honest reading is a tie, and the agent's own report says so. The story isn't the number; it's the safe autonomy and the written rationale per cycle.
+</p>
+<figure class="contain" style="margin:1rem 0">
+  <img src="img/i-let-an-llm-agent-design-quantum-circuits-in-a-sandbox-for-10-cycles__agent-trajectory.svg" alt="Per-cycle accuracy of the agent's proposed circuits against a fixed classical baseline; a collapse mid-run, then recovery to just above baseline">
+  <figcaption><b>The agent's search path</b> &mdash; per-cycle accuracy vs the fixed baseline (green). It edged it late; the end dip is the agent discovering more depth started to hurt.</figcaption>
+</figure>
+<p class="readmore">&rarr; <a href="/blog/i-let-an-llm-agent-design-quantum-circuits-in-a-sandbox-for-10-cycles">Full post: the agent in the sandbox</a></p>
+</div>
+
+<div class="callout accent">
+<span class="lbl">The point</span>
+<p>Seven experiments. Zero manufactured wins. Two runs on real quantum computers. Every quantum number sitting next to the classical one that ties or beats it &mdash; because <b>that discrimination is the service.</b> A vendor would have shown you the one mitigated bar that looked good and called it advantage. The judgment to tell you it isn't &mdash; and to prove it &mdash; is what you're actually paying for.</p>
+</div>
+
+<h2>Then I went after the state of the art</h2>
+<p>
+The seven findings above are the foundation. But a fair critic asks the harder question: <em>those are the easy cases &mdash; what happens when you use the newest, cleverest techniques the field invented specifically to beat classical?</em> So I ran four of them, honestly, on my own machine. Each one is a technique published to <em>rescue</em> quantum ML. Each one hit the same wall.
+</p>
+
+<!-- S-4 CAPSTONE — the single most compelling result -->
+<div class="diff-card tier">
+<span class="verdict">SOTA capstone &middot; the strongest honest result on this page</span>
+<h3>I reproduced a published quantum advantage &mdash; then erased it three ways</h3>
+<p>
+In 2021 a landmark paper (Huang et al., <em>Nature Communications</em>) showed a <b>projected quantum kernel</b> beating classical methods on a carefully constructed dataset. I reproduced it faithfully: on their engineered split, the quantum kernel scored <span class="num">0.900</span> against the weak classical baseline's <span class="num">0.730</span> &mdash; a real, large gap. The advantage is genuine. It is also <b>manufactured</b> &mdash; and it does not survive a fair fight:
+</p>
+<ul class="tight">
+  <li><b>Eraser 1 &mdash; a fairly-tuned classical model <em>beats</em> it:</b> give the classical side the same care the quantum side got, and it scores <span class="num">0.910</span>, closing 106% of the gap.</li>
+  <li><b>Eraser 2 &mdash; classical dequantization <em>matches</em> it:</b> 1,000 random Fourier features + a linear SVM reproduce the "quantum" kernel exactly (<span class="num">0.900</span> vs 0.900). The quantumness wasn't doing the work.</li>
+  <li><b>Eraser 3 &mdash; real-device noise erases the rest:</b> under depolarizing noise + finite shots, the quantum kernel slips to <span class="num">0.885</span> &mdash; at or below the fair classical line. The edge lived in fine structure that hardware destroys.</li>
+</ul>
+<figure class="contain" style="margin:1.1rem 0 0">
+  <img src="img/s4-erase-three-ways.svg" alt="Bar chart: the engineered PQK at 0.900, weak classical at 0.730, then a fairly-tuned classical at 0.910, RFF dequantization at 0.900, and PQK under noise at 0.885 — three green bars matching or beating the gold quantum bar">
+  <figcaption><b>The advantage, erased</b> &mdash; gold is the reproduced &ldquo;quantum&rdquo; result; every green bar is a classical method matching or beating it, and noise takes the rest. A quantum-favouring benchmark measures the benchmark, not quantum machine learning.</figcaption>
+</figure>
+<p class="verdict" style="margin-top:.8rem">Reproduced honestly, then falsified honestly &mdash; the whole point of the lab, on the field's own flagship example.</p>
+</div>
+
+<h3>The three supporting SOTA probes</h3>
+<div class="flow" style="margin:1.2rem 0">
+  <figure><img src="img/s2-projected-kernel-concentration.svg" alt="Line chart: as qubits grow, the fidelity kernel's similarity signal collapses while the projected kernel holds flat — it resists concentration but still loses to classical"><figcaption><b>S-2 &middot; projected quantum kernels</b> &mdash; resist the concentration collapse 35&times; better than the old kernel&hellip; and still lose to a classical RBF. Necessary, not sufficient.</figcaption></figure>
+  <figure><img src="img/s3-bp-escape.svg" alt="Line chart of gradient variance vs qubit count for several barren-plateau escape techniques; the ones that stay flat only do so at initialisation or by landing in the simulable local-cost regime"><figcaption><b>S-3 &middot; barren-plateau escapes</b> &mdash; the tricks that keep gradients alive only work <em>at init</em>, or by dropping back into the classically-simulable corner. No escape for the circuit that would actually be hard.</figcaption></figure>
+</div>
+
+<h3>The whole SOTA arc, one line each</h3>
+<p>Each row is a state-of-the-art technique the field built to give quantum the edge. Each links its reproduce-it experiment folder. Every verdict is the same shape.</p>
+<table>
+<thead><tr><th>Technique</th><th>What it promised</th><th class="mono">The honest finding</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>S-1</b> &middot; agentic search of the &ldquo;grail&rdquo;</td>
+  <td>An LLM agent hunts for a circuit that is <em>trainable AND classically hard</em> at once.</td>
+  <td>The trainable-and-hard corner is <span class="warn">near-empty</span> &mdash; the dilemma holds. The agent nearly faked a win; the sandbox harness caught it.</td>
+</tr>
+<tr>
+  <td><b>S-2</b> &middot; projected quantum kernels</td>
+  <td>A new read-out that cures the kernel &ldquo;everything-looks-the-same&rdquo; collapse.</td>
+  <td>Resists concentration <span class="num">35&times;</span> &mdash; and <span class="fail">still loses</span> to a classical RBF. Necessary, not sufficient.</td>
+</tr>
+<tr>
+  <td><b>S-3</b> &middot; barren-plateau escapes</td>
+  <td>Init &amp; training tricks to keep a deep quantum model trainable.</td>
+  <td>Escape only <span class="warn">at initialisation</span>, or by landing back in the classically-simulable regime. The hard circuit stays untrainable.</td>
+</tr>
+<tr>
+  <td><b>S-4</b> &middot; reproduce a published advantage</td>
+  <td>The projected-kernel &ldquo;quantum advantage&rdquo; from Huang&nbsp;2021.</td>
+  <td>Reproduced (0.900 vs 0.730) &mdash; then <span class="fail">erased three ways</span>: fair-classical 0.910, dequantization 0.900, noise 0.885.</td>
+</tr>
+</tbody>
+</table>
+<p class="note">Two more supporting probes back these up: two independent simulability surrogates that <em>disagree</em> on one circuit (so shipping both is strictly more honest than either alone), and a map of exactly when error-mitigation helps versus hurts. Both live in the repo.</p>
+
+<blockquote>
+Five independent state-of-the-art techniques, each tested honestly, all hit the same wall: whatever makes a quantum ML model usable &mdash; trainable, non-concentrated, plateau-free &mdash; tends to make it classically reproducible. That convergence, measured five different ways, is the real finding.
+</blockquote>
+
+<h2>What this does <em>not</em> claim</h2>
+<p>Stated up front, because the honesty is the product:</p>
+<ul class="tight">
+  <li><b>No quantum advantage, anywhere.</b> Not on one experiment &mdash; not even when I reproduced a <em>published</em> one and then erased it. That claim is permanently out of scope by design (<code>D1</code>) &mdash; this lab exists to <em>test</em> the hype, not to sell it.</li>
+  <li><b>These are small, canonical tasks</b> (two-moons, MNIST 0/1, toy 2-qubit circuits) chosen so the classical baseline is unambiguous and the physics is clean &mdash; not production ML workloads.</li>
+  <li><b>The hardware runs are inference, not training.</b> I never train on a real QPU (it burns budget for zero learning); circuits are trained on the simulator, proven equivalent to ~1e-15, then flown.</li>
+  <li><b>This is a research lab, not a managed quantum service.</b> What's for sale is the judgment, methodology, and honest measurement &mdash; a read on whether quantum helps <em>your</em> problem, delivered the same way: baseline beside every number, caveats included.</li>
+</ul>
+
+<div class="callout">
+<span class="lbl">Why local-first &amp; reproducible</span>
+<p>Everything runs on one RTX&nbsp;5090; only a circuit small enough to fit on a real QPU ever leaves the box. Every accuracy traces to a <code>seed_summary.csv</code>, every hardware number to a job id and an <code>equivalence.json</code> proving the flown circuit matched the trained model. You don't have to trust the write-up &mdash; you can re-run it.</p>
+</div>
+
+<div class="cta">
+<h2 style="border:none">Wondering whether quantum is worth it for you?</h2>
+<p>If someone is pitching you quantum &mdash; for optimisation, ML, chemistry, "advantage" &mdash; the most valuable thing you can buy is a neutral read: <em>does it actually beat the classical baseline for your problem, measured?</em> That's what this lab does. Baseline beside every number, real hardware where it matters, failures reported proudly.</p>
+<p style="margin-top:1rem">
+  <a class="btn" href="mailto:reddy.madhankumar.sg@gmail.com">Ask for an honest read &rarr;</a>
+  <a class="btn" href="/blog#case-studies">Back to case studies</a>
+  <a class="btn" href="https://github.com/MushiSenpai/qlab">The lab, the code &amp; the reproduce-it experiments</a>
+</p>
+<p class="note" style="margin-top:1rem">There is no "quantum advantage" on this page on purpose &mdash; because there wasn't any, and I won't sell you one. The methodology, every experiment, and the honest benchmarks (losses included) live in the repository.</p>
+</div>
+
+</main>
+
+<footer class="site">
+  <p>Built and measured on a sovereign AI stack &mdash; one RTX 5090, fully local, plus free time on two real quantum computers. Where a number is from a real run, it's a real run; where quantum tied or lost, it says so. &middot; <a href="/">theinvalid.me</a></p>
+</footer>
+
+</body>
+</html>
