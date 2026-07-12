@@ -6,7 +6,7 @@ import { repoStatuses, ago } from '../../lib/github.js';
 const projects = (await getCollection('projects')).sort(
   (a, b) => a.data.order - b.data.order,
 );
-const gh = await repoStatuses(projects.map((p) => p.data.repo));
+const gh = await repoStatuses(projects.map((p) => p.data.repo).filter(Boolean));
 ---
 
 <Base title="Projects — theinvalid.me">
@@ -30,7 +30,8 @@ const gh = await repoStatuses(projects.map((p) => p.data.repo));
       <p class="meta">
         <span>{p.data.stack.join(' · ')}</span>
         {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
-        <a href={p.data.repo}>repo ↗</a>
+        {p.data.repo && <a href={p.data.repo}>repo ↗</a>}
+        {p.data.caseStudy && <a href={p.data.caseStudy}>case study →</a>}
       </p>
     </article>
   ))}

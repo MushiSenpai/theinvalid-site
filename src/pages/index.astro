@@ -1,16 +1,22 @@
 ---
 import Base from '../layouts/Base.astro';
+import Contact from '../components/Contact.astro';
 import { getCollection } from 'astro:content';
 import { repoStatuses, ago } from '../lib/github.js';
 
-const projects = (await getCollection('projects')).sort(
-  (a, b) => a.data.order - b.data.order,
+const projects = await getCollection('projects');
+
+// Newest work leads; everything else collapses to compact rows.
+const byRecency = [...projects].sort(
+  (a, b) => b.data.started.valueOf() - a.data.started.valueOf(),
 );
-const building = projects.filter((p) => p.data.status === 'building');
-const shipped = projects.filter((p) => p.data.status === 'shipped');
+const latest = byRecency.slice(0, 3);
+const rest = byRecency
+  .slice(3)
+  .sort((a, b) => a.data.order - b.data.order);
 
 // Build-time GitHub snapshot (fail-soft); a scheduled rebuild keeps it fresh.
-const gh = await repoStatuses(projects.map((p) => p.data.repo));
+const gh = await repoStatuses(projects.map((p) => p.data.repo).filter(Boolean));
 
 const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -25,52 +31,87 @@ const fmt = (d: Date) =>
     <p class="called">$ they called me invalid_</p>
     <h1 class="thisisme">This is <span class="accent">me</span>.</h1>
     <p class="sub">
-      I'm <strong>Madhan Kumar Reddy</strong> — an AI Infrastructure Operator in
+      I'm <strong>Madhan Kumar Reddy</strong>, an AI Infrastructure Operator in
       Singapore. <strong>I build private, on-premises AI systems that never send
-      your data to the cloud</strong> — for firms that need AI but can't hand
+      your data to the cloud</strong>: for firms that need AI but can't hand
       sensitive data to OpenAI or Anthropic.
     </p>
     <p class="sub">
       No code hand-written: I spec, direct LLMs, and verify. Everything below is
-      public, operating daily, and documented — benchmarks, failures, and all.
+      public, operating daily, and documented. Benchmarks, failures, and all.
     </p>
-    <p class="sub">
-      <strong><a href="/start-here">New here? Start with the plain-English version →</a></strong>
+    <p class="cta-row">
+      <a class="btn solid" href="/services">Work with me</a>
+      <a class="btn" href="mailto:reddy.madhankumar.sg@gmail.com?subject=Private%20AI%20for%20my%20team">Email me</a>
+      <a class="btn" href="/start-here">New here? Plain-English version</a>
     </p>
-    <p class="sub">
-      <a href="/services">Work with me</a> · <a href="/projects">Projects</a> ·
-      <a href="/calculator">Field guide</a> · <a href="/blog">Knowledge base</a> ·
-      <a href="/resume">Résumé</a> · <a href="https://github.com/MushiSenpai">GitHub</a>
+    <p class="proof">
+      <span><strong>8</strong> projects, documented in public</span>
+      <span><strong>268 tok/s</strong> local LLM, measured</span>
+      <span><strong>2</strong> real quantum computers</span>
+      <span><strong>0</strong> manufactured wins</span>
     </p>
   </section>
 
-  <h2>Now building</h2>
-  {building.map((p) => (
+  <h2>Latest work</h2>
+  {latest.map((p) => (
     <article class="card">
-      <h3><a href={`/projects/${p.id}`}>{p.data.title}</a> <span class="badge building">building</span></h3>
+      <h3>
+        <a href={`/projects/${p.id}`}>{p.data.title}</a>
+        <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+      </h3>
       <p class="oneliner">{p.data.oneliner}</p>
       <p class="meta">
         <span>{p.data.stack.slice(0, 4).join(' · ')}</span>
         {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
-        <a href={p.data.repo}>repo ↗</a>
+        {p.data.repo && <a href={p.data.repo}>repo ↗</a>}
+        {p.data.caseStudy && <a href={p.data.caseStudy}>case study →</a>}
       </p>
     </article>
   ))}
 
-  <h2>Operating daily</h2>
-  {shipped.map((p) => (
-    <article class="card">
-      <h3><a href={`/projects/${p.id}`}>{p.data.title}</a> <span class="badge shipped">shipped</span></h3>
-      <p class="oneliner">{p.data.oneliner}</p>
-      <p class="meta">
-        <span>{p.data.stack.slice(0, 4).join(' · ')}</span>
-        {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
-        <a href={p.data.repo}>repo ↗</a>
-      </p>
-    </article>
-  ))}
+  <h2>Operating daily · earlier builds</h2>
+  <ul class="projrows">
+    {rest.map((p) => (
+      <li>
+        <span class="row-top">
+          <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
+          <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+          <span class="meta">
+            {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
+            {p.data.repo && <a href={p.data.repo}>repo ↗</a>}
+          </span>
+        </span>
+        <p class="one">{p.data.oneliner}</p>
+      </li>
+    ))}
+  </ul>
+  <p class="meta"><a href="/projects">all projects, statuses honest →</a></p>
 
-  <h2>Latest from the blog</h2>
+  <h2>Running LLMs on your own hardware?</h2>
+  <p style="color: var(--muted); margin-top: 0.4rem">
+    The self-hosting numbers people actually search for, measured on one RTX 5090:
+  </p>
+  <ul class="postlist">
+    <li>
+      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">guide</span>
+      <a href="/calculator">The local-AI field guide: VRAM math, GPU tiers, users per card, cloud break-even</a>
+    </li>
+    <li>
+      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">kv cache</span>
+      <a href="/blog/i-had-my-kv-cache-math-14x-wrong">I had my KV-cache math 14x wrong</a>
+    </li>
+    <li>
+      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">vram</span>
+      <a href="/blog/a-32gb-gpu-is-a-budget-not-a-suggestion">A 32GB GPU is a budget, not a suggestion</a>
+    </li>
+    <li>
+      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">serving</span>
+      <a href="/blog/six-hours-in-tensorrt-llm-so-you-dont-have-to">Six hours in TensorRT-LLM so you don't have to</a>
+    </li>
+  </ul>
+
+  <h2>Latest from the knowledge base</h2>
   <ul class="postlist">
     {posts.map((post) => (
       <li>
@@ -79,4 +120,9 @@ const fmt = (d: Date) =>
       </li>
     ))}
   </ul>
+  <p class="meta">
+    <a href="/blog">the knowledge base: case studies + the failure log →</a>
+  </p>
+
+  <Contact subject="Private AI for my team" lead="Want one of these running on your hardware?" />
 </Base>

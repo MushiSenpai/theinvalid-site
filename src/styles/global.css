@@ -1,8 +1,11 @@
 /* theinvalid.me — design tokens
    Dark, terminal-inflected, one warm accent (lantern gold).
-   Performance IS the animation: no JS frameworks, no webfonts, system mono. */
+   Performance IS the animation: no JS frameworks, no webfonts, system mono.
+   Dark is the brand default; a CSS-only light variant follows the visitor's
+   OS setting (no toggle, no JS — SITE-DECISIONS §10.1). */
 
 :root {
+  color-scheme: dark;
   --bg: #0b0e14;
   --bg-raise: #11151f;
   --fg: #e6e1d7;
@@ -15,6 +18,24 @@
   --error: #ff6b6b;        /* over-budget / failure state */
   --mono: ui-monospace, "JetBrains Mono", "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Light variant: same lantern-gold family, darkened where needed for
+   contrast on paper. Values live ONLY here — pages keep using the vars. */
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg: #f7f3ea;
+    --bg-raise: #efe9db;
+    --fg: #23282f;
+    --muted: #5b6270;
+    --line: #ddd5c2;
+    --accent: #8f5e13;     /* lantern gold, deepened for AA on paper */
+    --ok: #1a7f37;
+    --warn: #8f5e13;
+    --dim: #6b7280;
+    --error: #b3261e;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -53,6 +74,10 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   transition: background 0.15s, color 0.15s;
 }
 .btn:hover { background: var(--accent); color: var(--bg); text-decoration: none; }
+.btn.solid { background: var(--accent); color: var(--bg); font-weight: 600; }
+.btn.solid:hover { background: var(--fg); border-color: var(--fg); }
+
+.cta-row { display: flex; flex-wrap: wrap; gap: 0.7rem; margin: 1.5rem 0 0; }
 
 h1, h2, h3 { line-height: 1.25; font-weight: 650; }
 h1 { font-size: 2rem; }
@@ -94,22 +119,50 @@ th, td { border: 1px solid var(--line); padding: 0.5rem 0.7rem; text-align: left
 th { background: var(--bg-raise); }
 
 /* ── nav ─────────────────────────────────────────── */
+/* Visibly a nav, not inline prose: hairline below, gold underline on the
+   active tab (feedback 2026-07-12: a visitor mistook the site for a SPA). */
 nav.site {
   max-width: 46rem;
   margin: 0 auto;
-  padding: 1.5rem 1.25rem;
+  padding: 1.5rem 1.25rem 0.9rem;
+  border-bottom: 1px solid var(--line);
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.4rem 0.8rem;
+  gap: 0.4rem 0.75rem;
   font-family: var(--mono);
   font-size: 0.9rem;
 }
 nav.site .brand { color: var(--fg); font-weight: 700; margin-right: 0.3rem; }
 nav.site .brand .prompt { color: var(--accent); margin-right: 0.12em; }
 nav.site .brand:hover { text-decoration: none; color: var(--accent); }
-nav.site a { color: var(--muted); }
-nav.site a:hover, nav.site a[aria-current="page"] { color: var(--fg); text-decoration: none; }
+nav.site a { color: var(--muted); padding-bottom: 0.35rem; border-bottom: 2px solid transparent; }
+nav.site a:hover { color: var(--fg); text-decoration: none; }
+nav.site a[aria-current="page"] {
+  color: var(--fg);
+  border-bottom-color: var(--accent);
+  text-decoration: none;
+}
+
+/* ── jump bar (in-page nav for long index pages) ── */
+.jumpbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  margin: 0 -1.25rem 1.5rem;
+  padding: 0.55rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.2rem;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+.jumpbar span { color: var(--muted); }
+.jumpbar a { color: var(--accent); }
+/* keep jumped-to headings clear of the sticky bar */
+[id] { scroll-margin-top: 3.2rem; }
 
 /* ── hero ────────────────────────────────────────── */
 .hero { padding: 4.5rem 0 2.5rem; }
@@ -159,6 +212,48 @@ nav.site a:hover, nav.site a[aria-current="page"] { color: var(--fg); text-decor
 .badge.shipped  { color: var(--ok); }
 .badge.building { color: var(--warn); }
 .badge.parked   { color: var(--dim); }
+
+/* ── hero proof strip ────────────────────────────── */
+.proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.3rem;
+  margin: 1.6rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.proof strong { color: var(--accent); font-weight: 600; }
+
+/* ── compact project rows (older / completed work) ─ */
+.projrows { list-style: none; padding: 0; margin: 1rem 0; }
+.projrows li { padding: 0.6rem 0; border-bottom: 1px solid var(--line); }
+.projrows .row-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+.projrows .row-top .meta { margin-left: auto; }
+.projrows .one { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.92rem; }
+
+/* ── contact band (direct CTA, ∅ mark per §10.2 update 2026-07-12) ── */
+.contactband {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.1rem;
+  border: 1px solid var(--line);
+  background: var(--bg-raise);
+  border-radius: 10px;
+  padding: 1.25rem 1.4rem;
+  margin: 2.8rem 0 0;
+}
+.contactband svg { flex-shrink: 0; color: var(--accent); }
+.contactband .lead { margin: 0 0 0.2rem; font-weight: 650; }
+.contactband p { margin: 0; }
+.contactband .body { flex: 1 1 16rem; }
+.contactband .body .sub { color: var(--muted); font-size: 0.95rem; }
 
 /* ── lists ───────────────────────────────────────── */
 .postlist { list-style: none; padding: 0; }

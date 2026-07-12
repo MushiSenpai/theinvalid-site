@@ -7,7 +7,10 @@ const projects = defineCollection({
     title: z.string(),
     oneliner: z.string(),
     status: z.enum(['building', 'shipped', 'parked']),
-    repo: z.string().url(),
+    // Optional: a project can exist before its repo is public (e.g. QLAB).
+    repo: z.string().url().optional(),
+    // Optional: site-relative path to the project's flagship case study.
+    caseStudy: z.string().optional(),
     stack: z.array(z.string()),
     started: z.coerce.date(),
     order: z.number().default(99),

@@ -69,7 +69,9 @@ src/
 ├── styles/global.css         # all design tokens, ~200 lines, no framework
 ├── lib/github.js             # build-time repo status (fail-soft) → "updated X ago"
 └── pages/
-    ├── index.astro           # hero + Now building + Operating daily + latest posts
+    ├── index.astro           # hero + CTA row + Latest work (3 newest by `started`)
+    │                         #   + compact earlier-builds rows + self-hosting strip
+    │                         #   + latest posts + contact band (since 2026-07-12)
     ├── start-here.astro      # plain-English intro (non-technical buyers)
     ├── services.astro        # "Work with me" — the offer, pricing, contact
     ├── projects/index.astro  # all projects, status-badged + "updated X ago"
@@ -180,13 +182,24 @@ Never hardcode a new hex or font; use the CSS variable. Current values:
 accents — don't repurpose them decoratively. **One accent rule:** if a design needs
 a second color to work, the design is wrong. No gradients, shadows, or webfonts.
 
+**Light variant (added 2026-07-12, owner-approved).** Dark stays the brand default;
+a CSS-only `@media (prefers-color-scheme: light)` block in `global.css :root`
+follows the visitor's OS setting. No toggle, no JS, no localStorage — the zero-JS
+claim holds. Values (same lantern-gold family, deepened for contrast on paper):
+bg `#f7f3ea` · raise `#efe9db` · fg `#23282f` · muted `#5b6270` · line `#ddd5c2` ·
+accent `#8f5e13` · ok `#1a7f37` · error `#b3261e`. `Base.astro` carries paired
+`theme-color` metas. Standalone `public/*.html` pages keep their own dark heads
+(not yet adapted). Pages must keep using the vars — that's what makes this work.
+
 ### 10.2 The mark — empty set ∅
 The logo is the **empty-set glyph ∅** ("invalid / null / void" — the technical double
 meaning of the name, §2): a gold circle + a rising slash (lower-left → upper-right)
 with round caps, on a dark panel.
-- Used **only** as favicon / app icon / social-card mark. It is deliberately **not**
-  placed in the page body — it was tried in the hero and removed because it competed
-  with the wordmark. On-page identity is the wordmark, not the mark.
+- Used as favicon / app icon / social-card mark, and (since 2026-07-12,
+  owner-approved) in exactly ONE on-page spot: the contact band component
+  (`src/components/Contact.astro`), where it anchors the direct CTA. It stays out
+  of the hero — it was tried there and removed because it competed with the
+  wordmark. On-page identity remains the wordmark.
 - Clear space ≥ the height of the ∅. Never recolor, add a second accent, or apply a
   gradient/shadow.
 

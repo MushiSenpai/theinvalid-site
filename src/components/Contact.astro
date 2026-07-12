@@ -1,0 +1,31 @@
+---
+// Direct-contact band: one visible step from any page to an email.
+// The ∅ mark's only on-page appearance (owner-approved 2026-07-12,
+// SITE-DECISIONS §10.2). subject prefills the mailto.
+interface Props {
+  subject?: string;
+  lead?: string;
+}
+const {
+  subject = 'Private AI for my team',
+  lead = 'Have a problem like these?',
+} = Astro.props;
+const mail = `mailto:reddy.madhankumar.sg@gmail.com?subject=${encodeURIComponent(subject)}`;
+---
+
+<aside class="contactband">
+  <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true">
+    <circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" stroke-width="6" />
+    <line x1="14" y1="50" x2="50" y2="14" stroke="currentColor" stroke-width="6" stroke-linecap="round" />
+  </svg>
+  <div class="body">
+    <p class="lead">{lead}</p>
+    <p class="sub">
+      Tell me what you're trying to keep off the cloud. That's usually where this starts.
+    </p>
+  </div>
+  <p class="cta-row" style="margin:0">
+    <a class="btn solid" href={mail}>Email me</a>
+    <a class="btn" href="https://www.linkedin.com/in/reddymk/">LinkedIn</a>
+  </p>
+</aside>

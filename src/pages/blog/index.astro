@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Contact from '../../components/Contact.astro';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog')).sort(
@@ -7,18 +8,118 @@ const posts = (await getCollection('blog')).sort(
 );
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-SG', { year: 'numeric', month: 'short', day: '2-digit' });
+
+// Compact case-study index. Full prose lives on the linked pages; this list
+// is built to be skimmed in seconds (feedback 2026-07-12: nine full cards
+// buried the blog).
+const cases = [
+  {
+    title: 'I built a quantum ML lab. The honest answer: quantum mostly ties or loses today',
+    outcome:
+      'Reproduced a published quantum advantage (0.900 vs 0.730), then <strong>erased it three ways</strong>: a fairly tuned classical model beat it, dequantization matched it, device noise took the rest. Eleven experiments, two real QPUs, zero manufactured wins.',
+    meta: 'PennyLane / Qiskit · 11 experiments vs classical baselines · ibm_fez + ionq forte-1 · barren plateau measured at 1,436×',
+    link: '/case-studies-honest-qml-lab/',
+    linkLabel: 'full case study',
+    subject: 'Quantum feasibility assessment',
+    flagship: true,
+  },
+  {
+    title: 'One product photo → a marketplace-ready 3D model + a compliance report',
+    outcome:
+      'Five real SKUs on one RTX 5090: three passed clean, <strong>one refused, one flagged with the exact miss</strong> (703mm reconstructed vs 650mm listed). The gate stopping bad assets is the product.',
+    meta: 'TRELLIS.2 / Hunyuan3D · headless Blender · compliance gate · 63–154s per SKU · zero cloud',
+    link: '/case-studies-product-photo-to-3d/',
+    linkLabel: 'full case study',
+    subject: '3D assets for my product catalogue',
+    flagship: true,
+  },
+  {
+    title: 'One shot list → an Unreal-ready previs pack in 15 minutes',
+    outcome:
+      'Six props (4 photos + 2 text briefs): <strong>five delivered in 15m12s warm, one refused with its reason shown</strong>. One idempotent Unreal import script, Nanite on heroes only. Tested in Unreal Engine 5.8.',
+    meta: 'text/photo → 3D · per-tier mesh chain · FBX + GLB · zero cloud',
+    link: '/case-studies-shot-list-to-previs-pack/',
+    linkLabel: 'full case study',
+    subject: 'Previs assets for my production',
+  },
+  {
+    title: 'A sovereign LLM that physically can’t leak',
+    outcome:
+      'vLLM + Nemotron with routing-enforced privacy: the client profile <strong>refuses to fall back to cloud</strong>, failing loudly instead of degrading silently. Operated daily at up to 268 tok/s, 180K context.',
+    meta: 'vLLM · Nemotron · Tailscale-only · default-deny firewall',
+    link: '/projects/sovereign-ai-stack',
+    linkLabel: 'the stack',
+    subject: 'Private LLM deployment',
+  },
+  {
+    title: 'Auditing a private codebase for vulnerabilities, fully air-gapped',
+    outcome:
+      'Hybrid system beats the LLM alone, <strong>0.97 vs 0.90</strong>, and the cross-file taint engine hits 1.00 precision where a per-file LLM gets 0.25. Honest headline: the fine-tune added ~0 detection capability, and measuring that caught 4 of my own eval bugs.',
+    meta: 'cross-file taint · Semgrep OSS · Qwen2.5-Coder QLoRA · runs under --network=none',
+    link: '/projects/sovereign-code-auditor',
+    linkLabel: 'the auditor',
+    subject: 'Air-gapped code security audit',
+  },
+  {
+    title: 'A talking-head avatar from a photo and a voice sample, three quality tiers',
+    outcome:
+      'For a 34.5s narration, measured: <strong>MuseTalk 78s, LatentSync 242s, Hallo2 1197s</strong>. Honest ceiling: social-grade; broadcast close-ups still go to a cloud path, and I say so up front.',
+    meta: 'Fish Speech clone · 3 lip-sync engines, isolated + pinned · zero cloud',
+    link: '/blog/i-benchmarked-an-ai-avatar-pipeline-end-to-end',
+    linkLabel: 'full write-up',
+    subject: 'Local avatar pipeline',
+  },
+  {
+    title: 'Removing an object from production footage',
+    outcome:
+      '<strong>Clean removal in 180 seconds</strong>, no ghost, background reconstructed. On a worst-case clip (glassware, low light) it leaves a residue, and clients hear that up front with a free sample frame.',
+    meta: 'VOID · SAM3 · SeedVR2 4K finish · failures shown',
+    link: '/blog/object-removal-arc',
+    linkLabel: 'full write-up',
+    subject: 'Object removal for my footage',
+  },
+  {
+    title: 'Starving a diffusion model of room to hallucinate',
+    outcome:
+      'A vision LLM writes the scene constraints itself before any diffusion runs: <strong>203 seconds end to end, unattended</strong>, 16 mask targets including 13 dependent reflections and shadows. The known hard case (a liquid) did not disappear, and that boundary is named.',
+    meta: 'Nemotron 3-pass forensic scan · SAM3 · VOID/VACE',
+    link: '/blog/the-forensic-bridge-measure-the-scene-before-diffusion-touches-it',
+    linkLabel: 'full write-up',
+    subject: 'Constrained AI video edits',
+  },
+  {
+    title: 'Comic page → narrated video, fully local',
+    outcome:
+      'Panel detection, cloned character voices, narrator on captions, 2.5D parallax camera. <strong>Runs end to end</strong>; in active hardening on real series pages, hard problems documented as they’re solved.',
+    meta: 'vision LLM · OpenCV · Fish Speech · ffmpeg · zero cloud',
+    link: '/projects/comic-narrator',
+    linkLabel: 'the project',
+    subject: 'Comic-to-video pipeline',
+  },
+];
+
+const mail = (subject: string) =>
+  `mailto:reddy.madhankumar.sg@gmail.com?subject=${encodeURIComponent(subject)}`;
 ---
 
 <Base
-  title="Knowledge base — case studies, the failure log & the field guide — theinvalid.me"
-  description="Case studies, the failure log (decisions and what they cost), and an interactive field guide to running LLMs locally — the build log of a sovereign AI stack, failures included."
+  title="Knowledge base: case studies, the failure log & the field guide — theinvalid.me"
+  description="Case studies, the failure log (decisions and what they cost), and an interactive field guide to running LLMs locally: the build log of a sovereign AI stack, failures included."
 >
   <h1>Knowledge base</h1>
   <p style="color: var(--muted)">
     Everything I've learned building a sovereign AI stack, in public: the proof
-    (case studies), the failure log (why abandoned plans get written up — the
-    dead ends were the expensive part), and the interactive field guide.
+    (case studies), the failure log (dead ends written up because they were the
+    expensive part), and the interactive field guide.
   </p>
+
+  <nav class="jumpbar" aria-label="Sections on this page">
+    <span>jump to:</span>
+    <a href="#case-studies">case studies</a>
+    <a href="#blog">the failure log</a>
+    <a href="/blog/topics">by topic</a>
+    <a href="/calculator">field guide</a>
+  </nav>
 
   <article class="card" style="border-color: var(--accent)">
     <h3>📐 <a href="/calculator">The local-AI field guide</a></h3>
@@ -28,93 +129,33 @@ const fmt = (d: Date) =>
 
   <h2 id="case-studies">Case studies</h2>
   <p style="color:var(--muted)">
-    Problem → solution → outcome. Built and measured on my own stack — where a
-    number is from a real run I say so, and where something didn't work I say
-    that too. Client engagements get added here (with permission) as they happen.
+    Problem → solution → outcome, compressed to the result. Built and measured
+    on my own stack: where a number is from a real run I say so, and where
+    something didn't work I say that too. Each links to the full story.
   </p>
 
-  <article class="card" style="border-color: var(--accent)">
-    <h3>I built a quantum ML lab — and the honest answer is quantum mostly ties or loses today</h3>
-    <p><strong>Problem.</strong> Quantum computing is the most over-marketed idea in tech: vendors publish the cherry-picked win and the pretty error-mitigated bar, and almost nobody publishes the honest classical baseline sitting next to it. So anyone asked "should we invest in quantum for this?" has no neutral read — the demos all say yes, the physics quietly says not yet.</p>
-    <p><strong>Solution.</strong> <a href="https://github.com/MushiSenpai/qlab">QLAB</a>, a local-first quantum-ML lab built on one rule — <em>a quantum number is never shown alone</em>. Every quantum model is raced against ordinary classical methods (logistic regression, an MLP, an RBF-SVM) on the <em>identical</em> split; two trained circuits were flown to two real quantum computers (superconducting + trapped-ion); quantum-advantage claims are permanently out of scope by design, and every number traces to a reproducible job id.</p>
-    <p><strong>Outcome.</strong> Eleven experiments, zero manufactured wins — reported proudly. The capstone: I <strong>reproduced a published quantum advantage (0.900 vs a weak classical 0.730), then erased it three ways</strong> — a fairly-tuned classical beat it (0.910), classical dequantization matched it (0.900), device noise took the rest. Underneath: a barren plateau collapsing gradient variance <strong>1,436×</strong> (trainable ⇔ classically simulable — the honest dilemma); the same circuit on two QPUs where trapped-ion's raw answer beat superconducting but its cheap error-mitigation backfired; the GPU running the small circuits <strong>~60× slower</strong> than the CPU. Across five state-of-the-art techniques the finding is one wall: whatever makes a quantum ML model usable — trainable, non-concentrated, plateau-free — tends to make it classically reproducible. This sells judgment, not a capability. <a href="/case-studies-honest-qml-lab/">Full case study, all eleven honest findings →</a> · <a href="https://github.com/MushiSenpai/qlab">the lab &amp; reproduce-it experiments →</a></p>
-    <p class="meta">PennyLane / Qiskit · 11 experiments, each vs a classical baseline · 5 SOTA techniques, all tested honestly · published advantage reproduced &amp; erased 3 ways · 2 real QPUs (ibm_fez + ionq forte-1) · barren plateau 1,436× · quantum ties-or-loses, proven · local-first</p>
-  </article>
-
-  <article class="card">
-    <h3>One product photo → a marketplace-ready 3D model + a compliance report</h3>
-    <p><strong>Problem.</strong> E-commerce sellers need Amazon/Shopify-spec 3D models from flat listing photos, but raw image-to-3D tools hand back every result with equal confidence — including the broken ones — and no proof any of them meet a marketplace's published rules.</p>
-    <p><strong>Solution.</strong> The <a href="/projects/three-d-stack">3D Stack</a>: a photo drives generation (TRELLIS.2 / Hunyuan3D), then an automated headless-Blender mesh-ops chain — retopology to a triangle budget, UV unwrap, PBR bake, real-world rescale, KTX2 GLB export — and finally a compliance gate that checks each asset <em>mechanically</em> against the marketplace's spec and <strong>refuses to deliver the ones that fail</strong>.</p>
-    <p><strong>Outcome.</strong> On a real five-SKU batch, all local on one RTX 5090 (63–154s generation per SKU, delivered GLBs 0.76–1.33MB against a 4MB cap): three passed clean, <strong>one was refused</strong> (UV collapse + hallucinated depth) and <strong>one was flagged with the exact miss</strong> (703mm reconstructed vs 650mm listed). The gate stopping the bad assets is the product, not a caveat. <a href="/case-studies-product-photo-to-3d/">Full case study, failures included →</a> · <a href="/3d-catalogue">the live 3D catalogue →</a></p>
-    <p class="meta">TRELLIS.2 / Hunyuan3D · headless Blender · retopo + PBR bake · marketplace compliance gate · 5 real SKUs, 3 pass / 2 caught · zero cloud</p>
-  </article>
-
-  <article class="card">
-    <h3>One shot list → an Unreal-ready previs pack in 15 minutes</h3>
-    <p><strong>Problem.</strong> To block a sequence a director needs the set standing in the engine — dozens of throwaway props whose only jobs are to import clean and read at a glance. Asset libraries never have <em>your</em> props, outsourcing each one takes days, and a raw text-to-3D tool hands back meshes with no guarantee they'll even open in Unreal (broken UVs, non-manifold shells, invalid glTF). For a blocking asset the deliverable isn't the render — it's importing clean, first try, every time.</p>
-    <p><strong>Solution.</strong> The <a href="/projects/three-d-stack">3D Stack</a> takes a mixed shot list — reference photos and one-line text briefs — and drives a per-prop mesh chain sized to each prop's tier (retopo to a face budget, UV, texture pass, FBX + GLB export), then ships one idempotent Unreal import script that reads the pack's own manifest, attaches materials, switches Nanite on for heroes only, and <strong>skips anything the pipeline refused</strong> so a broken prop never half-imports.</p>
-    <p><strong>Outcome.</strong> On a real six-prop list (4 photos + 2 text briefs, three quality tiers), all local on one RTX 5090: <strong>five delivered in 15m12s warm</strong> (crowd body 15s → hero field cannon 5m53s; ~22 min from a cold start, the difference is weights loading once), and <strong>one facade was refused</strong> with its reason shown, not quietly dropped. A shot list at breakfast, a blockable set by lunch. <a href="/case-studies-shot-list-to-previs-pack/">Full case study, the refusal included →</a> · <a href="/3d-catalogue">the live 3D catalogue →</a></p>
-    <p class="meta">text/photo → 3D · headless Blender per-tier chain · FBX + GLB · one-script Unreal import, Nanite on heroes · 6 props, 5 delivered / 1 refused · zero cloud</p>
-  </article>
-
-  <article class="card">
-    <h3>Comic page → narrated video, fully local</h3>
-    <p><strong>Problem.</strong> Turning static comic/manga pages into dramatized video normally means manual editing per panel, or cloud services that ingest the artwork. A webtoon creator wants automation <em>and</em> wants the unreleased art to never leave their machine.</p>
-    <p><strong>Solution.</strong> A pipeline (<a href="/projects/comic-narrator">Comic Narrator</a>) that detects panels with a vision LLM + OpenCV, voices each character with a local clone, narrates captions, and drives a Ken-Burns + 2.5D parallax camera — all on one RTX 5090, nothing cloud.</p>
-    <p><strong>Outcome.</strong> Page-to-video runs end to end and is in active hardening on real, full-length series pages. Honest status: the hard problems (panel-order logic, model output variance, VRAM co-residence of a 30B LLM + TTS) are documented as they're solved — see the failure log below.</p>
-    <p class="meta">local · vision LLM · voice clone · ffmpeg · zero cloud</p>
-  </article>
-
-  <article class="card">
-    <h3>A talking-head avatar from a photo and a voice sample — three quality tiers, fully local</h3>
-    <p><strong>Problem.</strong> A speaking avatar is the most privacy-sensitive media job there is: the inputs are someone's face and someone's voice. Cloud avatar services ingest both. A marketing team (or a creator) wants ad-reads and narrated clips without either ever leaving the building — and wants honest quality tiers, not one-size-fits-all.</p>
-    <p><strong>Solution.</strong> The <a href="/projects/audio-stack">Audio Stack</a> avatar pipeline: clean the voice sample (Demucs), clone it (Fish Speech, 5s), synthesize the narration (25s for a 34.5s read), then lip-sync with one of <strong>three engines run as isolated, version-pinned services</strong> — MuseTalk for fast social drafts, LatentSync 1.6 for production blends, Hallo2 for cinematic head motion.</p>
-    <p><strong>Outcome.</strong> For a 34.5-second narration, measured: <strong>MuseTalk 78s</strong> (1024², ~7.7GB), <strong>LatentSync 242s</strong> (~20GB — cleaner lower-face blend, but its teeth are a tie with MuseTalk, so MuseTalk stays the default), <strong>Hallo2 1197s</strong> (~35× slower than realtime, earned only when you need real head-pose and expression). The honest ceiling: social-grade. Broadcast close-ups still go to a cloud path, and I say so up front. <a href="/blog/i-benchmarked-an-ai-avatar-pipeline-end-to-end">Full write-up with every number →</a></p>
-    <p class="meta">MuseTalk 78s · LatentSync 242s · Hallo2 1197s · 34.5s clip · measured, teeth-tie included · zero cloud</p>
-  </article>
-
-  <article class="card">
-    <h3>Starving a diffusion model of room to hallucinate</h3>
-    <p><strong>Problem.</strong> Inpainting models improvise: wrong-way shadows, changed materials, invented objects. For client edits on production footage, improvisation is a defect — but hand-writing dense scene constraints per shot doesn't scale.</p>
-    <p><strong>Solution.</strong> The forensic bridge (<a href="/projects/creative-stack">Creative Stack</a>): a local vision LLM runs a three-pass forensic scan — hero subjects, reflections and shadows as first-class dependents, atmospheric fields — and <em>writes the SAM3 mask prompts and fill constraints itself</em>, then drives the ComfyUI render. The generator gets specifications to obey, not space to confabulate.</p>
-    <p><strong>Outcome.</strong> End-to-end proof run: <strong>203 seconds</strong>, unattended — analysis, 16 mask targets (including 13 dependent reflections/shadows), auto-written fill prompt, VOID render. The honest half: the test target was a frying egg — a liquid, the known hard case — and it did not visibly disappear. Architecture proven, boundary named. <a href="/blog/the-forensic-bridge-measure-the-scene-before-diffusion-touches-it">The full case study →</a></p>
-    <p class="meta">Nemotron 3-pass · SAM3 video masks · VOID/VACE · 203s pipeline · failure stated up front</p>
-  </article>
-
-  <article class="card">
-    <h3>Removing an object from production footage</h3>
-    <p><strong>Problem.</strong> A clip needs an object gone — cleanly, temporally stable, without shipping the footage to a cloud VFX tool.</p>
-    <p><strong>Solution.</strong> Netflix's VOID inpainting + SAM3 video-mask tracking, run locally (<a href="/projects/creative-stack">Creative Stack</a>), with a 4K finishing pass.</p>
-    <p><strong>Outcome.</strong> On representative footage: <strong>clean removal in 180 seconds, no ghost, background reconstructed perfectly</strong>. On a worst-case clip (subject behind glassware, low light) it leaves a residue — and I tell clients that up front, with a free sample frame before any quote. The <a href="/blog/object-removal-arc">full honest write-up</a> shows both.</p>
-    <p class="meta">VOID · SAM3 · SeedVR2 4K · 180s/clip · measured, failures included</p>
-  </article>
-
-  <article class="card">
-    <h3>A sovereign LLM that physically can't leak</h3>
-    <p><strong>Problem.</strong> A team wants an AI assistant but is bound by data rules — nothing sensitive may touch OpenAI or Anthropic.</p>
-    <p><strong>Solution.</strong> The <a href="/projects/sovereign-ai-stack">Sovereign Stack</a>: vLLM + Nemotron on local hardware with routing-enforced privacy tiers — the "client" profile <em>refuses to fall back to cloud at all</em>, failing loudly instead of degrading silently. Tailscale-only, default-deny firewall, monitored backups.</p>
-    <p><strong>Outcome.</strong> Daily-operated on my own machine at <strong>up to 268 tokens/sec</strong> (observed under real multimodal load), 180K context. The guarantee isn't a policy promise — it's enforced by the routing, and the whole thing is public so a client can audit exactly how before trusting it.</p>
-    <p class="meta">vLLM · Nemotron · routing-enforced privacy · 268 tok/s observed</p>
-  </article>
-
-  <article class="card">
-    <h3>Auditing a private codebase for vulnerabilities, fully air-gapped</h3>
-    <p><strong>Problem.</strong> Teams whose code legally can't leave the network — banks, hospitals, defense, anyone under NDA — get no help from cloud AI code-review, because it uploads the source. And the obvious in-house fix, "fine-tune a model into a security expert," is a trap: a model that already read most of GitHub doesn't learn to <em>see</em> new bug classes from a few hundred examples.</p>
-    <p><strong>Solution.</strong> <a href="/projects/sovereign-code-auditor">SovereignSec-AI</a>, built as a <em>system</em> rather than a model: a custom cross-file taint engine (tree-sitter), SAST (Semgrep OSS + Bandit + own rules), an agentic loop, and a validation oracle, with a local LLM as one noisy member. The deterministic core returns <strong>proof-carrying findings</strong> — a source→sink path you can verify — under <code>--network=none</code>, no GPU required. I trained 7B/32B QLoRA adapters on one RTX 5090 specifically to <em>measure</em> what the fine-tune adds.</p>
-    <p><strong>Outcome.</strong> On a hard 29-module / 6-CWE benchmark the hybrid (LLM ∪ system) scores <strong>0.97 vs 0.90</strong> for the LLM alone, and the cross-file taint engine hits <strong>1.00 precision/recall where a per-file LLM gets 0.25 precision</strong>. The honest headline I publish up front: the fine-tune adds <strong>~0 detection capability</strong> — its value is output schema and calibration, not smarter detection — and measuring that cleanly caught <strong>4 of my own eval bugs</strong>. Code, the full benchmark, and both adapters with honest cards are <a href="https://github.com/MushiSenpai/SovereignSec-AI-Auditor">public</a>.</p>
-    <p class="meta">local · cross-file taint · Semgrep OSS · Qwen2.5-Coder QLoRA · proof-carrying · 0.97 vs 0.90 measured</p>
-  </article>
+  {cases.map((c) => (
+    <article class="card" style={c.flagship ? 'border-color: var(--accent)' : undefined}>
+      <h3>{c.title}</h3>
+      <p set:html={c.outcome} />
+      <p class="meta">
+        <span>{c.meta}</span>
+        <a href={c.link}>{c.linkLabel} →</a>
+        <a href={mail(c.subject)}>want this? email me →</a>
+      </p>
+    </article>
+  ))}
 
   <p style="margin-top:1.5rem">
     <a href="/services">→ What this costs and how to start</a>
   </p>
 
-  <h2 id="failure-log">The failure log</h2>
+  <h2 id="blog">The failure log</h2>
   <p style="color: var(--muted)">
     New posts as the work happens.
     <span style="font-family: var(--mono); font-size: 0.9rem">
       Looking for something specific? <a href="/blog/topics"><strong>Browse by topic →</strong></a>
-      — every post grouped by technology (LLM serving, GPU/VRAM, creative AI, audio, ops…).
+      (LLM serving, GPU/VRAM, quantum, creative AI, audio, ops…)
     </span>
   </p>
   <ul class="postlist">
@@ -128,4 +169,6 @@ const fmt = (d: Date) =>
       </li>
     ))}
   </ul>
+
+  <Contact subject="Private AI for my team" lead="Have a problem like these?" />
 </Base>

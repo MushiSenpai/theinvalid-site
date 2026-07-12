@@ -8,7 +8,7 @@ interface Props {
 
 const {
   title = 'theinvalid — Madhan Kumar Reddy',
-  description = 'AI Infrastructure Operator. I spec, direct LLMs, and verify. Sovereign local LLM, video and audio stacks on an RTX 5090 — all public, benchmarks and failures included.',
+  description = 'AI Infrastructure Operator. I spec, direct LLMs, and verify. Sovereign local LLM, video and audio stacks on an RTX 5090, all public: benchmarks and failures included.',
 } = Astro.props;
 
 const path = Astro.url.pathname;
@@ -29,7 +29,8 @@ const current = (p: string) =>
     <link rel="icon" href="/favicon.ico?v=nullset" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=nullset" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#0b0e14" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0e14" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f3ea" />
     <link rel="alternate" type="application/rss+xml" title="theinvalid blog" href="/rss.xml" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -56,8 +57,11 @@ const current = (p: string) =>
     </main>
     <footer class="site">
       <p>
-        Built by directing LLMs against specs — <a href="/resume#how-i-work--read-this-first">here's exactly how</a>.
+        Built by directing LLMs against specs: <a href="/resume#how-i-work--read-this-first">here's exactly how</a>.
         No trackers, no cookies, no JavaScript frameworks.
+      </p>
+      <p>
+        Talk to me: <a href="mailto:reddy.madhankumar.sg@gmail.com">reddy.madhankumar.sg@gmail.com</a>
       </p>
       <p>
         © 2026 Madhan Kumar Reddy ·

@@ -1,26 +1,35 @@
 ---
 import Base from '../layouts/Base.astro';
+import Contact from '../components/Contact.astro';
+
+const mail = (subject: string) =>
+  `mailto:reddy.madhankumar.sg@gmail.com?subject=${encodeURIComponent(subject)}`;
 ---
 
 <Base
   title="Work with me — theinvalid.me"
-  description="I deploy private, on-premises AI systems where your data physically never touches a cloud API. Remote-first, worldwide: sovereign LLM serving, local video/audio pipelines, e-commerce 3D asset generation, and AI readiness audits — for firms that can't send sensitive data to OpenAI or Anthropic."
+  description="I deploy private, on-premises AI systems where your data physically never touches a cloud API. Remote-first, worldwide: sovereign LLM serving, local video/audio pipelines, e-commerce 3D asset generation, and AI readiness audits, for firms that can't send sensitive data to OpenAI or Anthropic."
 >
   <h1>Work with me</h1>
   <p style="font-size:1.1rem; color:var(--fg)">
     I deploy <strong>private AI systems that never send your data to the cloud</strong>.
-    The whole thing runs on hardware you control — your premises, your server, your
-    rules. I work <strong>remote-first, worldwide</strong>: I spec it, build it (by
+    The whole thing runs on hardware you control: your premises, your server, your
+    rules. I work <strong>remote-first, worldwide</strong>. I spec it, build it (by
     directing LLMs, verified at every step) on your infrastructure over secure
-    remote access, and hand you a system plus the runbook to operate it — a
+    remote access, and hand you a system plus the runbook to operate it, a
     documented handover your own team can run.
   </p>
 
-  <p style="color:var(--muted)">
+  <p class="cta-row">
+    <a class="btn solid" href={mail('Private AI for my team')}>Email me about a project</a>
+    <a class="btn" href="https://www.linkedin.com/in/reddymk/">LinkedIn</a>
+  </p>
+
+  <p style="color:var(--muted); margin-top:1.6rem">
     Built for <strong>law firms, clinics, financial and government-adjacent teams</strong>
-    bound by data-protection rules or internal compliance — deployments are
+    bound by data-protection rules or internal compliance. Deployments are
     <strong>PDPA/GDPR-aware</strong>, which matters to any organisation handling
-    Singapore or EU personal data — and for <strong>studios and agencies</strong>
+    Singapore or EU personal data. Also for <strong>studios and agencies</strong>
     who want local video, voice, and avatar pipelines without per-seat SaaS bills.
     Currently serving international clients.
   </p>
@@ -35,82 +44,77 @@ import Base from '../layouts/Base.astro';
 
   <article class="card">
     <h3>🛡️ Sovereign AI Deployment <span class="badge shipped">headline offer</span></h3>
-    <p class="oneliner">A private LLM running inside your facility. Your data physically cannot reach a cloud API — enforced by routing, not by a promise.</p>
-    <p>vLLM or llama.cpp on your hardware (or I spec the hardware to buy), with fallback chains that <em>fail loudly</em> rather than leak silently, Tailscale-only access, default-deny firewall, monitored backups, and a runbook your team can operate. The exact discipline I run my own stack on — <a href="/projects/sovereign-ai-stack">see it</a>, publicly, daily.</p>
-    <p class="meta"><strong>SGD 3,000–8,000 by scope</strong> (single-model single-box at the low end; multi-stack, multi-user, or compliance-documented deployments at the high end) · 2 weeks spec + staging, delivered remotely onto your hardware; on-site deployment sprints available for overseas engagements</p>
+    <p class="oneliner">A private LLM running inside your facility. Your data physically cannot reach a cloud API: enforced by routing, not by a promise.</p>
+    <p>vLLM or llama.cpp on your hardware (or I spec the hardware to buy), with fallback chains that <em>fail loudly</em> rather than leak silently, Tailscale-only access, default-deny firewall, monitored backups, and a runbook your team can operate. The exact discipline I run my own stack on: <a href="/projects/sovereign-ai-stack">see it</a>, publicly, daily.</p>
+    <p class="meta"><strong>SGD 3,000–8,000 by scope</strong> (single-model single-box at the low end; multi-stack, multi-user, or compliance-documented deployments at the high end) · 2 weeks spec + staging, delivered remotely onto your hardware; on-site deployment sprints available for overseas engagements · <a href={mail('Sovereign AI deployment')}>start this conversation →</a></p>
   </article>
 
   <article class="card">
     <h3>🔎 AI Readiness Audit <span class="badge building">start here</span></h3>
     <p class="oneliner">Two hours + a written report: what AI can safely do for you, on what hardware, with what data risks.</p>
     <p>Gap analysis of your data sensitivity, existing workflows, and cloud exposure → a one-page recommendation and deployment roadmap. Low-commitment way to see how I work; converts to a full deployment if it makes sense.</p>
-    <p class="meta"><strong>SGD 500–1,000</strong></p>
+    <p class="meta"><strong>SGD 500–1,000</strong> · <a href={mail('AI readiness audit')}>book an audit →</a></p>
   </article>
 
   <article class="card">
     <h3>🎬 Local Creative Pipelines</h3>
-    <p class="oneliner">Object removal, 4K finishing, avatar videos, voice cloning, auto-dubbing — all on-prem.</p>
-    <p>Turnkey versions of my <a href="/projects/creative-stack">creative</a> and <a href="/projects/audio-stack">audio</a> stacks: a webtoon studio's <a href="/projects/comic-narrator">comic-to-video</a> pipeline, a marketing team's avatar ad-reads, a dubbing house's localization. I'm honest about the quality boundaries — the <a href="/blog">benchmarks are public</a> and prices are tiered by deliverable quality, not hype:</p>
+    <p class="oneliner">Object removal, 4K finishing, avatar videos, voice cloning, auto-dubbing. All on-prem.</p>
+    <p>Turnkey versions of my <a href="/projects/creative-stack">creative</a> and <a href="/projects/audio-stack">audio</a> stacks: a webtoon studio's <a href="/projects/comic-narrator">comic-to-video</a> pipeline, a marketing team's avatar ad-reads, a dubbing house's localization. I'm honest about the quality boundaries. The <a href="/blog">benchmarks are public</a> and prices are tiered by deliverable quality, not hype:</p>
     <table style="font-size:0.85rem">
       <tr><th>Tier</th><th>What you get</th><th>Object removal</th><th>Avatar video</th></tr>
       <tr><td><strong>Draft</strong></td><td>fast preview, source resolution, no finishing</td><td>SGD 12/sec (min 80)</td><td>SGD 80</td></tr>
       <tr><td><strong>Production</strong></td><td>QA'd removal + 1080p finish / social-grade avatar</td><td>SGD 25/sec (min 150)</td><td>SGD 150</td></tr>
       <tr><td><strong>Delivery</strong></td><td>4K finish, multi-pass QA, revision included</td><td>SGD 40/sec (min 240)</td><td>quote</td></tr>
     </table>
-    <p class="meta">Hard footage (low light, heavy occlusion) is quoted after a free sample frame — I'll tell you honestly if the tech isn't there yet. Rates evolve with the <a href="https://github.com/MushiSenpai/mushishi-creative-stack/blob/main/benchmarks/benchmarks.csv">public benchmarks</a>.</p>
+    <p class="meta">Hard footage (low light, heavy occlusion) is quoted after a free sample frame. I'll tell you honestly if the tech isn't there yet. Rates evolve with the <a href="https://github.com/MushiSenpai/mushishi-creative-stack/blob/main/benchmarks/benchmarks.csv">public benchmarks</a> · <a href={mail('Creative pipeline job')}>send me a clip →</a></p>
   </article>
 
   <article class="card">
-    <h3>🧊 E-commerce 3D — photo → marketplace-ready asset</h3>
-    <p class="oneliner">One product photo in; a spec-checked Amazon/Shopify 3D model out — delivered with a machine-generated compliance report that proves it meets the marketplace's published rules.</p>
-    <p>Local image-to-3D generation, an automated mesh-ops chain (retopology, UV unwrap, PBR bake, real-world rescale, KTX2 GLB + USDZ), and a compliance gate that <em>refuses</em> assets failing the spec — so a broken model never reaches your listing. The engineering, the honest benchmarks (failures included), and the open-source licence chain are public in the <a href="/projects/three-d-stack">3D Stack</a>.</p>
-    <p class="meta">Batch-priced, scoped and quoted per job after a look at your catalogue · see the <a href="/case-studies-product-photo-to-3d/">product-photo → 3D case study</a> (5 real SKUs, 2 stopped by the gate) and the live <a href="/3d-catalogue">3D catalogue</a>. The premium multi-view tier isn't offered for EU / UK / South-Korea deliverables (upstream model licence).</p>
+    <h3>🧊 E-commerce 3D: photo → marketplace-ready asset</h3>
+    <p class="oneliner">One product photo in; a spec-checked Amazon/Shopify 3D model out, delivered with a machine-generated compliance report that proves it meets the marketplace's published rules.</p>
+    <p>Local image-to-3D generation, an automated mesh-ops chain (retopology, UV unwrap, PBR bake, real-world rescale, KTX2 GLB + USDZ), and a compliance gate that <em>refuses</em> assets failing the spec, so a broken model never reaches your listing. The engineering, the honest benchmarks (failures included), and the open-source licence chain are public in the <a href="/projects/three-d-stack">3D Stack</a>.</p>
+    <p class="meta">Batch-priced, scoped and quoted per job after a look at your catalogue · see the <a href="/case-studies-product-photo-to-3d/">product-photo → 3D case study</a> (5 real SKUs, 2 stopped by the gate) and the live <a href="/3d-catalogue">3D catalogue</a>. The premium multi-view tier isn't offered for EU / UK / South-Korea deliverables (upstream model licence) · <a href={mail('3D assets for my catalogue')}>send me a photo →</a></p>
   </article>
 
   <article class="card">
     <h3>🔁 AI Stack Health Retainer</h3>
     <p class="oneliner">I keep the system you (or someone else) deployed alive and current.</p>
-    <p>Monthly: backup verification, watchdog review, dependency updates, GPU-memory tuning, quarterly failover test. A fraction of a full-time hire — and I document everything, including what breaks.</p>
-    <p class="meta"><strong>SGD 800–1,500/month</strong></p>
+    <p>Monthly: backup verification, watchdog review, dependency updates, GPU-memory tuning, quarterly failover test. A fraction of a full-time hire, and I document everything, including what breaks.</p>
+    <p class="meta"><strong>SGD 800–1,500/month</strong> · <a href={mail('AI stack health retainer')}>ask about a retainer →</a></p>
   </article>
 
   <h2>Why me specifically</h2>
   <p>
-    I'm not a traditional software engineer and I won't pretend to be — I read
+    I'm not a traditional software engineer and I won't pretend to be. I read
     code fluently and direct LLMs to write it, then verify with gates
     (<a href="/resume#how-i-work--read-this-first">the full method</a>). What I
     bring that most "AI developers" don't: a decade of
     <strong>quality control and security governance</strong> (subtitle QC across 36
     languages; GRC/SOP authoring at Merck), which is exactly the discipline
-    on-prem AI needs — validation, guardrails, and the operational habits
+    on-prem AI needs. Validation, guardrails, and the operational habits
     (monitored backups, default-deny networking, public failure logs) that keep
     a system running after launch day.
   </p>
   <p>
     Remote-first and worldwide: I deliver over secure remote access to your
     infrastructure, work across time zones, and finish with a documented
-    handover. On-site engagements — up to 2-week deployment sprints — are
+    handover. On-site engagements, up to 2-week deployment sprints, are
     available for overseas clients where travel makes sense.
   </p>
   <p class="meta">
-    Full history and skills: my <a href="/resume">résumé</a> — readable here or
+    Full history and skills: my <a href="/resume">résumé</a>, readable here or
     downloadable as a dated PDF, with the project list kept current.
   </p>
 
   <h2>Sensitive &amp; unrestricted work</h2>
   <p>
     Cloud AI tools refuse large categories of <em>legitimate</em> professional
-    work — medical and forensic imagery, security research, violence or nudity
+    work: medical and forensic imagery, security research, violence or nudity
     in a film or fine-art context, legal evidence. Because everything I run is
     local, there's no content-policy gate and nothing is logged by a third
     party. If your work keeps getting blocked by a cloud provider's filters,
     that's a solvable problem. Handled case-by-case, under NDA.
   </p>
 
-  <h2>Talk to me</h2>
-  <p>
-    Email <a href="mailto:reddy.madhankumar.sg@gmail.com">reddy.madhankumar.sg@gmail.com</a>
-    or connect on <a href="https://www.linkedin.com/in/reddymk/">LinkedIn</a>.
-    Tell me what you're trying to keep off the cloud — that's usually where this starts.
-  </p>
+  <Contact subject="Private AI for my team" lead="Ready to talk?" />
 </Base>

@@ -27,6 +27,12 @@ the operating playbook, and the brand/visual-identity spec — is
   `<head>` — they do NOT inherit Base.astro. Apply brand/favicon changes to them AND
   their generators (`generate-catalogue.py`, `scripts/deploy-3d-catalogue.sh`).
 
+## Writing style (owner rule 2026-07-12)
+- **No em dashes (—) in site copy.** Use commas, colons, periods, or parentheses
+  instead. The one exception: the `<title>` tag separator ("Page — theinvalid.me").
+  Applies to all NEW copy (pages, posts, case studies); existing blog posts get
+  cleaned opportunistically when otherwise edited, not in a mass rewrite.
+
 ## Deploy
 - `npm run build` MUST pass, then `git push` to `main` auto-deploys.
 - 3D catalogue: run **`scripts/deploy-3d-catalogue.sh`** (never hand-edit the deployed
