@@ -23,3 +23,7 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 drafts/
+
+# session working dirt (estate rule 2026-07-12)
+.claude/
+*.bak-*

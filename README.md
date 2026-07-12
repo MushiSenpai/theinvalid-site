@@ -1,43 +1,34 @@
-# Astro Starter Kit: Minimal
+# theinvalid.me
 
-```sh
-npm create astro@latest -- --template minimal
-```
+> They called me invalid; this is me.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Portfolio + engineering **failure log** for a sovereign AI stack built and run on
+one RTX 5090 — LLM serving, creative/audio/3D pipelines, and the write-ups of
+everything that broke on the way. The site is the honest record: benchmarks
+include the losses, case studies include the dead ends.
 
-## 🚀 Project Structure
+**Live: [theinvalid.me](https://theinvalid.me)**
 
-Inside of your Astro project, you'll see the following folders and files:
+## What this repo is
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+- **Astro 6, content-as-files, zero JS frameworks, system fonts only.** Posts and
+  project pages are markdown in `src/content/`; the build is fully static and
+  the performance is the flex (100/100 Lighthouse).
+- **Deploy = push to `main`.** Cloudflare rebuilds and ships in about a minute.
+- **One accent color.** If a design needs a second one, the design is wrong.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Map
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+| Path | What lives there |
+|---|---|
+| `src/content/blog/` | posts + case studies (failure logs included) |
+| `src/content/projects/` | project pages — the stacks, apps, and experiments |
+| `src/pages/` | routes: index, blog, projects, services, resume |
+| `public/` | static assets + standalone catalogue pages |
+| `pipeline/` | editorial queue + publishing checklist |
 
-Any static assets, like images, can be placed in the `public/` directory.
+## House rules
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Content follows the same rules the projects are built with: measured numbers
+over adjectives, failures named next to wins, and nothing published that can't
+be traced back to an artifact that actually ran.

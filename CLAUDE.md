@@ -32,3 +32,15 @@ the operating playbook, and the brand/visual-identity spec — is
 - 3D catalogue: run **`scripts/deploy-3d-catalogue.sh`** (never hand-edit the deployed
   `public/3d-catalogue.html`).
 - Lessons/decisions → append a row to `pipeline/queue.md` §B (same session).
+
+## Publishing policy (2026-07-12)
+This repository — and the site it deploys — is **PUBLIC**. Hard rules:
+- Never commit secrets or credentials, business or pricing figures, client names
+  or data, private network details, or working dirt (`.claude/`, `*.bak-*` are
+  gitignored — never force-add them).
+- Samples/media must be rights-clean and safe-for-work; failures documented
+  alongside successes.
+- Every capability claim must trace to a test/benchmark artifact that ran; a page
+  isn't "published" until it's linked from every index its siblings appear in AND
+  verified reachable with a real `curl`.
+- Run a secrets scan (gitleaks) before every push.
