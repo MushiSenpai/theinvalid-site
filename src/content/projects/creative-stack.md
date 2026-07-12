@@ -1,6 +1,6 @@
 ---
 title: "Mushishi Creative Stack"
-oneliner: "Local AI video production: generation, object removal, masked edits, and 4K60 finishing — with a forensic-analysis bridge that starves diffusion models of room to hallucinate."
+oneliner: "Local AI video production: generation, object removal, masked edits, and 4K60 finishing, with a forensic-analysis bridge that starves diffusion models of room to hallucinate."
 status: shipped
 repo: "https://github.com/MushiSenpai/mushishi-creative-stack"
 stack: ["ComfyUI", "FLUX.2", "Wan 2.2", "HunyuanVideo", "SAM3", "SeedVR2", "RIFE"]

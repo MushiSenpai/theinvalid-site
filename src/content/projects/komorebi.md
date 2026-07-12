@@ -1,6 +1,6 @@
 ---
 title: "Komorebi"
-oneliner: "A Studio Ghibli-inspired productivity suite in Flutter — tasks, kanban, calendar, notes, pomodoro, and a physics tower-stacking break game with online leaderboards."
+oneliner: "A Studio Ghibli-inspired productivity suite in Flutter: tasks, kanban, calendar, notes, pomodoro, and a physics tower-stacking break game with online leaderboards."
 status: building
 repo: "https://github.com/MushiSenpai/komorebi"
 stack: ["Flutter", "SQLite", "Drift", "custom design system"]

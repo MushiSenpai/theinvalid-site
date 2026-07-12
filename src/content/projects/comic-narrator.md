@@ -1,6 +1,6 @@
 ---
 title: "Comic Narrator"
-oneliner: "A comic page goes in; a dramatized video comes out — panel detection, cloned character voices, narrator on captions, 2.5D parallax camera."
+oneliner: "A comic page goes in; a dramatized video comes out: panel detection, cloned character voices, narrator on captions, 2.5D parallax camera."
 status: building
 repo: "https://github.com/MushiSenpai/comic-manga-narrator"
 stack: ["Nemotron vision", "OpenCV", "Fish Speech", "ffmpeg", "Freesound"]

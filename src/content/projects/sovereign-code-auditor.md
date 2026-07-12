@@ -1,6 +1,6 @@
 ---
 title: "SovereignSec-AI — Code-Security Auditor"
-oneliner: "A fully air-gapped AI code-security auditor — cross-file taint + SAST + an LLM, hybridized — that finds vulnerabilities across files and returns deterministic, proof-carrying findings."
+oneliner: "A fully air-gapped AI code-security auditor (cross-file taint + SAST + an LLM, hybridized) that finds vulnerabilities across files and returns deterministic, proof-carrying findings."
 status: shipped
 repo: "https://github.com/MushiSenpai/SovereignSec-AI-Auditor"
 stack: ["tree-sitter taint", "Semgrep OSS", "Qwen2.5-Coder", "QLoRA", "vLLM", "Docker --network=none"]

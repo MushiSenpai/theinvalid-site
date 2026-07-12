@@ -1,6 +1,6 @@
 ---
 title: "Mushishi Audio Stack"
-oneliner: "Fully local voice cloning, TTS, lip-sync avatars, music generation, and auto-dubbing — job-queue architecture, every model MIT/Apache-2.0."
+oneliner: "Fully local voice cloning, TTS, lip-sync avatars, music generation, and auto-dubbing: job-queue architecture, every model MIT/Apache-2.0."
 status: shipped
 repo: "https://github.com/MushiSenpai/mushishi-audio-stack"
 stack: ["Fish Speech", "WhisperX", "LatentSync", "Hallo2", "YuE 7B", "Redis/RQ"]
