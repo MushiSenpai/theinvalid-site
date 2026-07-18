@@ -71,7 +71,7 @@ Format rules: PIPELINE.md.
 **Sources:** ~/Documents/trading/GINKO-TRADING-INTEL-STACK-v1.0.md (Live Gate section); ginko repo phase log.
 **Targets:** linkedin, hn
 
-## [queued] the-license-audit-that-blocked-my-own-translation-model
+## [published 2026-07-18] the-license-audit-that-blocked-my-own-translation-model
 **Angle:** ISAZA (Mizo↔English translation): every viable open translation weight (NLLB, MMS, Seamless) turned out CC-BY-NC, and weights are not code, so the Apache label on the repo means nothing for the model. The dual-track answer: an NC research lane and a clean commercial lane that never share weights, enforced by license CI that quarantines violations. Also: an unverified helper dialect claim became a formal gate before any fine-tune.
 **Sources:** ~/Documents/translation/ISAZA-TRANSLATION-STACK-v1.0.md; isaza repo license-CI.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
@@ -904,3 +904,572 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | OPS-140 | H | **A worktree session launched from a repo SUBDIR can commit deliverables at the wrong repo-relative path — and the doc becomes invisible to every path-based check even though it IS committed (platform spec recovery, 2026-07-15).** The Mushishi Platform master spec v1.5 was "missing from disk": its session (launched from ~/Documents/business, worktree of the ~/Documents repo) wrote `platform/` at the WORKTREE ROOT, believing root = business/ — so the branch `claude/elegant-kilby-39a6bc` committed `platform/MUSHISHI-AI-PLATFORM-SPEC-v1.0.md` instead of `business/platform/...`. When the worktree was deleted, every doc citing `~/Documents/business/platform/` found nothing, and even merging the branch would have landed the file at `~/Documents/platform/` (a path nothing cites). Recovery was pure git (`git show branch:path`, sha256-verified, re-landed at the cited path, master `ab9cf90`) — no restic needed: the worktree died, the branch did not. Lessons: (1) before committing in a worktree, check where the repo root actually is (`git rev-parse --show-toplevel`) vs where the session THINKS it is; (2) land estate docs to master same-session at the exact path other docs cite — a doc committed only on a worktree branch at an uncited path is the publish≠reachable bug for internal docs; (3) "missing file" triage order = git branches (`git log --all -- '*name*'`) BEFORE backup restore. | SUTRADHARA spec recovery (2026-07-15) | unmined |
 | OPS-141 | H | **A "band-aid the symptom" post-pass and a "fix the classifier" root-pass produce the same map channel — but only the root fix survives a re-gate (3D DEFINITIVE crate, F125, 2026-07-15).** F123 flagged the crate "reads too chrome" and softened it with a manual metallic/roughness post-pass (roma-mat: metallic p50 255→178) — but the underlying reseg still classified 91% of texels as steel (metallic 1.0), so the very next stage that re-derives ORM from the reseg would wipe the softening. Root cause: the v3.6 STEEL-DEFAULT material classifier was tuned on the single DARK-LIT reference photo, where luma is an unreliable carbon signal (shadowed steel reads dark), so it FORBADE steel→carbon promotion — correct for that input, wrong once clean evenly-lit multi-view anchors exist. Fix = make the promotion SYMMETRIC but on a DIFFERENT signal: weave PERIODICITY (an FFT peak), which is immune to the dark-lit-steel bug that luma has. Promote only when the clean multi-view projection is the source, only on large planar outward fields, with a STRICTER peak floor than the demotion floor (34 vs 20). Result: carbon 4→13 regions, texel_frac 0.091→0.638, metallic p50→0 at the SOURCE — no post-pass needed, and it can't be undone by a re-run. Lessons with legs: (1) if a "fix" is a post-pass on a derived map, check whether the deriving stage re-runs downstream — it'll silently revert your fix (same class as OPS-109 out-of-band re-export staleness); (2) a classifier tuned on input A's failure mode becomes wrong for input B — when the input class changes (dark photo → clean multi-view), re-examine the guards that the old input justified; (3) the right way to add a promotion the old rule forbade is a DIFFERENT, bug-immune signal (FFT weave vs luma), not loosening the signal the bug lived in; (4) an emissive that "glows" needs BOTH a bright emission map AND KHR_materials_emissive_strength >1 (glTF clamps emissiveFactor to [0,1]; a bright albedo-blue alone reads as dim cyan, not an LED) — the F121/F122 "blues subdued" residual was half-fixed until the strength extension went in. | 3D definitive crate material endgame (F125, 2026-07-15) | unmined |
 | OPS-142 | H | **An overcorrection reads as a NEW defect — and the cure is a REFERENCE MEASUREMENT before a bolder parameter, not a bolder parameter (3D DEFINITIVE crate BLOOMFIX, F125-addendum, 2026-07-15).** F125 fixed the "blues subdued" residual by lifting the blue LEDs to a near-white emissive floor (B≥235) + emissive_strength 5.0 — which then rendered the bars BRIGHTER than the surrounding steel and became the DOMINANT defect (large luminous white-blue smears). The measurement that reframed it: in the reference photo the blue bars are DARKER than the steel (luma 63.8 vs 174.9, ratio 0.364) — they read blue by CHROMA + contrast, not luminance; the whole "make them glow brighter" axis was pushing away from the reference. Fix = drop the floor to a saturated moderate-luminance blue (B=200) + strength 1.4, and address the real smear source: the PROJECTION painted broad BLOBS where it couldn't resolve discrete bars (4 components held 89% of emissive texels), so a blob guard collapses any over-wide component to a bar-width core. Bloom −58% emissive texels, bar width 6.1→3.88. Second half of the pass: a "durable fix marked owner-gated" was actually a ONE-LINE WIRING GAP — `_synth_brushed_steel` existed and was tested but was only called from `_run_synthesis`, never from `_run_hybrid` (the path the shipped crate uses), so steel got satin roughness but a FLAT normal = glassy; wiring an equivalent `_synth_brushed_normal()` into the hybrid path fixed it. Lessons: (1) before making a corrective parameter BOLDER, MEASURE the reference target the parameter is chasing — F125 assumed "brighter = closer" when the reference bars are dark; a ratio measurement (0.364) would have caught the inversion up front; (2) a smear/bloom is often a MASK-EXTENT problem (the emissive region is too wide) before it's an intensity problem — tighten the mask (erode + blob-guard to the feature's real geometry) before touching strength; (3) when a residual is filed "durable fix, owner-gated," check first whether the fix already EXISTS and is just unwired on the active code path — `grep` the function's callers before assuming new work; (4) glTF emissive_strength >1 that made the LEDs glow in F125 was also the bloom's HDR multiplier — the same knob fixes and breaks, so tune it against the reference luminance ratio, not "more glow." | 3D definitive crate bloomfix (F125-addendum, 2026-07-15) | unmined |
+| OPS-143 | S | **A test of a FALLBACK path that doesn't block the primary silently tests different code per environment (3D meshops, F126, 2026-07-15).** `test_reference_mask_prefers_alpha_over_luma` asserted the corner-luma fallback drops dark sub-margin pixels — but `_reference_object_mask` tries rembg FIRST, and rembg is installed in the orchestrator venv (segments the square correctly → assertion flips) while absent in the td-meshops container (test passes). Same test, two envs, two code paths; an earlier session's "64 passed" was true only for its container env. Fix = monkeypatch rembg out of sys.modules so the assertion pins the path it's actually about. Lessons: (1) fallback tests must explicitly disable the primary/optional dep; (2) a "N tests passed" done-note implicitly claims an environment — name it. | goofy-sammet-3bb40a (2026-07-15) | unmined |
+| OPS-144 | H | **To measure your own security engine on a digital twin honestly, author the twin's graph with the engine's OWN shipped ingest functions, make the scorer read the ENGINE OUTPUT (never the ground-truth manifest), and count a DETECTED-but-de-prioritized finding as a HIT (BHAIRAVA twin T0, WO-D, 2026-07-15).** Three coupled honesty rules fell out of building the MERIDIAN twin's T0 scorer. (1) Don't hand-craft the graph the engine reads — call the engine's real ingest fns (`audit.ingest`/`casm.ingest`/`reach.deploy_link`) so the content-derived node ids line up exactly as on a real cross-layer graph; the shipped P5 engine then runs with zero adaptation and the result reflects prod behavior, not a bespoke fixture. (2) Anti-leakage (V-D5): the ground-truth manifest is SCORING ground truth only and must be provably out of the engine's input — enforce it with a structural AST test (the graph builder imports no yaml/manifest/scorer), not a promise. (3) The subtle one: an intentionally-isolated public bucket (on no attack path) is DETECTED by the CSPM engine but DE-PRIORITIZED — a first-cut recall that only scanned attack-paths scored it a MISS, punishing the exact "rank, never drop" (D8) behavior the tool is designed for. Credit findings by what the engine EMITS (including ranked-low ones) with a reachability-weighted severity, so recall is complete AND the D17 ranking still puts the reachable crown jewel above the isolated bucket. Result: D17 Spearman 0.95/NDCG 0.98, min-cut finds the cross-plane bridge choke point, clean-control FP gate 0 high-sev. Also: a "not-yet-built" leg (the LLM entry, graph_node:null) is scored NOT-YET-COVERED, never a miss — don't let a future phase drag a present-phase number down. | BHAIRAVA twin T0 (WO-D, 2026-07-15) | unmined |
+| OPS-144 | H | **The local-optimization trap at architecture scale (3D texture saga close, D42/F128, 2026-07-15).** Fifteen texture passes each fixed its measured defect while the owner's viewer verdict worsened — all operated downstream of a fragmented UV atlas nobody re-questioned; the external professional named it in one look ("texture unpacking is not right; needs seamless unwrap"). Lessons: (1) when successive fixes each "succeed" while the holistic verdict degrades, stop patching and re-derive the foundation; (2) an unwrap optimized for packing efficiency is optimized against every downstream texture operation — seams belong on panel boundaries; (3) the deliverable format the CLIENT names (quads, Blender-standard, engine-agnostic) outranks the format the pipeline finds convenient; (4) fix-plans age — F100c (quad-primary delivery) was correctly planned day one and never shipped while 15 texture passes ran. |
+
+## 2026-07-16 — Segmentation rule ≠ unwrap rule: measure the flood, not the threshold [§B]
+- Rebuilding S6 (F128 charter): the "obvious" seam source — dihedral hard-edge components
+  (F111 v3.1's rule, proven for GROOVE DRAWING) — silently fails for UNWRAP segmentation:
+  a quad-remesher rounds every 90° box corner over 2-3 quad rows, so per-edge dihedral
+  drops below any hard threshold and the flood fill leaks through the gap; measured ONE
+  region holding 97.7% of faces. Same code, different question: strokes only need edges
+  to EXIST; charts need boundaries to CLOSE. Fix = normal-budget region growing (faces
+  join while within 60° of the region SEED normal; hard edges stay absolute barriers) —
+  cuts rounded corners no matter how many rows they span. Lesson generalizes: when
+  reusing a proven rule in a new stage, measure the property THE NEW STAGE needs
+  (closure), not the property the old stage proved (presence).
+- Prune-loop lesson: a per-pass "block the merge target" guard starved convergence (20
+  slivers left after 24 passes). Only block merged-AWAY labels as later targets; a
+  target may legitimately RECEIVE many merges per pass.
+
+## 2026-07-16 — Gate false-quarantine: fix the MEASUREMENT's blind spot, not the threshold [§B]
+- G17-L1 quarantined every crate build for a week at IoU 0.567 < 0.75 while the asset was
+  fine: the gate compared a FIXED-elevation turntable orbit against a ~30°-elevation ¾
+  photo — no orbit frame could ever match the photo's pose. The pipeline already KNEW the
+  solved camera (s8b/RoMa registration, IoU 0.86-0.92 at that pose); the fix was one extra
+  shipped-render frame AT the solved pose, picked up by the existing best-of-frames scan
+  with zero gate-code change. Measured: best_iou 0.567 → 0.9138, first delivery promotion
+  in the F120-F127 arc. Lesson: when a gate false-fails a class of good work, check whether
+  the gate's INPUT SET can even contain a passing sample before touching thresholds — and
+  reuse poses/answers the pipeline already solved upstream.
+
+### §B — an unconditional up==0 alert on an on-demand stack is a design conflict, not an incident (2026-07-16, TdServiceDown)
+- TdServiceDown (up{stack="3d"}==0, severity high) fired at 17:18 after the 17:12 boot.
+  Triage first suspected a crash or idle-flush kill — the truth: the 3D stack had been
+  DELIBERATELY down since 2026-07-15 01:55 (`3d-ctl.sh stop` = `docker compose down`,
+  containers removed, nemotron left as idle GPU resident per owner directive). The box
+  was then off 07-15 15:32 → 07-16 17:12; on boot alertmanager state was fresh, so the
+  same stale condition re-notified as if new. The alert had ALSO been nagging every
+  repeat_interval (4h) since the teardown — normal idle state read as a high-severity page.
+- Fix per the estate's own convention (audio stack precedent + the IsazaGatewayDown
+  comment IN THE SAME FILE: "we do NOT fire while it is legitimately down"): deactivated
+  TdServiceDown in monitoring/vmalert/rules.yml (commented out, dated rationale,
+  .bak-tddown-20260716), SIGHUP-reloaded vmalert, verified the alert expired in
+  alertmanager. Crash-during-work still surfaces via RQJobsFailing (rq-3d exporter).
+- Lesson 1: before treating a service-down alert as an incident, ask whether DOWN is that
+  service's normal state — an on-demand stack needs a conditional alert ("up but
+  unscrapeable" / dead-man during work windows), never a bare up==0.
+- Lesson 2 (found while fixing): cadvisor (--docker_only) currently exports ONLY the root
+  cgroup — zero per-container series (container_last_seen etc.), so "container running but
+  unscrapeable" can't be expressed, and prometheus.yml's "container visibility comes from
+  cadvisor" comment is currently FALSE. That's a real monitoring gap: ContainerRestartLoop
+  and any container-level alert are silently blind. Follow-up task chip spawned.
+
+### §B — cadvisor is blind to Docker's containerd image store; use the containerd factory, not the docker factory (2026-07-16, closes Lesson 2 above)
+- Root cause (the Lesson-2 gap): this box runs Docker's containerd IMAGE STORE, not the
+  classic graphdriver. `docker info` -> Storage Driver: overlayfs, driver-type
+  io.containerd.snapshotter.v1 (data-root /mnt/data-disk2/ai/docker-data). cadvisor's
+  DOCKER factory identifies each container's read-write layer by reading
+  image/<driver>/layerdb/mounts/<id>/mount-id — a CLASSIC-graphdriver file that does NOT
+  exist under the snapshotter store. So `newDockerContainerHandler` errored for EVERY
+  container ("failed to identify the read-write layer ID"), cadvisor dropped them all, and
+  only {id="/"} was exported. NOT a cgroup-v2 permission bug and NOT a volume-mount bug:
+  the `/:/rootfs:ro` recursive bind and cgroup access were both fine. Measured, didn't
+  guess — the old `/var/lib/docker` mount was also a red herring (real root is the
+  daemon.json data-root on disk2).
+- Bumping cadvisor does NOT fix it: v0.49.1, v0.52.0, v0.52.1 all fail identically (the
+  docker factory has no containerd-snapshotter support in any released version), and
+  --disable_metrics=disk didn't skip the RW-layer lookup (it's unconditional).
+- Fix (verified on throwaway cadvisor instances BEFORE touching prod): use cadvisor's
+  CONTAINERD factory against Docker's `moby` namespace (`--containerd-namespace=moby`) and
+  DISABLE the docker factory by pointing `--docker` at a bogus socket so it can't
+  claim-then-fail the docker cgroups first. `--docker_only=true` still filters raw systemd
+  slices, leaving containers + root only. Per-container series went from 1 -> 30+ groups;
+  0 layer-ID errors. Kept the pinned v0.49.1 image (works) — smallest change.
+- CAVEAT worth remembering: containerd's moby namespace only knows the 64-char container
+  id, so cadvisor's `name` label = that id, and Docker friendly names / compose labels
+  (com.docker.compose.service) are NOT visible via containerd (they live at the docker
+  layer). Only `id` + `image` are usable. So alert rules on this box must match containers
+  by IMAGE, not name. Reinstated TdServiceDown as conditional
+  `up{stack="3d"}==0 and on() (count(container_last_seen{image=~".*mushishi-meshops.*"} > time()-120) > 0)`
+  — fires only when the container is genuinely running-but-unscrapeable, so the on-demand
+  stack being stopped never pages (dry-run = 0 series while down). ContainerRestartLoop's
+  annotation now surfaces `image` (the readable handle) instead of the hash `name`.
+- Lesson: a monitoring exporter's storage assumptions are a compatibility contract with the
+  runtime. When Docker moved to the containerd image store, cadvisor's docker-factory path
+  silently broke while the container stayed "healthy" — a green exporter that emits nothing
+  is worse than a red one. Verify a fix against the SPIRIT (real named/imaged containers),
+  not just the letter (count by name > 1, which hash-names satisfy trivially).
+- .bak: docker-compose.yml.bak-cadvisor-containerd-20260716, rules.yml.bak-tdrewrite-20260716.
+- OPEN (future, if friendly names ever needed on dashboards/alerts): a node-exporter
+  textfile writer emitting docker_container_info{id,name,image,compose_service} and a
+  `* on(id) group_left(name)` join would restore friendly names estate-wide — deferred as
+  scope beyond this fix.
+
+## 2026-07-16 — A hybrid without its fill lane is a different (worse) algorithm — gate lane PRESENCE [§B]
+- The crate's "hybrid" texture (projection + Paint-fill) ran with paint_fill_frac=0.0
+  ("no paint glb") and silently became projection+flat-median — 35% of the surface
+  shipped as single-color fill, and the owner rejected exactly those faces. The
+  degradation was RECORDED in metrics and gated NOTHING (the F107 recording≠gating
+  class at the algorithm level). Lesson: when a composite algorithm loses one of its
+  lanes, that is not a parameter change, it is a DIFFERENT algorithm — gate on lane
+  presence/fractions (projection/mirror/synthesis shares), park on silent degradation.
+- Metric-artifact mismatch: the emissive "bar width" metric was computed on a skeleton
+  and passed while the actual written map carried 3,801 disconnected fragments. Measure
+  the artifact that ships, not an idealization of it (F25's texture-map corollary).
+
+## 2026-07-16 — Box 2 deploy-day lessons (intel-vps) [§B]
+- A restock watcher beats price capitulation: hourly cron + ntfy caught cx43@hel1 20h
+  after a 3-week stockout; bought at $20.81/mo vs $89-120 for the in-stock alternative.
+- Two deploy scripts, two privilege models: GINKO's script sudo-escalates per-step and
+  ran clean as a plain user; TANYUU's assumes a ROOT ssh target but neither documents nor
+  asserts it — it mkdir-failed as mushi and STILL exited 0 (set -euo pipefail defeated by
+  remote-failure handling). Lesson: deploy scripts must (a) assert their required remote
+  privilege up front and (b) fail loudly; "exit 0" from a deploy that did nothing is the
+  silent-skip class (OPS-1/64/66) wearing a new coat.
+  → FIXED 2026-07-16, tanyuu PR #20: up-front root assertion (`id -u` preflight before any
+  mutating step), every remote step explicitly `|| die` (bare `set -e` doesn't survive
+  errexit-exempt contexts), FAILED banner on any non-zero exit, runbook §2 shows
+  `root@<host>`, regression tests (PATH-shimmed ssh) pin non-root fail-fast + failure
+  propagation. Full write-up: osint PROBLEMS-AND-SOLUTIONS.md F15.
+- Fresh-box restic gotcha: backup timers fail until `restic init` runs on BOTH tiers
+  (local + offsite), and per-user known_hosts means root's first sftp to the Storage Box
+  fails even after the deploy user accepted the key. Init + key-accept belong in the
+  bootstrap, not the first 03:45 backup failure.
+- tailscale up races: a nohup'd `tailscale up` left running while a second one starts
+  regenerates the nodekey and invalidates the first auth URL mid-click. Kill the old
+  process before re-issuing; expect a possible stale machine entry to delete.
+
+### §B — the WRITTEN-map gate must survive its own drawing primitive (2026-07-16, F129b)
+
+Variant C of the sci-fi crate re-texture (frame-vs-inset steel/carbon + LED glow +
+11 mesh-anchored bars). Three lessons worth keeping:
+
+- **Measure the palette from the reference's actual pixels, not the projection.** The
+  frames rendered dark-uniform because the code used the ¾-photo's projected steel
+  median (~luma 96, a lighting artifact). The reference's bright brushed-steel frames
+  are ~luma 172 (top-20% of non-blue pixels). Two-material contrast on a metallic
+  surface under even IBL comes from a bright base color; measure it, don't infer it.
+- **A gate defined in atlas space biases the primitive that must pass it.** The
+  emissive-component gate scores components by AXIS-ALIGNED bbox-fill (≥0.5). Groove
+  loci are diagonal in UV space, so straight diagonal bars have bbox-fill ~0.35 and
+  fail — even though they're perfectly clean bars. Fix was to draw bars axis-aligned
+  at the groove midpoint (in the recess, snapped to H/V) so the shipped map passes the
+  gate by construction. When a quality gate lives in a projected/packed space, the
+  authoring primitive has to be authored in that same space or it fights the metric.
+- **KHR_materials_emissive_strength is not free.** trimesh's GLB exporter binds an
+  emissive texture + factor but never writes the strength extension, so LEDs render as
+  flat blue paint. A tiny JSON-chunk post-pass (mirror the existing ORM-consolidate
+  rewrite) adds it; Blender's glTF importer reads it too, so the same inject lights the
+  bars in the PNG turntable AND in model-viewer. Verified glow only after the inject.
+
+Also reaffirmed (F129 process lesson): a known-FP judge class (G17 "holes/tears" on
+brushed-normal streaks under flat IBL) licenses SKEPTICISM, not dismissal — the same
+votes also carried a real "missing carbon-fiber detail" residual. Acceptance evidence
+= close-up tiles per named prior complaint + your own honest per-phrase verdict.
+
+### §B — the crate treadmill was three stacked causes, and the cheap experiment beat 30 fix cycles (2026-07-16, F130 review)
+
+OPS-145. Architecture-scale review of the 3D stack (owner: "a simple crate seems impossible").
+Verdict: no single villain — a frozen actuator (SPRINT-GATES forbade re-running S2, so 17
+texture rebakes iterated against an upstream defect), a noisy sensor (G17 VLM proven wrong in
+BOTH directions on hard-surface metal), and a mis-scoped deliverable (single-photo fully-automated
+hero hard-surface: the one category the industry agrees needs humans or parametrics in 2026)
+multiplied into ~30 failure rows. The 10-minute untextured clay render — which nobody ran in six
+days — refuted "the generator is the ceiling" (s2-raw was crisp all along; the remesh/retopo chain
+melted it) and relocated the fight from S8 texture to S3/S4 geometry + intake policy.
+Lessons that generalize beyond 3D: (1) when a loop's only movable layer is downstream of the
+defect, every "fix" mints a new artifact class — check WHICH layers the sprint froze before
+iterating; (2) a review of textured output cannot adjudicate a geometry question — strip the
+confound (render untextured) before diagnosing; (3) ~30 clean same-day SKUs vs ONE spiraling SKU
+is a scope signal, not a capability signal — price the SKU class, not the pipeline. Full report:
+~/Documents/3D/STACK-REVIEW-20260716.md (F130).
+
+### §B — an emissive guard is a PER-LANE obligation: every new fill lane re-opens the F118 leak (2026-07-17, F131)
+- Built the two cheap deterministic S8 texture wins from the F130 review (§7 ideas #3+#11)
+  in `s8b_reference_match.py`: SYMMETRY-MIRROR PRE-FILL (fit the reflection plane offset —
+  classical mechanism of "Symmetry Strikes Back" CVPR 2025, arXiv 2411.17763, no weights —
+  then reflect unseen texels across it and RE-SAMPLE the photo) and PERPENDICULAR-ONLY
+  projection (view-cos >= 0.60) + CLONE-FILL of the dropped grazing zones from in-region
+  texture. Both behind flags; measured on the seamnet crate: real-photo coverage
+  25.2% → 59.7% with prefill alone (the review promised ~48%; multi-axis XYZ symmetry
+  beat it), flat median fill 60.3% → 19.6%.
+- The transferable lesson: the F118/F121 rule "mirror MATERIAL, never emissive" is not a
+  one-time fix on the mirror — it is a STANDING OBLIGATION on every lane that moves pixels
+  to places the camera never saw. The new pre-fill honored it by design (blue samples
+  rejected: ~109k texels on this job). The new CLONE-FILL did not — its source windows
+  included direct-projected LED texels, and the zoom tiles showed small blue chips stamped
+  onto the front panel: the same over-replication class through a brand-new lane, caught
+  only because acceptance evidence includes zoom tiles at the prior-complaint crops
+  (F129 process lesson). One-line fix: exclude blue from clone sources.
+- Corollary: when a defect class has a named guard, new code paths must be audited against
+  that guard AT REVIEW TIME ("which lanes move pixels? does each one carry the guard?"),
+  not discovered per-lane in renders. A checklist question beats a re-diagnosis.
+- Also re-proven: mirror by RE-SAMPLING (structure) beats mirror by nearest-source colour
+  transfer — the F129 "mirrored faces still 92-97% flat" defect was the transfer, not the
+  symmetry idea.
+
+### §B — assignment beats synthesis when the reference is itself procedural (2026-07-17, F132)
+- Built the F130 review's #1 lane (option C / trim-decal method): a texture stage that
+  ASSIGNS procedural materials to mesh-measured panel regions and PLACES LED features
+  into the mesh's own slot islands, instead of synthesizing pixels from a 24%-coverage
+  photo. Every prior failure class got a structural kill: box masks in world-mm ⇒
+  rectilinear boundaries (no organic distance-band frames), analytic twill at fixed tow
+  ⇒ no tire-tread scale drift, slot-restricted emission ⇒ bars sit in grooves BY
+  CONSTRUCTION (93.5% membership, gated), and a distribution gate ⇒ steel-dominance
+  cannot invert again. G17 parseable votes moved 2 → 5 → 7 across A/B → C → D.
+- The transferable lesson: when the reference image is a STUDIO RENDER OF CLEAN
+  PROCEDURAL MATERIALS, reconstruction is the wrong frame entirely — the honest move is
+  to identify the material system and REBUILD it parametrically, using the photo only as
+  art direction. Synthesis lanes spent ~17 rebakes approximating what assignment
+  expresses in ~40 lines of mm-box config.
+- Measure the capability before architecting around it (re-proven): a 60-second probe
+  showed Cycles NORMAL bake does not capture shader bump on our container build — that
+  single measurement redirected the whole lane from BSDF emit-rewire bakes to
+  position-map + numpy composition, and made it MORE deterministic and testable.
+- Concurrency discipline: the F-number I "knew" was free was already claimed in code by
+  a sibling session mid-edit (F131) before its ledger row existed — the uniqueness check
+  must read the CODE and the ledger, and lanes racing an actively-edited module should
+  copy small primitives (with provenance) rather than import from a moving file.
+
+- [2026-07-17, 3D/cratewright] CONSTRUCTED beats RECONSTRUCTED for the symmetric-box hard-surface
+  class, measured: the parametric generator (F132, review-20260716 option D) reproduced the
+  gamedev crate e2e in 106s CPU with 100% quads / deliberate loops / UV util 0.83 / authored LED
+  positions, and the A/B against the photo-recon seamnet mesh is decisively crisper at every
+  inspection distance. The photo's job is ART DIRECTION (a human authors ~40 lines of params);
+  the pipeline's job is construction. Post-worthy pairing with the F130 review story (§A candidate:
+  "when the fix is to stop reconstructing").
+- [2026-07-17, 3D/gates] A new capability lane is exactly when the existing gate wall earns its
+  keep — it vetted cratewright three times in one session: G7's unvetted-waiver park exposed a
+  tile-composition decision (drop S7 rather than whitelist), G18 physics caught hand-authored
+  carbon albedo below the physical band (the same F110-add4 trap the gate was built for — fix the
+  material, not the gate), and G17 parked catalogue ingest fail-closed. Lesson: when a gate blocks
+  a NEW lane, first ask which of the three it is — (a) honest defer that shouldn't be in this
+  chain, (b) real defect in the new thing, (c) metric category error (reference-silhouette-IoU
+  applied to an art-direction job). Only (c) justifies changing the gate, and that's an owner call.
+- [2026-07-17, 3D/bmesh] Three constructional bmesh traps now guarded as loud build errors in the
+  generator (never silent cleanup): inset_region whose region touches a bevel crease explodes the
+  miter (clamp cell bounds into the flat-face span); an inset rim landing exactly on a pre-existing
+  station loop mints zero-height quads (deterministic rim/station dodge beats post-hoc weld —
+  weld-partial leaves tris); centroid-bounds region selection grabs coplanar faces at OTHER depth
+  levels (bucket by depth, keep the dominant plane). Also: bake margin must stay under the UV pack
+  gap or islands bleed into each other (the "black gash" class).
+
+- [2026-07-17, 3D/gates] RESOLVED the F132 (c) owner-call: reference-silhouette-IoU applied to an
+  art-direction job. Owner chose (a) — skip the photo-fidelity legs for constructed tiles, gate on
+  construction (G2/G6/G18) + F109 self-silhouette + human A/B. Implemented as a `reference_role`
+  manifest key (enum reconstruction|art-direction) declared on the tile: G17 then sets
+  has_reference=False (skips L1 best-view IoU + raggedness-vs-ref) AND passes reference=None to the
+  L2 VLM (skips matches_reference), while the reference-free hole + VLM-defect legs still gate. The
+  generalizable lesson: a category-error gate fix belongs at INTAKE SEMANTICS (declare what the
+  reference IS), not as a per-gate threshold tweak — one tile key retargets every downstream leg
+  and future constructed tiles inherit it. SECOND, honest scoping catch: neutralizing photo-fidelity
+  did NOT unblock the parked crate — it is catalogue.eligible (PUBLIC) and no vision model was
+  reachable, so it still parks on the ORTHOGONAL D38 'don't ship an unjudged public asset' gate.
+  Fidelity semantics and judge-availability are different gates; fixing one doesn't move the other.
+- [2026-07-17, 3D/metrics] UV-island counts computed over a triangulated GLB's raw vertex indices
+  OVER-REPORT (237 vs true 36) because glTF split-vertices at hard-edge/tangent normal seams — not
+  UV seams — shatter each island into shards. Weld corners by (position, uv) before counting: a
+  normal-only split (same pos+uv) collapses, a real UV seam (same pos, diff uv) stays split. Cross-
+  checks exactly against the generator's construction-time count. Any 'island', 'component', or
+  'shell' metric read off an exported mesh must first decide which discontinuities it means to see.
+- [2026-07-17, osint/licensing] Verify the DATA-source LICENSE, not just the code/API license,
+  against your COMMERCIAL model. TANYUU's primary AML sanctions source is OpenSanctions, whose CODE
+  is usable but whose DATASET is CC-BY-NC — non-commercial ONLY — while AML screening is the stack's
+  core commercial thesis (13 files depend on it). A repo that reads MIT can still ship you a
+  paid-product landmine in its bundled data or its model WEIGHTS (REVEAL/GeoCLIP NC weights under
+  open code are the same trap). Fix pattern: route every COMMERCIAL path through a public-domain
+  source (OFAC-SDN-direct, built keyless in D-2.1) and demote the NC source to analyst-only; add a
+  weight/data-license check to the pre-Stage-P audit gate, separate from the code-license check.
+- [2026-07-17, git] `git reset --mixed <ref>` on a working tree that is BEHIND <ref> shows
+  committed files as phantom deletions/modifications (the index moved to <ref>, the tree did not).
+  `git reset --hard <ref>` restores the tracked files to match; UNTRACKED work survives a hard reset,
+  so it is safe when the only un-committed things are new untracked files. Caused a scare mid deploy-
+  glue commit; nothing was lost.
+- [2026-07-17, estate/forks] A server-side API rate-limit is about CONCURRENCY, not task size —
+  breaking a build into smaller forks does not beat it (D-2.1 died twice at ~17 concurrent estate
+  sessions, succeeded on the third try once traffic cleared). Reduce concurrent sessions or wait;
+  do not thrash. And SURVEY before forking a queued build in a multi-session estate: shared main /
+  KARIBUSA runs ahead of any one session's plan, so a queued wave may already be merged (a P8 fork
+  this session was redundant — case-mgmt+Lane-2/3 was already landed by another session). Check
+  `gh pr list --state merged` + main HEAD first; fork only the genuine gaps.
+
+- [2026-07-17, 3D/gates] RESOLVED the orthogonal L2 blocker from the entry above, owner ruling:
+  for art-direction + public, SUBSTITUTE the judge, don't waive it. Keep D39's invariant (no
+  unjudged public asset) but change the judge of record from the flaky-on-metal VLM to the owner:
+  (a) L2 VLM becomes advisory-only on art-direction tiles (records verdict, never blocks — not on
+  fail, not on unavailable, not for public), so public shipping stops being coupled to GPU/judge
+  availability; (b) public promotion is gated on a recorded owner sign-off ARTIFACT
+  (owner-signoff.json in the job dir) — absent ⇒ the asset rests at the estate's existing
+  pending-owner-signoff rung (ingested private) until the owner reviews the A/B montage. The
+  generalizable rule: when an automated judge is unreliable for a class, don't waive the gate
+  (that's the F130 treadmill) and don't keep the flaky requirement — REPLACE the judge of record
+  with a human sign-off artifact, keeping the invariant. Cost is zero: the crate ships the moment
+  the owner looks at the montage and drops the artifact; judge reachability stops mattering for
+  constructed tiles. §A candidate pairs with 'when the fix is to stop reconstructing'.
+
+- [2026-07-17, 3D/git] Put /data/ai/01-workspace/3d-stack under LOCAL git (no remote, owner-gated
+  per GITHUB-VISIBILITY-POLICY — tree holds private/commercial gate logic). Motivation (F133):
+  no VCS meant every session hand-rolled *.bak-<tag>-<date> snapshots for rollback — s10_export.py
+  alone had ~19 .bak copies, s8b_reference_match.py 21, gates.py 16 (208 .bak files, 7.1MB total).
+  Init commit 2df90b3, gitleaks-clean, noreply author. .gitignore EXCLUDES: the three vendored
+  upstream clones TRELLIS.2/ UniRig/ Hunyuan3D-Omni/ (each carries its OWN .git — a top-level
+  `git add -A` would gitlink them as empty submodules), library-v2/venv/ (1.1G), node_modules/,
+  __pycache__/.pytest_cache, *.bak-* (git replaces them), and large binary assets (*.glb fixtures
+  et al.). TRACKS 111 first-party files: meshops/ orchestrator/ library-v2 py, tools/ source,
+  benchmark.py, simwright_pilot.py. Generalizable: from now on use git for 3d-stack rollback (a
+  branch or `git stash`/pre-edit diff), NOT new .bak-* files. The 208-file .bak corpus stays in
+  place for now; owner ruling = ARCHIVE-then-PRUNE after a stability window (suggested review
+  ~2026-07-31, adjustable): tar.zst the loose .bak-* OUTSIDE the tracked tree, THEN filesystem-
+  delete them (they're gitignored/untracked, so the prune is `find -name '*.bak-*' -delete`, not a
+  commit). ARCHIVE RULE (owner, 2026-07-17): if the tar.zst becomes the SOLE copy of the pre-git
+  history, its destination MUST be inside a backup.sh BACKUP_PATHS path — "anything irreplaceable
+  must be in backup.sh" is a CLAUDE.md non-negotiable, and a tarball outside both git and the
+  backup set silently violates it. Alternative that avoids the question: `git add -f` the corpus
+  as one archive commit (lives in repo history, covered by whatever protects the repo), then rm.
+  Either path is fine; do not land between them. No remote until owner decides.
+
+- [2026-07-17, platform/SUTRADHARA] Status reconciliation + P-F build wave. (1) The KARIBUSA
+  ledger (PROJECT-STATUS.yaml) drifts from reality because sessions edit the live on-disk file
+  but rarely commit it: git HEAD was ~1 week behind the working tree, and the `conductor` entry
+  still flagged "master spec v1.5 MISSING (own-platspec)" through 07-17 even though the spec was
+  re-landed 07-15 (ab9cf90). RULE: before treating any `own-*` owner_action or "MISSING" marker
+  as open, verify it against disk/git — the ledger is canonical for STATUS but stale on
+  freshly-resolved items. STATUS.md mirrors are only as fresh as the last commit + sync_status_md
+  run. Committed the catch-up (145385c, single-file scope). (2) SUTRADHARA reframing: v1 core
+  P0–P6 is COMPLETE and P7 is explicitly "v2 — sketch only, do not build in v1" (spec §12) — so
+  there is no core "rest of build"; the only remaining v1 surface is the P-F freelance/back-office
+  track, most of it owner-gated (P-F2 Telegram tokens; P-F5/P-F6 accountant+legal, invoicing
+  BLOCKING on accountant sign-off). (3) The Conductor GPU-lease landing (P1, shipped 07-05) already
+  cleared the OSINT v2 GPU gates — P4-GPU/P6-GPU/GPU-embed + the REVEAL-deepfake VLM leg were
+  "waiting on Conductor," and Conductor is live; they now queue only on the single RTX 5090, not on
+  the platform. On-chain tracing / multi-tenancy / self-improving-loop were never Conductor-gated
+  (own build / Stage-P / weeks-of-go-live-data respectively).
+
+- [2026-07-17, platform/ci] "Must stay green" ≠ your problem: verify a gate's baseline on clean
+  main before owning its red. `make check-drift` (and its 2 pytest tests) are red on
+  mushishi-platform `main` ITSELF — registry/profiles.yaml lags the live gpu-tenants.sh by 5 GPU
+  tenants (td-roma, td-pixal3d, td-hi3dgen, td-triposg, vllm-locator) added by 3D/OSINT sessions
+  and never registered. Two independent P-F build agents each nearly treated this as their own
+  failure; both correctly proved it pre-existing by stash-and-run on clean main, then deselected
+  the on-box drift tests (which `skipif` off the GitHub runner where gpu-tenants.sh is absent). The
+  authoritative gate for this repo is GitHub CI (ruff+mypy+pytest+eval-gate+gitleaks), NOT
+  on-box-only `check-drift`. OPEN ITEM: reconcile profiles.yaml to gpu-tenants.sh (add the 5 as
+  unexercised profiles, null perf per "don't fabricate") — a real accuracy bug in the core registry.
+
+- [2026-07-17, platform/process] `gh pr merge` to main is denied by the permission classifier in
+  non-interactive/forked sessions. Completed, CI-green build work therefore PARKS as open PRs for
+  owner merge — it does not auto-land. Plan multi-task build queues around this: build → push →
+  open PR, and expect a stack of green PRs awaiting the owner (or a Bash permission rule for
+  `gh pr merge`). This session landed P-F4 (PR #23, examples/ LangGraph+CrewAI showcase,
+  live-traced) and P-F3 (PR #24, /v1/capacity + reservations + owner-gated on-win bootstrap) both
+  green-and-open; P-F1 (private opportunity-engine costing) built in-place (that repo has no VCS).
+
+- [2026-07-17, freelance/P-F1] Costing-in-pitch generator (quote_block.py) shipped in
+  opportunity-engine: deterministic lead→band→quote, prices ONLY via cost-calc.py constants (never
+  a hardcoded or LLM-guessed number), splits a send-ready client_block from an internal owner_note
+  (margin/floor/discount never leak into the sendable block — asserted in tests). Send stays HUMAN,
+  no Airtable write. Lesson: keyword band-classifiers have predictable collision traps (a RAG
+  build's "audit log" read as an advisory "audit" band) — exclude the ambiguous bare token, require
+  a qualifier, and lean on the PRICING-REVIEW safety net for genuinely ambiguous scopes rather than
+  forcing a guess. OPEN ITEM (owner): `~/Freelance/opportunity-engine` is NOT under version control
+  and now holds pricing logic + draft artifacts — a data-loss risk (same class as the 3d-stack
+  no-VCS entry 07-17); bring it under local git (owner-gated, no remote — it's private pricing) or
+  into backup.sh BACKUP_PATHS.
+- [2026-07-17, estate/forks] A background build-agent that dies with an API/connection error mid-
+  final-report has often ALREADY completed and merged its work — the drop hit the report, not the
+  build. Do NOT treat the failure notification as "work lost." VERIFY the actual repo state (merged
+  PR list, main HEAD, expected files present, CI checks, gitleaks) before re-forking; re-running a
+  completed wave is the redundant-fork waste again. (TANYUU P11 fork: status=failed "Connection
+  closed mid-response", yet PR #26 was merged, framework/ staged, CI 3/3 green — confirmed by
+  inspecting main, not by trusting the truncated result.) Corollary for publish-class waves:
+  "continue till all builds complete" authorizes BUILDING, never the PUBLIC flip — creating a public
+  repo / flipping visibility stays owner-gated; a fork prepares + audits the extraction privately and
+  returns a GO/NO-GO, and you re-verify its safety claims (no NC/secret leak into the public surface)
+  yourself before surfacing the recommendation.
+
+- [2026-07-17, freelance/P-F1 · RESOLVED] Closed the P-F1 open item above: `~/Freelance/opportunity-engine`
+  is now under LOCAL git (commit 2264843, branch main, NO remote — private pricing/BizDev, owner-gated
+  per GITHUB-VISIBILITY-POLICY) AND added to backup.sh BACKUP_PATHS (offsite disaster tier, incl. its
+  .git history). Did BOTH, not either/or, because they are complementary: git = version control + rollback
+  (supersedes the leftover profile.toml.bak-*/score.py.bak-* files — owner can `git rm` those now); restic =
+  disaster recovery, since a local-only repo still dies with the disk, and the .git history is itself
+  irreplaceable once it exists. gitleaks-clean (working tree + the single commit). The one finding was a
+  FALSE POSITIVE — the built-in `airtable-api-key` rule matched the hardcoded Airtable BASE id (a non-secret
+  resource identifier, not a credential); recorded + rationalised in a committed `.gitleaksignore`. The real
+  PAT stays in a gitignored `.env` / $AIRTABLE_TOKEN and was never on disk in this tree. Edited ONLY the
+  operational /data/ai/01-workspace/scripts/backup.sh, NEVER the ~/Documents/github-staging mirror (a private
+  path must not leak into a public-bound copy). Follow-up worth a sweep: the rest of ~/Freelance
+  (FREELANCE-PROGRAM-LOG.md ~51KB + sibling project dirs) is likewise outside backup.sh — same coverage-gap
+  class, not fixed here (scope was opportunity-engine only).
+
+- [2026-07-17, infra/backup] Swept the WHOLE `~/Freelance` into backup coverage (closes the follow-up
+  above). Replaced the opportunity-engine-only BACKUP_PATHS line with a single broad `/home/mushi/Freelance`
+  entry + scoped EXCLUDES. Lesson: `~/Freelance` is 58G on disk but ~99% regenerable — blindly adding it
+  would have risked the 2026-06-28 restic `/tmp`-repack OOM. Method that generalises: (1) `du --max-depth=1`
+  each heavy tree to see WHERE the weight is (here: sovereign-code-auditor `.tmp` 28G + `.venv-train` 7.9G +
+  `out` 2.1G; sovereign-legal-rag `.data` 14G vector store; sovereign-rag-demo `.venv` 5.4G); (2) confirm the
+  git repos have GitHub remotes (all 4 do → committed code re-clonable, so only unpushed/uncommitted work +
+  NON-git dirs actually need protecting); (3) broad path + scoped excludes (`/home/mushi/Freelance/**/.venv*`,
+  `**/venv|__pycache__|.pytest_cache|.mypy_cache|.ruff_cache`, plus absolute paths for `.tmp`/`out`/
+  `unsloth_compiled_cache`/`.data`); (4) **PROVE it with a restic `--dry-run --json`** before trusting the
+  excludes — a malformed exclude silently backs up all 58G. Result: 58G → **0.505 GiB scanned / 0.486 GiB added**,
+  restic-verified, `bash -n` clean, path is parsed array element #102. Edited ONLY the operational
+  `/data/ai/01-workspace/scripts/backup.sh`, never the github-staging mirror (0 Freelance hits). Standing rule:
+  a NEW heavy AI repo under `~/Freelance` (new venv name / vector store / big outputs) needs its own scoped
+  exclude added + a re-verify, or it bloats the offsite set.
+
+- [2026-07-17, platform/registry] profiles.yaml drift RESOLVED via PR #25 (b0a75d3, awaiting
+  owner merge): registry/profiles.yaml was missing 6 of 27 gpu-tenants.sh tenants
+  (td-roma/td-pixal3d/td-hi3dgen/td-triposg/vllm-locator + td-paint) — not the 5 first flagged;
+  td-paint (F114) was also orphaned and drift can't go green without all 6. Each added as its OWN
+  single-tenant profile (mode_script null = on-demand per-job swap-in, not in 3d-mode.sh KEEP;
+  vram/warmup null per the honesty rule — the GB figures in gpu-tenants.sh are DESIGN ESTIMATES,
+  not P1-2 measurements) rather than folded into 3d.trellis, because each carries an explicit
+  NEVER-co-load constraint the source-of-truth forbids asserting co-residency for. check-drift
+  green, 21/21 tests. LATENT ISSUE (owner-territory, NOT touched, chipped): 3d-mode.sh stops
+  non-KEEP tenants then globs docker-compose.*.yml and `up -ds` EVERY file — which would bring the
+  mutually-exclusive NEVER-co-load 3D engines up simultaneously. The per-job state machine may
+  flush others before a job, but the bulk bring-up looks co-load-unsafe (OOM class per
+  feedback_mode_gpu_stoplist / no-co-load lessons). Worth an owner look.
+
+- [2026-07-17, 3d/gpu-safety] RESOLVED the latent bulk-bring-up OOM flagged just above. Read
+  `3d-mode.sh` + `gpu-tenants.sh` + the orchestrator (`3d-orchestrator.py`/`lib/vram.py`) and traced
+  the ACTUAL co-load path, which was narrower and worse than the first guess. The glob `up -d`s 9
+  compose files, but 8 of them are LAZY: their container idles at ~0 VRAM and only allocates during a
+  job — a per-request subprocess that exits (td-paint/pixal3d/hi3dgen/triposg, confirmed via
+  `subprocess` in each server.py), a subprocess.check_output gen (td-omni), or a load-on-/generate +
+  POST /unload cycle (td-trellis2). So having those "up" is NOT a co-load — and the orchestrator
+  REQUIRES them healthy (it errors "start it (docker compose up -d)" for pixal3d/hi3dgen/triposg if
+  they aren't). The ONE real culprit is **vllm-locator**: a `vllm/vllm-openai` engine that allocates
+  weights+KV at CONTAINER START and holds ~14-18GB for its whole lifetime. The bulk `up -d` made it a
+  resident squatter every 3D session. Masking was PARTIAL: the trellis2/omni/unirig routes call
+  `assert_card_free_for_gen()` + a conditional `stop_other_tenants` flush at the GEN_HEADROOM_MB=26000
+  threshold, which stops vllm-locator right before the job (so no OOM, but wasteful churn +
+  stop-mid-load race). The pixal3d/hi3dgen/triposg/paint routes have NO assert and NO flush — they
+  only `wait_healthy` then generate — so a ~21GB texture/geometry subprocess co-loaded onto the
+  resident ~14-18GB locator = 35GB > 32GB = **OOM on a single normal job** (the un-masked path). And
+  nothing consumes vllm-locator: no LOCATOR_URL in services.py, zero references in the orchestrator —
+  the mode glob was the ONLY thing that ever started it. td-roma is a red herring (no compose file →
+  never in the glob; runs `--rm` one-shot). FIX (front-end only, delegates to the SSOT per CLAUDE.md):
+  added `MODE_NO_BRINGUP=(vllm-locator)` + a `compose_no_bringup()` helper to `gpu-tenants.sh` (skip a
+  compose file iff EVERY container_name it declares is eager-resident/swap-only; fails OPEN); `3d-mode.sh`
+  now skips those files in its bring-up loop. Dry-run over all 9 real compose files: vllm-locator.yml
+  SKIP, the other 8 UP (meshops.yml still UP because td-redis/worker aren't excluded). `bash -n` clean
+  on both. NOT live-tested: `vllm-nemotron` (foreign, Up 24h healthy, ~30GB) holds the card and no td-*
+  containers are built right now — respected GPU etiquette, did not evict, proposed+verified statically
+  instead. LATENT FOLLOW-UP (owner-territory, NOT touched): the pixal3d/hi3dgen/triposg/paint
+  orchestrator routes still lack a pre-job `assert_card_free_for_gen()`/flush — defense-in-depth only
+  now that the mode script no longer creates a squatter, but any OTHER resident holder (a leftover omni
+  that skipped /unload, a future eager engine) would still OOM those routes. Worth adding the same guard
+  the trellis2/omni/unirig routes already have. Also worth auditing other `*-mode.sh` for the same
+  glob-and-up-everything shape (only 3d-stack uses per-service D8 files today, so only 3d-mode.sh is
+  affected). Files: `/data/ai/01-workspace/scripts/{3d-mode.sh,gpu-tenants.sh}` (git repo watari, edited
+  working tree only — not committed/pushed).
+- [2026-07-17, osint/verify] On-box live smokes catch what fixtures structurally cannot — that a
+  keyed source's REAL provisioned key actually parses, and that a real endpoint still returns the
+  shape the parser expects. TANYUU C8-W2 shipped fixtures "to documented API shapes" (unrun); the
+  first TANYUU_LIVE_SMOKE=1 pass surfaced three real gaps a green offline suite hid: (1) a live
+  smoke must SKIP (not red-fail) on a transient transport error — a crt.sh ReadTimeout carries zero
+  signal about parser correctness, so treat timeout/read/connect like the GDELT 429-skip; a genuine
+  200-with-wrong-shape still fails. (2) credential-file readers that do `.read().strip()` smuggle a
+  pasted label line / `export VAR=` line / trailing newline straight into the request URL — read the
+  LAST non-empty line and strip an optional `export VAR=`/`VAR=` prefix + quotes (exact env-name
+  only, so a base64 `=` survives). (3) a key-gate test that asserts key_available()==False by
+  clearing only the ENV var flaps on any box that has provisioned the on-disk key file — isolate
+  BOTH sources (env + file path via monkeypatch), the OPS-143 pattern again. A "keys minted" owner
+  action isn't done until a live smoke proves the key parses end-to-end.
+- [2026-07-18, 3d/gpu-safety] RESOLVED the F134 LATENT FOLLOW-UP (integrate3 routes lack the pre-gen
+  guard) — but MEASURING the named cause first flipped the diagnosis. The F134 note (and gpu-tenants.sh's
+  comment) said pixal3d/hi3dgen/triposg/paint "have NO assert_card_free_for_gen and NO flush." Driving
+  the REAL `_s2_generate` with GPU+services stubbed showed the opposite: the etiquette assert at line
+  159 is at function-body level, so EVERY non-early-return route (incl. the integrate3 elifs 46 lines
+  below) already calls it — a resident FOREIGN holder was refused, not OOM'd. The three sources made a
+  LOCAL read of the elif branches and missed the shared preamble. The ACTUAL defect the shared preamble
+  carries for integrate3: it is trellis2-scoped — the conditional flush used `keep=TRELLIS2_KEEP` and the
+  health-wait was hard-coded to td-trellis2. So on a low-headroom card an integrate3 job would (a) flush
+  away its OWN td-<engine> tenant (a registered GPU tenant not in the trellis2 keep-set) then fail its
+  own wait_healthy, and (b) block on / require a td-trellis2 it never uses (gen runs on td-<engine>;
+  topo-normalize + S3-S10 run in td-meshops-worker — verified). FIX (orchestrator-only, reuses lib/vram
+  helpers, mirrors the Omni route's own keep-set): resolve the gen tenant from `params["engine"]` via a
+  new `INTEGRATE3_TENANTS` map, flush `keep=(td-<engine>, td-meshops)`, and skip the td-trellis2
+  health-wait for integrate3 (each branch already waits its own :9110/:9111/:9112). Trellis2 family
+  (generate/parts/draft/d3s2) byte-for-byte unchanged. td-paint (:9109) is a registered TENANT but has
+  NO orchestrator route (zero refs in the orchestrator) — nothing to guard there; the "paint route" in
+  F134 is a tenant-list carryover, not code. PROOF: `test_integrate3_gen_guard` drives real
+  `_s2_generate`, asserting the guard fires BEFORE generate, the low-headroom flush keeps the engine's
+  OWN tenant, the wait hits the engine port not :9101, and the trellis2 family is unchanged; suite 42/42
+  (+11). GPU UNTOUCHED: foreign `vllm-nemotron` held ~30GB the whole time — never evicted, no mode
+  switch, no container stopped; verified purely static (py_compile + stubbed-probe unit test + diff).
+  Commit `4be27e6` on 3d-stack master (LOCAL git, no remote — NOT pushed). LESSON: measure the named
+  cause before building its fix — "route X has no guard" was a local-scope misread of a shared guard;
+  the real bug was the guard's TARGET (trellis2 keep-set/health-wait), not its absence. Files:
+  `/data/ai/01-workspace/3d-stack/orchestrator/{3d-orchestrator.py,tests/test_orchestrator.py}`.
+
+### §B — deploy success = a scheduled unit actually RAN; three green signals lied while every loop was dead (2026-07-17/18, GINKO intel-vps, ginko PR #15)
+
+- **The incident.** GINKO Stage-V on intel-vps looked healthy — containers green, timers
+  `enabled` + scheduled — while ALL 15 loop lanes (predictions, briefs, OSINT, pgdump) had
+  written ZERO rows since provisioning. Three silent layers stacked: (1) shared home/VPS units
+  hardcode `Requires=trading-stack.service` but the VPS installs `trading-stack-vps.service` →
+  every start-job refused ("Unit not found"); (2) units ExecStart the HOST `.venv` but the deploy
+  rsync EXCLUDES `.venv` and never ran `uv sync` → `ExecMainStatus=203`; (3) schema applies via
+  `ginko-ingest migrate` from that venv, nothing on boot → `relation "job_runs" does not exist`.
+- **Why three "verifications" all passed on a dead system.** Container health checks containers,
+  not host units. `is-enabled`/`list-timers` shows NEXT fire times even for unstartable services.
+  Even `systemd-analyze verify` (added after layer 1) only proves the dependency GRAPH — layers 2
+  and 3 sail through it. Each fix "succeeded" while the loops stayed 100% dead.
+- **The gate that ends the class: a RUN-canary.** The deploy now starts one guaranteed-no-op lane
+  (L16 with `GINKO_TANYUU_LIVE` unset) and FAILS unless `Result=success` AND the job row landed in
+  a migrated schema. Exec proves the venv; the row proves the DB. "A scheduled unit actually ran
+  end-to-end" is the only accepted success signal — same family as "publish ≠ done until a real
+  curl reaches it".
+- **Sequel found while arming: don't let the canary burn the day.** `run_job` is idempotent per
+  (job_id, as_of); the L16 loop passed `as_of=today`, so the deploy canary's success silently
+  skipped the day's remaining 3 fires as `already_succeeded`. L15 had already codified the answer
+  (`as_of=None` for N×/day lanes; re-run safety belongs to the id-keyed ingest upsert, not job-slot
+  dedup). Convention: slot-key daily lanes only; multi-fire lanes pass `as_of=None`.
+- Diagnosis record: ginko `deploy/VPS-LOOP-EXECUTION-GAP.md`. Fixes: ginko PR #15 (squash-merged
+  `57479ee`). Estate sweep: Tanyuu installs under the canonical unit name (immune), Bhairava has no
+  VPS units. Acceptance clock restarted 07-17 → 07-31 from the first passing canary.
+
+### §B — "deployed ≠ operating," round 3: the substrate that could never fill + the gateway that read from a different store than it wrote to (2026-07-18, TANYUU intel-vps, tanyuu PR #30)
+
+- **The incident.** Days after GINKO's dead-loops lesson (above), the SAME class on the same box,
+  different stack, different mechanics: Tanyuu Stage-V had healthy containers, a passing keystore
+  fix (PR #28), and a working authenticated GINKO pull — over a substrate with ZERO rows that
+  could NEVER accumulate. Two independent silent layers: (1) no collection mechanism existed on
+  the VPS at all — the collect timer was a HOME user-systemd unit, never part of the VPS deploy;
+  (2) the containerized gateway served an IN-MEMORY store (`create_app(keys=…)`, no PG backend) —
+  the home box's PG wiring lived in a host-only script the container never ran. Writes would land
+  in Postgres; reads came from empty dicts. Auth worked perfectly. Everything green.
+- **The generalization.** GINKO's lesson was "a scheduled unit actually RAN is the only success
+  signal." Tanyuu adds the data-plane twin: **a serving stack operates only if the write path and
+  the read path meet in the same store, and something actually feeds the write path.** Health
+  checks see neither. An acceptance clock started at container bring-up measures nothing.
+- **The fixes (one code path per concern, tanyuu PR #30).** Shared `pg_store` wiring both
+  gateways boot through (env-driven for the container; boot-probe FAILS the boot if the env is
+  set but the DB unreachable — an in-memory fallback would be the silent lie); a profile-gated
+  collect one-shot run by a system timer via `docker compose run` (no host venv to drift — the
+  exact GINKO layer-2); and a RUN-canary that counts ROWS after each run: PASS needs ≥1 row in
+  the serving tables, all-sources-down records an honest SKIPPED, and claimed-success-over-empty-
+  substrate fails the unit. The deploy ends by running it once for real.
+- **Estate rule reaffirmed + extended:** deploy success = the workload's OUTPUT observed (a row,
+  a file, a reachable page) — and boot assertions must cover every injected dependency the app
+  can silently do without (keystore was PR #28's; the serving store was this one's; conductor/
+  litellm keys remain latent on the analyst path — tracked in the ledger).
+- **Bonus trap re-confirmed:** docker bind mounts can't see freshly created paths under the
+  mergerfs /data pool (shadow-mount-until-reboot) — e2e scratch moved under $HOME.
+
+## [queued] the-best-osint-dashboard-i-could-build-with-zero-external-assets (2026-07-18)
+**Angle:** Tanyuu had four single-panel demo dashboards that all bound the same port and only ever
+showed synthetic data — so the substrate was collecting real intel nobody could see. Built ONE
+consolidated portal (overview/map/timeline/graph/entities/claims/sources/alerts) over the live
+Postgres/AGE store. The constraint made it interesting: estate rule = one self-contained HTML file,
+inline vanilla-JS + inline SVG, no CDN/npm/webfonts, CSP-safe, offline. So every widget is
+hand-rolled — a force-directed link graph, a Tufte-dense timeline, and a **geospatial map with no
+tile server**: bake a public-domain Natural-Earth coastline into an equirectangular SVG path
+(`x=lon+180, y=90-lat`) and resolve dual-format geo tags server-side (USGS `lat,lon` vs GDELT
+country names → centroids). SOTA data-presentation isn't React+Mapbox; it's information design
+(separated confidence/reliability/provenance, evidence one click away, honest "calibration pending"
+at n=0) within a sovereign no-egress box.
+**Second angle (stronger):** ran a 4-dimension adversarial AI review over the change. Its #1
+"high-severity, will-500-in-prod" finding — "Apache AGE rejects a parameterized `LIMIT`" — was
+**refuted by a single live query** (`snapshot(limit=5)` returned exactly 5 rows against the real
+DB). The reviewer reasoned from a true-sounding general claim that was false for this AGE version.
+Lesson (again): measure the *named cause* before you "fix" working, tested code — an adversarial
+reviewer is a hypothesis generator, not an oracle. The other 7 findings were real and worth fixing
+(honest source-grading for multi-source claims, a nonce-CSP + Host-header backstop on a no-auth
+loopback surface, a shape inconsistency, a misleading deploy comment) — verify, don't dismiss, and
+don't obey either.
