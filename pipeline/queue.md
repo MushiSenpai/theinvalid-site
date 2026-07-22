@@ -76,7 +76,7 @@ Format rules: PIPELINE.md.
 **Sources:** ~/Documents/translation/ISAZA-TRANSLATION-STACK-v1.0.md; isaza repo license-CI.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
 
-## [queued] a-fitness-ai-that-refuses-to-guess
+## [published 2026-07-22] a-fitness-ai-that-refuses-to-guess
 **Angle:** ADASHINO: sets, reps, and progression come from a deterministic solver; the LLM is only the conversational shell around it. Why there is deliberately no generated demo video, and why the release gate is four weeks of the owner actually training with it before any claim ships. Honest state: P0 to P2 built, dogfood gate ahead.
 **Sources:** ~/Documents/fitness/ spec (D1-D14); adashino repo PRs.
 **Targets:** linkedin, reddit:r/fitness, hn
