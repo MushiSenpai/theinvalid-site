@@ -79,12 +79,12 @@ A Studio Ghibli-inspired productivity suite in Flutter (tasks, kanban, calendar,
 ---
 
 <!-- oss-auto:start -->
-## OPEN-SOURCE CONTRIBUTIONS
+## OPEN-SOURCE CONTRIBUTIONS — 1 merged
 
 Upstream fixes submitted to the tools I run in production — each links to the live PR.
 
 - **FlagEmbedding** (BGE-M3 / bge-reranker-v2-m3) — [#1584](https://github.com/FlagOpen/FlagEmbedding/pull/1584): `device=` was silently swallowed by `**kwargs`, loading the reranker across every visible GPU (OOM); aliased it to `devices=` with a regression test.
-- **qdrant-client** — [#1247](https://github.com/qdrant/qdrant-client/pull/1247): local mode runs exact search, so `search_params` is ignored — but silently, making `exact=True` look like a no-op. Added a one-time warning + batch-path coverage + regression tests.
+- **qdrant-client** — [#1247](https://github.com/qdrant/qdrant-client/pull/1247) (merged): local mode runs exact search, so `search_params` is ignored — but silently, making `exact=True` look like a no-op. Added a one-time warning + batch-path coverage + regression tests.
 - **whisperX** — [#1442](https://github.com/m-bain/whisperX/pull/1442): a chunk mis-detected as a language with no alignment model crashed the *entire* transcription; made it warn and keep the segment-level result. Validated on real audio with a same-clip before/after.
 - **ComfyUI-WanVideoWrapper** — [#2041](https://github.com/kijai/ComfyUI-WanVideoWrapper/pull/2041): the VRAM-management node wrapped meta-device tensors before materializing them → `Cannot copy out of meta tensor` crash on no-LoRA VACE; materialize-before-wrap fix, validated end-to-end on a Wan-VACE run (live before/after traceback).
 - **MuseTalk** — [#419](https://github.com/TMElyralab/MuseTalk/pull/419), [#420](https://github.com/TMElyralab/MuseTalk/pull/420): a PyTorch 2.6 `weights_only` crash on the legacy face-parse checkpoints; an `UnboundLocalError` on image input — two clean, low-risk fixes.
