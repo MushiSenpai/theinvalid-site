@@ -81,7 +81,7 @@ Format rules: PIPELINE.md.
 **Sources:** ~/Documents/fitness/ spec (D1-D14); adashino repo PRs.
 **Targets:** linkedin, reddit:r/fitness, hn
 
-## [queued] planning-a-robotics-stack-before-buying-a-single-servo
+## [published 2026-07-25] planning-a-robotics-stack-before-buying-a-single-servo
 **Angle:** VISHWAKARMA, a planning post and labeled as one: choosing VLA models by license lane (Apache SmolVLA/openpi vs no-ML-training GR00T), quarantining Isaac Sim because sm_120 support isn't there (ManiSkill3 instead), discovering the target drone was discontinued mid-spec, and sequencing a $0 software-only P0 before ~$330 of hardware. Nothing here claims a working robot; it documents how to plan so the first purchase isn't a mistake.
 **Sources:** ~/Documents/robotics/VISHWAKARMA-ROBOTICS-STACK-v1.0.md (v1.0.2, license lanes + §20 buy list).
 **Targets:** linkedin, reddit:r/robotics, hn
@@ -1473,3 +1473,28 @@ reviewer is a hypothesis generator, not an oracle. The other 7 findings were rea
 (honest source-grading for multi-source claims, a nonce-CSP + Host-header backstop on a no-auth
 loopback surface, a shape inconsistency, a misleading deploy comment) — verify, don't dismiss, and
 don't obey either.
+
+### §B — the run-canary earned its keep: it caught a 2.74 GB feed OOM that container-health hid (2026-07-24, TANYUU intel-vps deploy)
+
+- **The payoff.** The Stage-V deploy's RUN-canary (added the week before, §B above) FAILED the very
+  first live deploy — the collect one-shot cgroup-OOM'd (exit 137). Every other signal was green:
+  containers healthy, gateway PG-backed + keystore-seeded, endpoints 200. Without the canary the
+  deploy ends "green" and the 6h timer silently OOM-loops forever — the exact "deployed ≠ operating"
+  fiction the canary exists to kill. It paid for itself on day one.
+- **The bug it exposed.** OpenSanctions' consolidated `entities.ftm.json` is **2.74 GB** (one FtM
+  entity per line). `HttpCollector.fetch_bytes` does `resp.content` — the whole body into RAM — then
+  `decode` + `splitlines` + a record per entity, before the go-live leg keeps only `[:25]`. A 32 GB
+  dev box with no cgroup cap survived (local e2e said `opensanctions SUCCEEDED`); the 2 GB VPS
+  container did not, and raising the cap just moved the OOM to 6 GB. **Local success on an
+  unmetered box hid an unbounded read that only a memory-capped prod container reveals** — the
+  measure-in-the-target-environment lesson.
+- **The fix.** `fetch_bytes_bounded(max_bytes)` streams and returns only the first N bytes of
+  COMPLETE lines (8 MiB sample) — additive, `fetch_bytes` + golden fixtures untouched. Collect now
+  peaks at tens of MB. Redeploy: `PASS sources_ok=5/6 event=94 entity=38 claim_record=38`.
+- **Adjacent discipline that mattered.** A parallel session was mid-flight building a `portal` app in
+  the shared `~/projects/tanyuu` checkout, having edited the very deploy files I was shipping. Rule
+  held: rebased/merged in an ISOLATED `git worktree`, deployed from a clean `main` checkout (never
+  rsync a dirty shared tree into prod), and never disturbed their WIP (no `git add -A`, no stash).
+- **Stack-boundary restraint.** The full GINKO e2e needs `GINKO_TANYUU_LIVE=1` — a persistent
+  config flip on the GINKO stack that starts trading-substrate ingest. That is an owner decision on
+  another stack, not a deploy-session side effect; left it to the owner with the substrate proven ready.
