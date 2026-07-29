@@ -86,7 +86,7 @@ Format rules: PIPELINE.md.
 **Sources:** ~/Documents/robotics/VISHWAKARMA-ROBOTICS-STACK-v1.0.md (v1.0.2, license lanes + §20 buy list).
 **Targets:** linkedin, reddit:r/robotics, hn
 
-## [queued] a-local-3d-asset-foundry-with-two-license-lanes
+## [published 2026-07-29] a-local-3d-asset-foundry-with-two-license-lanes
 **Angle:** URO: image to mesh to retopo to bake on one RTX 5090, with commercial GUI tools running headless in Docker (license identity locks, Xvfb activation, path contracts) and a hard split between the clean lane and the NC lane. Includes the QuadRemesher anti-debug freeze (the engine parks itself in tracing-stop when launched from python) and why deterministic gates outrank a VLM judge.
 **Sources:** ~/Documents/3D/3D-Stack-v1.0.md; 3D-Stack-PROBLEMS-AND-SOLUTIONS.md (F-series); td-* containers.
 **Targets:** linkedin, reddit:r/threejs, hn
