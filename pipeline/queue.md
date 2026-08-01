@@ -91,7 +91,7 @@ Format rules: PIPELINE.md.
 **Sources:** ~/Documents/3D/3D-Stack-v1.0.md; 3D-Stack-PROBLEMS-AND-SOLUTIONS.md (F-series); td-* containers.
 **Targets:** linkedin, reddit:r/threejs, hn
 
-## [queued] my-security-auditor-is-80-percent-assembled-not-invented
+## [published 2026-08-01] my-security-auditor-is-80-percent-assembled-not-invented
 **Angle:** BHAIRAVA: a security-audit stack assembled roughly 80% from parts already built for other projects (the code auditor, OSINT collection frames, egress monitors, a knowledge graph), with 282 tests across the v1 phases. The thesis: in a one-person shop, assembly over invention is the only way a security product ships, and the boundary that matters is the signed-authorization gate: it will not touch third-party systems autonomously, by design.
 **Sources:** ~/Documents/security/BHAIRAVA-SECURITY-STACK-v1.0.md (D6, assembly map); bhairava repo test counts.
 **Targets:** linkedin, hn
