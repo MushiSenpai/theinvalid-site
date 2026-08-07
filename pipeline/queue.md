@@ -96,7 +96,7 @@ Format rules: PIPELINE.md.
 **Sources:** ~/Documents/security/BHAIRAVA-SECURITY-STACK-v1.0.md (D6, assembly map); bhairava repo test counts.
 **Targets:** linkedin, hn
 
-## [queued] one-yaml-file-to-rule-my-estate
+## [published 2026-08-07] one-yaml-file-to-rule-my-estate
 **Angle:** KARIBUSA: after status lines scattered across memory files kept going stale, one canonical PROJECT-STATUS.yaml with a dashboard on top became the single source of truth for 25 projects. Includes the fail-open trap: a bad YAML edit 500'd the status API and the UI silently fabricated sample alerts that looked real; the fix degrades with a line-numbered parse error instead of failing into fiction.
 **Sources:** karibusa repo (loader + sample-mode fix); PROJECT-STATUS.yaml conventions header.
 **Targets:** linkedin, reddit:r/selfhosted, hn
