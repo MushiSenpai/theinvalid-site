@@ -101,7 +101,7 @@ Format rules: PIPELINE.md.
 **Sources:** karibusa repo (loader + sample-mode fix); PROJECT-STATUS.yaml conventions header.
 **Targets:** linkedin, reddit:r/selfhosted, hn
 
-## [queued] a-gtk-switch-for-one-gpu-shared-by-seven-ai-stacks
+## [published 2026-08-08] a-gtk-switch-for-one-gpu-shared-by-seven-ai-stacks
 **Angle:** MUSHISHI MODE: one 32GB RTX 5090 serves an LLM stack, video, audio, 3D, and more, but never two at once. A native GTK4 switcher with job-guards (a mode switch checks for running jobs before it kills anything) and a strict rule that the app stays a front-end: all GPU stop/start logic lives in the same shell scripts cron and humans use. VRAM budgeting as a UI problem.
 **Sources:** /data/ai/01-workspace/mushishi-mode/DESIGN.md; gpu-tenants.sh single source of truth.
 **Targets:** linkedin, reddit:r/linux, hn
