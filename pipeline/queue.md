@@ -106,7 +106,7 @@ Format rules: PIPELINE.md.
 **Sources:** /data/ai/01-workspace/mushishi-mode/DESIGN.md; gpu-tenants.sh single source of truth.
 **Targets:** linkedin, reddit:r/linux, hn
 
-## [queued] driving-a-linux-ai-workstation-from-the-couch
+## [published 2026-08-14] driving-a-linux-ai-workstation-from-the-couch
 **Angle:** SETU (Mushishi Bridge): a phone/Mac web command panel over the whole estate, 26 registered services, served only over the tailnet (tailscale serve HTTPS, PWA install). The design line that kept it small: it is a command panel, not a dashboard; monitoring stays read-only elsewhere, and every action the panel offers is a script that also works without the panel.
 **Sources:** mushishi-bridge repo (registry, UPGRADES.md); tailscale-serve setup notes.
 **Targets:** linkedin, reddit:r/selfhosted
