@@ -1,6 +1,6 @@
 # The Blog Pipeline — full operating manual
 
-Automated weekly blog production with one human gate for social promotion.
+Automated twice-weekly blog production (Wed + Sat 09:00) with one human gate for social promotion.
 Built 2026-06-11. This document is the single reference: how it works, how to
 feed it, how to stop it.
 
@@ -13,7 +13,7 @@ feed it, how to stop it.
  │ Any work session that produces a lesson/failure/decision appends  │
  │ a topic block to pipeline/queue.md  (status: [queued])            │
  └──────────────────────────────┬────────────────────────────────────┘
-                                │  every Wednesday 09:00 (cron on mushishi)
+                                │  every Wed + Sat 09:00 (cron on mushishi)
  ┌─ THE BOT RUNS ───────────────▼────────────────────────────────────┐
  │ /data/ai/01-workspace/scripts/blog-bot.sh                         │
  │  1. git pull (site repo)                                          │
@@ -33,7 +33,7 @@ feed it, how to stop it.
  │ 2. Open drafts/<slug>/linkedin.txt → paste to LinkedIn            │
  │ 3. Open drafts/<slug>/reddit-*.txt → paste to the named subreddit │
  │ 4. (optional) hn-title.txt → submit to news.ycombinator.com      │
- │ 5. Done. Next post: next Wednesday.                               │
+ │ 5. Done. Next post: next Wed or Sat slot.                         │
  └───────────────────────────────────────────────────────────────────┘
 ```
 
