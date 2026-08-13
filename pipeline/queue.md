@@ -1498,3 +1498,35 @@ don't obey either.
 - **Stack-boundary restraint.** The full GINKO e2e needs `GINKO_TANYUU_LIVE=1` — a persistent
   config flip on the GINKO stack that starts trading-substrate ingest. That is an owner decision on
   another stack, not a deploy-session side effect; left it to the owner with the substrate proven ready.
+
+### §B — an OSS-PR campaign is a portfolio asset with a decay clock: stale bots close PRs, and dormant repos never merge them (2026-08-14, OSS campaign audit)
+
+- **The audit.** 11 upstream PRs submitted 2026-06-26..28 (mined from my own failure logs, not
+  issue-farming). Live status today: **1 merged** (qdrant-client #1247, 2026-07-22), 9 open,
+  1 closed-unmerged (transformers #46921 — permanently `exclude:true`, never cite).
+  **Zero human maintainer reviews on the 9 open ones** in ~7 weeks.
+- **The decay clock nobody was watching.** `fishaudio/fish-speech` runs `actions/stale@v9` with
+  `days-before-pr-close: 30`. Both my PRs there carried the `stale` label since 07-28/07-29 and were
+  **~13 days from auto-closing**. An unmonitored PR is not a stable asset — it silently degrades to
+  zero. The oss-observer tracked *state* (open/merged) but not *stale labels or close deadlines*,
+  so the countdown was invisible to the tooling that existed to watch exactly this.
+- **Merge odds are a repo-liveness property, not a PR-quality property.** Checked last-commit dates:
+  MuseTalk 2025-09-26 (~11mo dormant), YuE 2025-06-04 (~14mo). Four of the nine open PRs sit in
+  repos that may never merge anything again — including two that earned an *independent third-party
+  reproduction* (MuseTalk #419/#420, HeimdallCore 08-05). Good PR + dead repo = no merge.
+  **Rank targets by upstream commit recency, not just by fix quality or issue-match.**
+- **Never bump a moot PR.** Before commenting, re-verified every fix still applies at upstream HEAD
+  (fish-speech `ServeTTSRequest.text` still bare `str` @schema.py:82; `pyaudio` still core
+  @pyproject.toml:40; colpali still has no `plaid` extra). A bump on an already-fixed PR burns the
+  maintainer relationship the campaign exists to build. The re-verification also *produced* the
+  comment's substance: `fast-plaid` moved 1.4.7 → 1.6.0.2110, the PR's `>=1.4.7,<2.0.0` range still
+  resolves, and `fastkmeans` became transitive — a real status update, not "any updates?".
+- **Outward copy drifts toward UNDERSELLING after a win.** Three internal files still claimed
+  "0 merged" three weeks after the qdrant merge, and one file contradicted itself (README table
+  "0 merged" vs its own line 41 "1 merged"). The auto-generated resume block (`oss-status.py`,
+  `<!-- oss-auto -->` markers) was correct and live on theinvalid.me — **the hand-written copy was
+  the stale surface.** Anything a script doesn't own, rots.
+- **Tooling lesson (mine).** `gh pr comment --body` inside a shell-quoted string leaked literal
+  backslashes into three public comments (`` \`main\` ``). **Always write PR/issue bodies to a file
+  and use `--body-file` / `-F body=@file`** — never inline-escape markdown through a shell. Caught
+  and PATCHed within a minute, but the comments now carry GitHub's "edited" marker.
