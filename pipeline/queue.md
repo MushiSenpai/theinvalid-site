@@ -1580,3 +1580,46 @@ don't obey either.
   decision, not a layout one.
 - **The device killed a design direction outright:** the Fold 8 has **no S Pen support**. Worth
   confirming hardware capabilities before designing around them.
+
+## Qwen3.8-27B NVFP4 on one 5090 — sourcing a model stack (2026-08-24)
+
+Setting up an abliterated Qwen3.8-27B (NVFP4, single RTX 5090) surfaced a cluster of
+lessons about **trusting sources vs verifying them**.
+
+- **Verify HF repos against the API, never against search results or model cards.**
+  Three separate failures in one session: `unsloth/Qwen3.8-27B-Instruct-NVFP4` (the
+  name in the original request) **does not exist** — the real repo has no `-Instruct`
+  infix. A repo whose card and blog coverage both said "~23 GB" was actually **24.7 GB**
+  by summed blob size, which changed the verdict on a 32 GB card. And `hf download`
+  reports **"Repository not found"** for a repo that is merely **gated** (`gated: auto`,
+  API returns 200) — the error names the wrong cause. One-liner that settles all three:
+  `curl -s "https://huggingface.co/api/models/$R?blobs=true"` → read `gated` and sum
+  `siblings[].size`. Cheap, and it killed a 25 GB download that would have failed anyway.
+- **Model cards go stale within hours.** The chosen checkpoint was **re-quantized the
+  same day we pulled it** (ablation narrowed to layers 18–51), which *resolved* a
+  documented `reasoning_effort: xhigh` runaway gotcha. Docs written from the previous
+  revision would have shipped a stale workaround. Read the card at pull time, not from
+  a cached summary — and record which revision you validated against.
+- **Validate CLI flags inside the target image before booting**, not from docs. vLLM's
+  `serve --help` is paginated (80 lines, zero flags shown) — every flag looks ABSENT.
+  `--help=all` gives 1933 lines. Doing this pre-boot confirmed `--no-async-scheduling`,
+  `--mamba-cache-mode {align,all,none}`, and that `--kv-cache-dtype` also accepts
+  `nvfp4` — and it caught that the pinned "0.27.x" nightly actually reports
+  `0.26.1rc1.dev1046`. A failed boot on a 20 GB model costs far more than one `docker run`.
+- **`pgrep -f "<pattern>"` matches the waiting shell itself.** A poll loop containing
+  the literal string `hf download sakamakismile` matched its *own* command line, so a
+  download that finished in 11m50s still read "downloading" 20 minutes later. Confirm
+  completion by comparing **local bytes to remote bytes**, or grep the process list for
+  the binary, not for a phrase your own script contains.
+- **A CUDA `.run` bundles a driver, and installs it by default.**
+  `cuda_13.3.1_610.43.02_linux.run` carries driver **610.43.02** — running it with
+  defaults silently overwrites a deliberately chosen 595.91.07. Deselect the Driver
+  component, or skip the toolkit entirely: **containerized inference never uses the host
+  CUDA toolkit** (the image ships its own runtime), only the driver crosses the boundary.
+  Related: [[feedback_nvidia_run_dkms]], [[feedback_amdgpu_display_freeze]].
+- **Sources that disagree are usually both right, at different sizes.** "Is
+  `--enforce-eager` mandatory on 32 GB?" split the guides — because it depends on
+  checkpoint size (18.8 GB runs cudagraphs at util 0.97 and hits 262K; a larger quant
+  OOMs during graph capture, and *raising or lowering* `--gpu-memory-utilization`
+  doesn't help because capture allocates **outside** that budget). Before treating
+  guidance as contradictory, check which regime it was measured in.
