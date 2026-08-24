@@ -111,7 +111,7 @@ Format rules: PIPELINE.md.
 **Sources:** mushishi-bridge repo (registry, UPGRADES.md); tailscale-serve setup notes.
 **Targets:** linkedin, reddit:r/selfhosted
 
-## [queued] 25-ways-the-audio-stack-install-deviated-from-its-spec
+## [published 2026-08-24] 25-ways-the-audio-stack-install-deviated-from-its-spec
 **Angle:** Entry points lie, pin everything, the spec is a hypothesis — a tour of the LESSONS.md genre and why publishing failures beats hiding them.
 **Sources:** audio repo LESSONS.md (all); backlog A-1..A-6.
 **Targets:** linkedin, reddit:r/LocalLLaMA
@@ -1530,3 +1530,53 @@ don't obey either.
   backslashes into three public comments (`` \`main\` ``). **Always write PR/issue bodies to a file
   and use `--body-file` / `-F body=@file`** — never inline-escape markdown through a shell. Caught
   and PATCHed within a minute, but the comments now carry GitHub's "edited" marker.
+
+## TRINETRA — native Fold 8 cockpit + the SETU mode-table drift (2026-08-14)
+
+- **The cockpit had quietly died and nothing reported it.** `tailscale status` showed the Mac
+  **offline 37 days**. SETU (Mushishi Bridge) was built for exactly one client, that client was
+  gone, and no dashboard flagged it — the Bridge was "green" the whole time because it measures
+  *services*, not *whether anyone can reach them*. **Liveness of a UI's only client is part of
+  that system's health, and nothing in the estate models it.**
+- **A responsive breakpoint that hides labels without providing icons doesn't degrade — it
+  deletes the app.** Measured against the live daemon at 360px: six nav buttons rendering
+  **39×20px and completely empty** (`static/style.css:150` sets `.nav button span{display:none}`,
+  and there were no icons behind them), every touch target 20px against a 44px minimum. It had
+  shipped as "mobile support" and had never been opened on a phone. **Measure the small viewport
+  in a real engine; don't trust that a media query implies a working layout.**
+- **The drift wasn't a missing row, it was a duplicated function.** 3D Foundry (`3d-mode.sh`) and
+  Stop Current Mode (`stop-mode.sh`) reached the scripts dir and the GTK app on 2026-07-03 but
+  never the Bridge's MODES table — so no Bridge client could enter 3D Foundry and the only stop
+  offered was the nuclear StopAll. Root cause: `current_mode()` existed **twice** (`bridge.py:116`
+  + `modes.py:97`) and the copies diverged — one returned `"Idle / Nothing"`, the canonical title
+  was `"System Idle / Nothing"`, and only one could learn about 3D. Since `app.js` reads
+  `currentMode` from *both* endpoints and matches key-or-title, **the active row highlighted or not
+  depending on which response landed last** — a visible bug nobody had traced to its cause.
+  This is the estate's third instance of "a second front-end mirrors a list instead of deriving
+  it" (cf. `gpu-tenants.sh` stop-list). **The durable fix is a test asserting the mirror matches
+  reality on disk, not another one-time re-sync.**
+- **A guard you haven't seen fail is not a guard.** Added a bidirectional drift test (every listed
+  mode's script exists; every `*-mode.sh` on disk is reachable) and then **ran it against the
+  pre-fix table** to confirm it flags exactly `['3d-mode.sh', 'stop-mode.sh']`. Writing the
+  assertion and watching it pass proves nothing about whether it catches the bug it was written for.
+- **`gitleaks detect` on a fresh repo is a false clean.** It reported "no leaks found" after
+  scanning **0 commits** — because there were none yet. **Use `--no-git` to scan the working tree**
+  before the first commit, or the pre-publish gate silently passes on unscanned files.
+- **Probe the toolchain before writing the code.** Four independent build blockers on this box, all
+  surfaced by a cheap `:app:tasks` run in seconds: (1) `java -version` says 21 but there is **no
+  `javac`** — JREs only; solved with Gradle's foojay toolchain auto-provisioning rather than a sudo
+  apt install; (2) **AGP 9 rejects the standalone Kotlin plugin** (Kotlin is built in now);
+  (3) current androidx needs **API 37 + AGP ≥ 9.1**, and the SDK package is minor-versioned
+  `platforms;android-37.0`, not `android-37`; (4) AGP 9.1.1 needs Gradle ≥ 9.3.1. Finding these
+  *after* writing ~1000 lines would have confused "my code is wrong" with "the toolchain is wrong".
+- **Design the rule against the window, not the device.** The Fold 8's dp figures are *derived*
+  (Samsung doesn't publish shipped density and One UI lets users change display size), so the
+  cover/unfolded decision reads the live `Configuration.screenWidthDp` — and half the unit tests
+  exist purely to prove a density change can't misclassify the canvas. **When a spec number is
+  derived rather than confirmed, push the uncertainty into a runtime read and test the boundary.**
+- **Folding is a configuration change.** Android destroys and recreates the Activity on unfold, so
+  a live SSE stream held in a composable would reconnect at the worst moment. Holding it in a
+  ViewModel is what makes the transition seamless — the continuity requirement is an *architecture*
+  decision, not a layout one.
+- **The device killed a design direction outright:** the Fold 8 has **no S Pen support**. Worth
+  confirming hardware capabilities before designing around them.
