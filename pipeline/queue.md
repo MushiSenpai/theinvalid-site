@@ -116,7 +116,7 @@ Format rules: PIPELINE.md.
 **Sources:** audio repo LESSONS.md (all); backlog A-1..A-6.
 **Targets:** linkedin, reddit:r/LocalLLaMA
 
-## [queued] shipping-a-domain-site-and-offsite-backup-in-one-evening
+## [published 2026-08-27] shipping-a-domain-site-and-offsite-backup-in-one-evening
 **Angle:** The small lessons nobody writes down: parking DNS records block custom domains, zone-scoped API tokens can't touch Pages/Workers, storage boxes ship with all access toggles off, restic sftp needs relative paths, and Cloudflare Pages is quietly becoming Workers.
 **Sources:** EXECUTION-PLAN 2026-06-11; SITE-DECISIONS.md §8; backlog I-5..I-9.
 **Targets:** linkedin, reddit:r/selfhosted
