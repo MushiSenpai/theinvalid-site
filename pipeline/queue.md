@@ -1623,3 +1623,60 @@ lessons about **trusting sources vs verifying them**.
   OOMs during graph capture, and *raising or lowering* `--gpu-memory-utilization`
   doesn't help because capture allocates **outside** that budget). Before treating
   guidance as contradictory, check which regime it was measured in.
+
+### §B — three of the four kernels I was told to hand-write were already upstream, and the license was the only real blocker (2026-08-27, KOUKI / MiniMax H3 + LTX-2.5, F136)
+
+- **The proposal.** Add MiniMax H3 (33B omni-modal video+audio, open-weighted 2026-07-31) to
+  KOUKI and use **CUDA-Agent** (BytedTsinghua-SIA agentic-RL kernel generator, 2.11× vs
+  `torch.compile` on KernelBench) to hand-write four fused kernels: 3D MM-RoPE, AdaLN
+  modulation, tiled VAE decode, FP8/INT4 dequant GEMM. Confident, specific, well-structured.
+  **Three of the four were already done upstream and the fourth targeted 12% of the runtime.**
+- **What checking actually found.** AdaLN fusion: already in the reference impl (each block
+  fuses its attention residual gate with the following MLP AdaLN and carries normalized state
+  across the loop). Tiled VAE decode: already shipped as vLLM `--vae-patch-parallel-size` +
+  `--vae-use-tiling`, 3.4–3.5× — **and the VAE is not the bottleneck, the DiT is ~88% of
+  latency.** FP8/INT4: already exists as vLLM online FP8 plus community NVFP4/GGUF/INT8. Only
+  MM-RoPE was un-done, and RoPE is a rounding error next to attention.
+- **The proposal inverted the one interesting fact.** H3 puts ~13B of its 33B params in AdaLN
+  branches. The win isn't *fusing* the modulation — it's that those projections are
+  **precomputable into a lookup table and never loaded at inference**. The community NVFP4
+  build already does it: **13B → ~43M params**. The optimization was a *data-layout* insight,
+  and the proposal read it as a *kernel* insight.
+- **Both missed levers were model-level, not kernel-level.** (1) A Turbo LoRA takes H3 from 20
+  steps to 8: **3m23s → 1m21s on a 5090, ~2.5×**, zero engineering. (2) MiniMax **trained H3
+  with sparse attention but the weight release exposes full attention only** — real headroom,
+  in the layer that actually dominates, and not reachable by the proposed tool at all.
+- **The tool was real but scope-mismatched.** CUDA-Agent optimizes **isolated operators in the
+  1–100 ms band** from a `model.py` reference, and its own training pipeline **explicitly
+  filters out stochastic operators** — which is precisely the shape of a diffusion sampling
+  loop. Beating Opus 4.6 and Gemini 3 Pro on KernelBench says nothing about whether the
+  benchmark's task shape matches yours. **Check the benchmark's unit of work before believing
+  its win transfers.**
+- **Hardware sanity killed the premise before any of this mattered.** H3 is ~135 GB BF16 (2 ×
+  52-block DiTs @ 66.3 GB, Qwen3-VL encoder 51.5 GB, VAEs ~11 GB). Official consumer path is
+  **2 × RTX 5090**; the estate has one, and it was full with `vllm-qwen38` at 29.5 GB. "33B"
+  in a headline is a *transformer* count, not a *checkpoint* count, on any model with a
+  separate encoder and VAEs. Multiply before planning.
+- **The actual blocker was legal, and nobody had looked.** The **H3 Community License §I.5
+  excludes self-hosted weights from the US, EU, UK and South Korea, and §V.4 extends that
+  exclusion to the outputs.** It is **not revenue-gated** — it binds at personal-project
+  scale. The estate's VPSes are both **Hetzner, in Germany**. So the one hard operational
+  constraint that came out of a CUDA-optimization question was: *H3 stays on the home box and
+  never touches either VPS.* (The $20M authorization and the UI-attribution clauses are the
+  ones that wait.) Same trap as the OpenSanctions CC-BY-NC finding — **permissive tooling over
+  a restricted weight license.**
+- **And the better model was one search away.** **LTX-2.5** (22B, 2026-08-11) does the same
+  job on this hardware at **~25 s for 4 s of 720p vs H3's 1m21s**, ships an official **NVFP4
+  Blackwell build at ~5.5 GB** with official `ltx-kernels`, has **day-1 ComfyUI templates**,
+  is **trainable**, and carries **no territorial restriction**. Its own watch-clause is
+  different: free commercial under **$10M entity-wide**, but **transferring a fine-tune may
+  require a paid license** — which matters the moment a LoRA ships to a client.
+- **The generalizable rule.** When handed a confident optimization plan, the order is:
+  (1) does the target *fit the hardware*, (2) is the *license* usable, (3) has upstream
+  *already done it*, (4) is there a **model-level** lever (fewer steps, better quant, sparser
+  attention) that dwarfs the kernel-level one, and only then (5) write kernels. This plan was
+  reviewed at step 5 and failed at steps 1, 2, 3 and 4. Related: F121/F135 (measure the named
+  cause before building its fix) — here the named causes were not merely unmeasured, they were
+  **already fixed**.
+- **Priority: H** — this is a post. Working title: *"Three of the four CUDA kernels I was told
+  to write already existed."* Spec: `~/Documents/02-Creative-Stack/CC-spec-h3-ltx25-video-gen.md`.
