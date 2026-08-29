@@ -1693,3 +1693,71 @@ lessons about **trusting sources vs verifying them**.
   **already fixed**.
 - **Priority: H** — this is a post. Working title: *"Three of the four CUDA kernels I was told
   to write already existed."* Spec: `~/Documents/02-Creative-Stack/CC-spec-h3-ltx25-video-gen.md`.
+
+## Omarchy on a 2013 Intel MacBook — plan-stage lessons (2026-08-30)
+Context: planning Omarchy 4 "Quattro" (Arch/Hyprland/Quickshell) as a dual boot alongside OCLP Sonoma on a
+Late-2013 15" MacBook Pro. Nothing installed yet; these are research + probe findings worth keeping.
+Spec: `~/Documents/omarchy/OMARCHY-INSTALL-PLAN.md` (v1.1).
+
+- **An inventory that omits a component is not an inventory that denies it.** I read this machine's specs
+  from the estate stack docs ("Intel Iris Pro 1536MB", nothing further), concluded it was a `MacBookPro11,2`
+  with no discrete GPU, and told the owner that dodging the dual-GPU variant was one of the main reasons the
+  plan was low-risk. A one-line probe returned **`MacBookPro11,3`** — Iris Pro **plus** an NVIDIA GT 750M
+  behind Apple's gmux. **Absence of a line in a spec doc is not evidence of absence in the hardware.** The
+  general form: a doc written for one purpose (a stack architecture note) is not a complete inventory for
+  another (a driver-compatibility assessment), and the failure mode is silent because the doc looks
+  authoritative and internal. **Probe the machine before you characterise its risk profile.** The correction
+  cost nothing here because it landed before anything was installed; the same error found at Phase 3 would
+  have been a black screen on a machine whose macOS had already been shrunk. **Pri H — this is a post.**
+  Working title: *"My own spec doc lied to me about my own laptop."*
+- **The capability you are preserving may have already expired — check its version ceiling before you pay to
+  keep it.** The disk-sizing question was framed around keeping Xcode for iOS testing. It dissolved on one
+  fact: since **April 2026** App Store Connect requires **Xcode 26+ (iOS 26 SDK)**, Xcode 26 requires
+  **macOS Sequoia**, and OCLP Sonoma caps out near Xcode 16.2. The partition was being sized to protect a
+  capability that had been dead four months. The retention argument survived but for a completely different
+  reason (rollback), at a much smaller size. **Pri M.**
+- **"Historically hard" is a claim with a date on it.** Apple firmware disables the iGPU when a non-macOS OS
+  boots on dual-GPU MacBook Pros, which for a decade meant `apple_set_os.efi` shims, rEFInd, and forum
+  archaeology — and reports that later Mac firmware broke the shim. But **Linux 6.11 moved it into the EFI
+  stub**, and `MacBookPro11,3` is the *first* model on the whitelist. A risk I was about to escalate to
+  plan-threatening was already fixed upstream two years ago. **When a hardware problem has a long paper
+  trail, check whether the trail ends in a merged patch before pricing the workaround.** Corollary that did
+  survive: it constrains the fallback kernel (any kernel booted must be >= 6.11). **Pri H.**
+- **A tool's own docs can be stale in the direction that costs you the most.** Omarchy's official Mac-support
+  page still states the drive is wiped and macOS becomes unbootable, which reads as "dual boot impossible"
+  and would have killed the plan. The current reality (v4 free-space install, two ESPs, copy `limine_x64.efi`
+  to `EFI/BOOT/BOOTX64.EFI` so Apple's picker sees it) lives only in a GitHub discussion, with maintainers
+  noting the docs gap. **Check the issue tracker against the manual before accepting a documented
+  "not possible".** **Pri M.**
+- **The install medium's driver gaps are a separate risk from the installed system's.** Omarchy's manual says
+  the installer auto-applies Broadcom Wi-Fi fixes, which reads as "wifi handled". It is not: the BCM4360 has
+  no in-kernel driver and the **ISO itself does not ship `broadcom-wl`** (request omarchy-iso#22, never
+  implemented). The installed system can have working Wi-Fi while the installer has none. **Ask "does the
+  installer have network" as a question distinct from "does the OS support this NIC".** **Pri M.**
+- **A proprietary DKMS module against a rolling-release kernel is an availability risk, not a maintenance
+  chore.** `broadcom-wl-dkms` is the most likely way this machine loses its network far from home. Mitigation
+  must be day-one: `linux-lts` as a second boot entry, DKMS confirmed built against *both* kernels, an
+  in-kernel USB NIC in the bag. Related trap on the same machine: the GT 750M is Kepler, supported only by
+  the EOL `nvidia-470xx` branch that will not build on a current kernel — **an installer that helpfully
+  detects "NVIDIA" and installs a proprietary driver would break the boot.** **Pri M.**
+- **When the rollback path is fragile, the rollback artifact must be tested, not merely possessed.** macOS
+  boots here only because OpenCore loads from the Apple ESP (probe confirms SIP partially disabled and the
+  system volume seal Broken, both normal for OCLP), so partition or NVRAM disruption can strand it, and the
+  fallback (Internet Recovery) restores **Mavericks** and forces a full OCLP rebuild. The plan makes a
+  **booted-and-verified OCLP USB installer** a hard prerequisite. An untested installer is not a rollback.
+  **Pri M.**
+- **Encryption can be the wrong first move on unproven hardware.** LUKS was deliberately deferred: Apple
+  internal keyboards have been reported not to accept input at the boot encryption prompt. A laptop you
+  cannot unlock is a worse failure than an unencrypted one that never leaves the house. The honest form is to
+  **defer the control and carry its constraint explicitly** (no credentials or client data on the machine
+  until encrypted), not to pretend the risk is absent. **Pri L.**
+- **Separate what a change actually buys from what it was proposed to fix.** The stated motivation was
+  reclaiming evenings because the workstation sits in the kids' room. But remote access already worked from
+  macOS over Tailscale, SETU exists for exactly this, and the laptop cannot run useful local inference anyway
+  (Haswell + Iris Pro, ~3-5 tok/s on a 7-8B Q4). The real gain is a fast agent-native terminal on hardware
+  whose macOS side is on a clock — a genuine win, just a different one. Recording that distinction *before*
+  the work is what makes a decision gate meaningful instead of retrospective. Follow-up also reframed the
+  constraint itself: the blocker is 5090 **noise**, not inaccessibility, which has entirely different fixes
+  (scheduling, WoL, a job queue — none of them a laptop). Owner's read is the kid may adapt to it as white
+  noise, so it became a **measured** test across three logged evenings rather than an assumption either way.
+  **Pri H.**
