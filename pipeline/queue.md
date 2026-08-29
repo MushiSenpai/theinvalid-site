@@ -121,7 +121,7 @@ Format rules: PIPELINE.md.
 **Sources:** EXECUTION-PLAN 2026-06-11; SITE-DECISIONS.md §8; backlog I-5..I-9.
 **Targets:** linkedin, reddit:r/selfhosted
 
-## [queued] killing-the-two-pass-dance
+## [published 2026-08-29] killing-the-two-pass-dance
 **Angle:** Fitting a 30B multimodal LLM and a TTS engine on one 32GB RTX 5090: six boot attempts, why `gpu-memory-utilization` is a fraction of TOTAL validated against FREE, weights-in-VRAM ≠ checkpoint-on-disk (21.5GiB vs "~18"), and `--max-num-batched-tokens` as the hidden knob nobody mentions (16384→4096 freed the GiBs that utilization tweaking couldn't). Full draft already exists in the repo — bot adapts, not writes from scratch.
 **Sources:** comic-manga-narrator docs/BLOG-killing-the-two-pass-dance.md; DEVLOG session 2; backlog P-8.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
@@ -1531,13 +1531,18 @@ don't obey either.
   and use `--body-file` / `-F body=@file`** — never inline-escape markdown through a shell. Caught
   and PATCHed within a minute, but the comments now carry GitHub's "edited" marker.
 
-## TRINETRA — native Fold 8 cockpit + the SETU mode-table drift (2026-08-14)
+## TRINETRA — native Fold 8 cockpit + the SETU mode-table drift (2026-08-28)
 
-- **The cockpit had quietly died and nothing reported it.** `tailscale status` showed the Mac
-  **offline 37 days**. SETU (Mushishi Bridge) was built for exactly one client, that client was
-  gone, and no dashboard flagged it — the Bridge was "green" the whole time because it measures
+- **A single-client system has an unmodelled dependency: the client.** `tailscale status` showed
+  the Mac **offline 37 days** while SETU reported green the whole time — because it measures
   *services*, not *whether anyone can reach them*. **Liveness of a UI's only client is part of
   that system's health, and nothing in the estate models it.**
+- **I turned that observation into a wrong premise, and the owner corrected it.** From "offline
+  37 days" I concluded the Mac was *dead* and framed the new app as its replacement. **It is not
+  dead** — it returns when the Linux base system is finished, and it is the travelling
+  workstation. The real justification was always stronger and didn't need the drama: a phone is
+  the control surface you have *everywhere*, and a Mac is one that comes and goes. **An absence
+  in telemetry is not a death certificate — check the plan before inferring the fact.**
 - **A responsive breakpoint that hides labels without providing icons doesn't degrade — it
   deletes the app.** Measured against the live daemon at 360px: six nav buttons rendering
   **39×20px and completely empty** (`static/style.css:150` sets `.nav button span{display:none}`,
@@ -1555,6 +1560,14 @@ don't obey either.
   This is the estate's third instance of "a second front-end mirrors a list instead of deriving
   it" (cf. `gpu-tenants.sh` stop-list). **The durable fix is a test asserting the mirror matches
   reality on disk, not another one-time re-sync.**
+- **The guard caught a SECOND, independent drift the next day — and it was live, not theoretical.**
+  Hours after the drift test was written it failed with `unreachable mode scripts: ['video-mode.sh']`.
+  A ComfyUI video lane (`comfyui-video` :8189) had been added 2026-08-27 and wired correctly into the
+  etiquette layer — it was already in `gpu-tenants.sh` GPU_TENANTS and the busy-guard already polled
+  its port — but registered in **neither front-end**. And it was **resident on the GPU at that moment**,
+  so the Bridge was reporting the live mode as `mixed / unknown` while a real workload ran. Fourth
+  instance of the same shape. **The fix for a mirror is a test, not a re-sync — the re-sync is stale
+  before you finish typing it.**
 - **A guard you haven't seen fail is not a guard.** Added a bidirectional drift test (every listed
   mode's script exists; every `*-mode.sh` on disk is reachable) and then **ran it against the
   pre-fix table** to confirm it flags exactly `['3d-mode.sh', 'stop-mode.sh']`. Writing the
