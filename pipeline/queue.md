@@ -1796,3 +1796,34 @@ Spec: `~/Documents/omarchy/OMARCHY-INSTALL-PLAN.md` (v1.1).
   (scheduling, WoL, a job queue — none of them a laptop). Owner's read is the kid may adapt to it as white
   noise, so it became a **measured** test across three logged evenings rather than an assumption either way.
   **Pri H.**
+
+## A mirror that is 99.9% symlinks is more dangerous than one that is 0% (2026-08-30)
+- **A single real file inside a symlink farm is invisible and unbounded.** The Obsidian vault mirrors
+  `/data/ai` with 2,870 symlinks. Exactly one tracked file in it, `theinvalid-site/pipeline/queue.md`,
+  had at some point been replaced by a **real file**. Because every sibling in that directory
+  (`CLAUDE.md`, `README.md`, `PIPELINE.md`) *is* a symlink, nothing looked wrong, and sessions had been
+  appending to both copies **for weeks**. When measured they were genuine forks: 343 row IDs shared,
+  **31 only in the vault**, 61 only in canonical. Neither was a subset, so "just delete the stale one"
+  and "just restore the symlink" would each have destroyed real work. **A mostly-symlinked mirror trains
+  you to trust the mirror; that trust is what the one real file exploits.** A mirror that is honestly
+  0% symlinks is safer, because nobody trusts it. **Pri H — this is a post.** Working title:
+  *"The most dangerous file in my estate was the only one that wasn't a symlink."*
+- **`grep`-reachability is a namespace, and duplicate basenames inside it are a bug.** The convention
+  said "append to `theinvalid-site/pipeline/queue.md`", a relative path with two matches under
+  `~/Documents`. Any session that resolved it by searching rather than by absolute path had a coin-flip.
+  **Conventions that name a file must name it absolutely**, or the convention itself is the defect.
+  Fixed by pinning the absolute `/data/ai/...` path in CLAUDE.md.
+- **A substring check for an identifier is a false-negative generator.** The first merge pass filtered
+  vault rows with `if row_id not in canonical_text`. That silently dropped **S-30**, because canonical
+  contained `OPS-30`. Only a row-anchored regex (`^\|\s*ID\s*\|`) caught it, and only because the merge
+  was verified in **both directions** afterwards rather than assumed. **Match identifiers with anchors,
+  and verify a merge by set difference both ways, not by "it ran".** **Pri M.**
+- **Discovering a fork means you must diff for *unique* content, not for staleness.** The instinct on
+  finding a 373KB copy beside a 504KB canonical was "the small one is stale". Size ordering said nothing:
+  the files were also wrapped differently, so line-level `comm` was noise, and the smaller file still held
+  31 entries the larger one had never seen. **Compare by stable identifiers, not by bytes, lines, or
+  mtime.** **Pri M.**
+- **`.bak-*` beside a tracked file is a fork trap, not a backup.** Four `queue.md.bak-*` snapshots sat in
+  the same vault directory. They turned out fully subsumed, but only because they were checked. This
+  restates an existing 3D-stack lesson (use git for rollback, never new `.bak-*`) that had clearly not
+  propagated estate-wide; it is now a CLAUDE.md rule. **Pri L.**
