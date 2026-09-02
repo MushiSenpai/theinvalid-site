@@ -126,7 +126,7 @@ Format rules: PIPELINE.md.
 **Sources:** comic-manga-narrator docs/BLOG-killing-the-two-pass-dance.md; DEVLOG session 2; backlog P-8.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
 
-## [queued] the-model-echoed-my-prompt-back
+## [published 2026-09-02] the-model-echoed-my-prompt-back
 **Angle:** A real manga page lost ALL its dialogue because Nemotron returned `"dialogues[]"` — the prompt's array notation — as literal JSON keys, and `.get("dialogues")` silently got nothing. Model output variance as a distribution: same prompt at temp 0.1 produced pixel bboxes, normalized floats, plain keys, bracket keys, and occasionally no JSON at all (json_repair returns a bare string; callers .get() and die). The discipline: normalize at the parse boundary, validate types, retry once per item.
 **Sources:** comic-manga-narrator docs/DEVLOG.md sessions 2+5 (bugs 3, 6, 9); docs/LESSONS.md §1-2; backlog P-6, P-7.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
