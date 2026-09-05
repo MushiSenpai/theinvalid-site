@@ -135,7 +135,7 @@ Format rules: PIPELINE.md.
 **Sources:** creative repo benchmarks.csv Vanisher row (2026-06-12); EXECUTION-PLAN E1 entry; /tmp/e1-frames methodology (frame-delta vs control region).
 **Targets:** linkedin, reddit:r/StableDiffusion, hn
 
-## [queued] the-bug-was-a-zero-size-stack
+## [published 2026-09-05] the-bug-was-a-zero-size-stack
 **Angle:** A Flutter game rendered pure blank — and three sophisticated theories (dual-GPU passthrough, the Flame engine, "X11 screenshots of GL animations lie") were all wrong. The fix was one line: a Stack sizes itself to its largest NON-positioned child, and a conditional `SizedBox.shrink()` overlay collapsed the whole game to 0×0 during play. What found it: replacing the subtree with a red ColoredBox and bisecting — plus a human eyewitness report that falsified the lying-screenshots theory. Debug by bisection, not theory; and when your verification tool might be lying, verify the verifier.
 **Sources:** komorebi repo CHANGELOG 1.1.1 + commit 3ed3b9d (regression test); session memory 2026-06-12.
 **Targets:** linkedin, reddit:r/FlutterDev, hn
