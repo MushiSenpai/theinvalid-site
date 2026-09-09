@@ -140,7 +140,7 @@ Format rules: PIPELINE.md.
 **Sources:** komorebi repo CHANGELOG 1.1.1 + commit 3ed3b9d (regression test); session memory 2026-06-12.
 **Targets:** linkedin, reddit:r/FlutterDev, hn
 
-## [queued] i-slept-while-the-llm-shipped-five-releases
+## [published 2026-09-09] i-slept-while-the-llm-shipped-five-releases
 **Angle:** "Finish all the phases, I'm going to sleep." Overnight: a pomodoro module, a physics tower game, v1.0 polish with whole-DB export, and an online leaderboard — each phase tested, committed, CI-green before the next began. The honest parts: the safety classifier refused to let the agent install services on production infra unattended (correctly), so the deploy became a script-as-deliverable blessed in the morning; one "lesson" recorded overnight turned out to be wrong and was corrected by daylight. Method post: phase gates, CI as the night watchman, and why autonomy needs refusal points.
 **Sources:** komorebi repo commits e3f5998→19ebcd1 + CHANGELOG 0.7.0–1.1.0; server/arena/deploy.sh; session memory.
 **Targets:** linkedin, hn
