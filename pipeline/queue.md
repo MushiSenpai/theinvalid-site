@@ -145,7 +145,7 @@ Format rules: PIPELINE.md.
 **Sources:** komorebi repo commits e3f5998→19ebcd1 + CHANGELOG 0.7.0–1.1.0; server/arena/deploy.sh; session memory.
 **Targets:** linkedin, hn
 
-## [queued] multiplayer-without-servers-seed-the-rng-with-the-date
+## [published 2026-09-12] multiplayer-without-servers-seed-the-rng-with-the-date
 **Angle:** Real-time multiplayer needs WebSockets, state sync, and anti-cheat. A daily duel needs none of it: seed the piece RNG with the UTC date and everyone on Earth stacks the same blocks that day — a leaderboard row is the only network traffic. Fair, async, offline-tolerant competition from one integer. When "play together" actually means "compare honestly," determinism is the whole server.
 **Sources:** komorebi lib/services/arena_api.dart (dailyMode/dailySeed) + seed-determinism test; server/arena/README.md modes section.
 **Targets:** linkedin, reddit:r/gamedev, hn
