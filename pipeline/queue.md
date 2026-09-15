@@ -1827,3 +1827,22 @@ Spec: `~/Documents/omarchy/OMARCHY-INSTALL-PLAN.md` (v1.1).
   the same vault directory. They turned out fully subsumed, but only because they were checked. This
   restates an existing 3D-stack lesson (use git for rollback, never new `.bak-*`) that had clearly not
   propagated estate-wide; it is now a CLAUDE.md rule. **Pri L.**
+
+- **NTFY-SCRAPE-1 (2026-09-15): The estate watcher was green on quiet runs and crashed only when it had news,
+  and each crash deleted the news.** Follow-up to OSS-ALERT-1. Swept `/data/ai`, `~/Freelance` and `~/projects`
+  for anything still scraping the ntfy topic out of `healthcheck.sh` after the 07-12 scrub. The 07-13 fix
+  patched `scripts/` only, and **five readers in other trees were still scraping** (four here, plus the
+  observer fixed earlier today). (1) KARIBUSA `watch.py` looked the topic up lazily, only when a
+  transition needed sending, so "no transitions" runs stayed green and just the runs with news died: **323
+  failed runs, 07-12 23:45 to 09-15** (66 Jul, 44 Aug, 213 Sep). It also wrote `last-state.json` BEFORE
+  sending, so every failed run consumed its transitions and nothing ever retried. Roughly 65 days of health,
+  drift, PR-green and estate alerts never reached the phone. (2) `smartd-notify.sh` grepped for a literal
+  topic, matched nothing, and did `exit 0`: **disk SMART alerts were silently dead** for the same window.
+  The journal shows no SMART events since, so nothing was lost, by luck. (3) `render-ntfy-secret.sh` would
+  have written the literal `$(cat …)` as the vmalert bridge topic on the next deploy or rotation; the live
+  secret still dates from 07-07. (4) `reclaim_reminder.sh` was latent only, since its one-shot had fired on
+  07-11. All of them now read `~/.config/mushishi-infra/ntfy.topic` and fail with a non-zero exit when it is
+  missing or empty. The watcher checks the topic before doing any work and advances state only after a
+  successful send. **A lookup that returns empty is an error, never a skip. Resolve every dependency at
+  startup, not on the rare path that needs it. Advance watcher state only after delivery. Sweep a secret move
+  across every tree, by the old value's shape, not by directory.** **Pri M.**
