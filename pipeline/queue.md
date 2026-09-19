@@ -165,7 +165,7 @@ Format rules: PIPELINE.md.
 **Sources:** sovereign doc Decision Log §v1.6.2-1 (the six + the four lessons); backlog H-12..H-17.
 **Targets:** linkedin, reddit:r/selfhosted, hn
 
-## [queued] my-tested-workflows-broke-from-upstream-drift
+## [published 2026-09-19] my-tested-workflows-broke-from-upstream-drift
 **Angle:** I ran a benchmark sweep across 9 ComfyUI workflows I'd built and "tested" weeks earlier. Result: only 5 of 9 still validate on the current ComfyUI — 4 broke from upstream drift. `ModelSamplingFlux.patch() got an unexpected keyword argument` (a node API changed under me), `Node 'Video Latent' has no class_type` (a custom node renamed/removed), Hunyuan workflows missing 4-5 nodes each. The honest lesson: "tested and working" has a SHELF LIFE on a fast-moving stack. A workflow is a snapshot against an environment that keeps moving; without pinned custom-node versions, your tested artifacts rot. Either pin everything, or treat re-validation as routine maintenance — and BENCHMARK PERIODICALLY so you discover the rot before a client does.
 **Sources:** creative benchmarks COVERAGE.md sweep 2026-06-13; /tmp/sweep-results.csv; the 4 specific errors.
 **Targets:** linkedin, reddit:r/comfyui, reddit:r/StableDiffusion, hn
@@ -1960,3 +1960,17 @@ Spec: `~/Documents/omarchy/OMARCHY-INSTALL-PLAN.md` (v1.1).
   08-30 lesson said "compare by stable identifiers". **Identifiers are only stable if they're unique. Where
   sessions mint IDs in parallel, compare by content, and treat an ID match with a different title as a
   collision, not a match.** **Pri H.**
+
+- **ATS-SCORE-2 (2026-09-18) — The AI screener reads your EXPERIENCE section, not your proudest section. One
+  honest paragraph moved the score ~25 points.** Follow-up to ATS-SCORE-1, same scorer (hiring-agent, gemma3:12b),
+  same renderer, N=3 per arm, control re-run in-session. Arms: current résumé 45–65; a restructured variant that
+  put each upstream PR in its own entry AND trimmed own-repo projects 9→4 scored **87/89/89**; an ablation adding
+  ONLY a dated `**Open-Source Contributor** — upstream AI/ML infrastructure projects (Jun 2026 – present)` line to
+  the EXPERIENCE section, changing nothing else, scored **84/83/78** (open_source 15 → 25–30). So the experience
+  entry carries nearly all of the lift and the project trimming is worth ~6 points, not worth deleting real work
+  for. **The mechanism was NOT the one I designed for:** the PR-per-entry blocks were dropped again (0 PR links in
+  the parsed JSON, projects parsed = 4), and the evaluator's own evidence string quotes the work entry verbatim.
+  **Put a claim in the schema slot the parser keeps (work/experience), then read the evaluator's evidence text to
+  confirm which words it actually used — an A/B that moves the number still doesn't tell you which change moved
+  it, so ablate.** Counts in that line now carry the oss-observer's sed anchors, so a future merge updates the
+  résumé itself (verified with a mocked 4th merge). **Pri M.**
