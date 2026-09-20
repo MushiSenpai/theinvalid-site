@@ -93,6 +93,7 @@ Upstream fixes submitted to the tools I run in production — each links to the 
 - **YuE** (music generation) — [#153](https://github.com/multimodal-art-projection/YuE/pull/153) (merged): the documented `git clone` of the codec checkpoints silently yields ~133-byte LFS pointer stubs when git-lfs is missing or the HF bandwidth quota is hit; added an `hf download` fallback + a stub warning (#118).
 - **PyDriller** (git repository mining) — [#326](https://github.com/ishepard/pydriller/pull/326): on a shallow clone (`--depth 1`, the `actions/checkout` default) the missing parent made `modified_files` die with a bare `exit code(128)` naming neither the cause nor the fix; it now warns on open and raises an actionable `ShallowRepositoryError`, with a depth-1 regression test (Fixes #229, open since 2022).
 - **trimesh** (3D mesh processing) — [#2605](https://github.com/mikedh/trimesh/pull/2605): `simplify_quadric_decimation(percent=)` is forwarded as `target_reduction`, so it is the fraction of faces REMOVED, not kept, and the docstring stopped mid-sentence — the inversion silently returned 8 triangles for a 1200-face target in my 3D pipeline; completed the description with measured numbers (0.9 keeps 510 of 5120 faces).
+- **xFormers** (attention kernels) — [#1411](https://github.com/facebookresearch/xformers/pull/1411): the README's development-binaries install omits the `--index-url` the stable block treats as essential, so `pip install --pre -U xformers` resolves from PyPI and can install a wheel built for a different CUDA version over a cuda-specific or nightly PyTorch — on Blackwell that surfaced as an NCCL ABI crash at import, not an install error; documented the failure mode and the matching nightly-index form.
 <!-- oss-auto:end -->
 
 ---
@@ -109,7 +110,7 @@ Upstream fixes submitted to the tools I run in production — each links to the 
 ## EXPERIENCE
 
 **Open-Source Contributor** — upstream AI/ML infrastructure projects, remote (Jun 2026 – present)
-Submitted 12 upstream pull requests to widely-used AI and developer tooling I run in production (qdrant-client, colpali, YuE, FlagEmbedding, whisperX, ComfyUI-WanVideoWrapper, fish-speech, MuseTalk, PyDriller), 3 merged as of 2026-09-18. Every fix came from a real production bug I hit and root-caused, with a regression test or a documented before/after reproduction. Links to every PR are in the open-source section above.
+Submitted 13 upstream pull requests to widely-used AI and developer tooling I run in production (qdrant-client, colpali, YuE, FlagEmbedding, whisperX, ComfyUI-WanVideoWrapper, fish-speech, MuseTalk, PyDriller), 3 merged as of 2026-09-18. Every fix came from a real production bug I hit and root-caused, with a regression test or a documented before/after reproduction. Links to every PR are in the open-source section above.
 
 **IT Security Governance Analyst** — Merck Sigma-Aldrich, Singapore (Feb–Jul 2017)
 Part of the GRC team authoring Standard Operating Procedures from security requirements across operational teams; compliance documentation and policy rollout in a multinational environment. *(The skill that became agent guardrails and sovereignty-tier rules.)*
