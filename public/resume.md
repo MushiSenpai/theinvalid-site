@@ -91,6 +91,7 @@ Upstream fixes submitted to the tools I run in production — each links to the 
 - **fish-speech** — [#1303](https://github.com/fishaudio/fish-speech/pull/1303), [#1304](https://github.com/fishaudio/fish-speech/pull/1304): empty TTS text returned an HTTP 500 (which streaming clients wrote as a `.wav`); constrained the request schema to reject it with a clean 4xx (Fixes #946); `pyaudio`'s hard PortAudio build dependency broke every headless / slim / API-only install; moved it to an optional `[client]` extra.
 - **colpali** (vision-document retrieval) — [#418](https://github.com/illuin-tech/colpali/pull/418) (merged): wired `fast-plaid` in as the `plaid` optional dependency — the maintainer-requested integration (#335) that a previous volunteer had left stalled.
 - **YuE** (music generation) — [#153](https://github.com/multimodal-art-projection/YuE/pull/153) (merged): the documented `git clone` of the codec checkpoints silently yields ~133-byte LFS pointer stubs when git-lfs is missing or the HF bandwidth quota is hit; added an `hf download` fallback + a stub warning (#118).
+- **PyDriller** (git repository mining) — [#326](https://github.com/ishepard/pydriller/pull/326): on a shallow clone (`--depth 1`, the `actions/checkout` default) the missing parent made `modified_files` die with a bare `exit code(128)` naming neither the cause nor the fix; it now warns on open and raises an actionable `ShallowRepositoryError`, with a depth-1 regression test (Fixes #229, open since 2022).
 <!-- oss-auto:end -->
 
 ---
@@ -107,7 +108,7 @@ Upstream fixes submitted to the tools I run in production — each links to the 
 ## EXPERIENCE
 
 **Open-Source Contributor** — upstream AI/ML infrastructure projects, remote (Jun 2026 – present)
-Submitted 10 upstream pull requests to widely-used AI tools I run in production (qdrant-client, colpali, YuE, FlagEmbedding, whisperX, ComfyUI-WanVideoWrapper, fish-speech, MuseTalk), 3 merged as of 2026-09-18. Every fix came from a real production bug I hit and root-caused, with a regression test or a documented before/after reproduction. Links to every PR are in the open-source section above.
+Submitted 10 upstream pull requests to widely-used AI and developer tooling I run in production (qdrant-client, colpali, YuE, FlagEmbedding, whisperX, ComfyUI-WanVideoWrapper, fish-speech, MuseTalk, PyDriller), 3 merged as of 2026-09-18. Every fix came from a real production bug I hit and root-caused, with a regression test or a documented before/after reproduction. Links to every PR are in the open-source section above.
 
 **IT Security Governance Analyst** — Merck Sigma-Aldrich, Singapore (Feb–Jul 2017)
 Part of the GRC team authoring Standard Operating Procedures from security requirements across operational teams; compliance documentation and policy rollout in a multinational environment. *(The skill that became agent guardrails and sovereignty-tier rules.)*
