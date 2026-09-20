@@ -1974,3 +1974,14 @@ Spec: `~/Documents/omarchy/OMARCHY-INSTALL-PLAN.md` (v1.1).
   confirm which words it actually used — an A/B that moves the number still doesn't tell you which change moved
   it, so ablate.** Counts in that line now carry the oss-observer's sed anchors, so a future merge updates the
   résumé itself (verified with a mocked 4th merge). **Pri M.**
+
+- **PUBLISH-PASS-1 (2026-09-20) — I added a second rewrite pass to a publisher, and the rebase step silently
+  dropped it: the site went live claiming 10 PRs above a list of 11.** The oss-observer regenerates a résumé
+  block between markers AND (new) rewrites the "N upstream pull requests" count anchors. When the site copy
+  changes it does `git pull --rebase --autostash` and then re-applies its edits to the freshly pulled file — but
+  that re-apply only ran the MARKER pass, because that was the only pass that existed when it was written.
+  My new pass was computed, then thrown away, and the stale number was committed, pushed and deployed. The
+  commit looked correct in isolation; only fetching the deployed `resume.md` showed the contradiction.
+  **When you add a pass to a pipeline, grep for every place the pipeline re-derives its output (rebase, retry,
+  conflict, cache-miss paths) — a re-derivation written against N passes will not run pass N+1. And verify the
+  DEPLOYED artifact, never the commit.** Cost: one bad deploy, caught in ~2 minutes. **Pri M.**
