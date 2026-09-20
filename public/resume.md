@@ -108,7 +108,7 @@ Upstream fixes submitted to the tools I run in production — each links to the 
 ## EXPERIENCE
 
 **Open-Source Contributor** — upstream AI/ML infrastructure projects, remote (Jun 2026 – present)
-Submitted 10 upstream pull requests to widely-used AI and developer tooling I run in production (qdrant-client, colpali, YuE, FlagEmbedding, whisperX, ComfyUI-WanVideoWrapper, fish-speech, MuseTalk, PyDriller), 3 merged as of 2026-09-18. Every fix came from a real production bug I hit and root-caused, with a regression test or a documented before/after reproduction. Links to every PR are in the open-source section above.
+Submitted 11 upstream pull requests to widely-used AI and developer tooling I run in production (qdrant-client, colpali, YuE, FlagEmbedding, whisperX, ComfyUI-WanVideoWrapper, fish-speech, MuseTalk, PyDriller), 3 merged as of 2026-09-18. Every fix came from a real production bug I hit and root-caused, with a regression test or a documented before/after reproduction. Links to every PR are in the open-source section above.
 
 **IT Security Governance Analyst** — Merck Sigma-Aldrich, Singapore (Feb–Jul 2017)
 Part of the GRC team authoring Standard Operating Procedures from security requirements across operational teams; compliance documentation and policy rollout in a multinational environment. *(The skill that became agent guardrails and sovereignty-tier rules.)*
