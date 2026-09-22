@@ -1985,3 +1985,17 @@ Spec: `~/Documents/omarchy/OMARCHY-INSTALL-PLAN.md` (v1.1).
   **When you add a pass to a pipeline, grep for every place the pipeline re-derives its output (rebase, retry,
   conflict, cache-miss paths) — a re-derivation written against N passes will not run pass N+1. And verify the
   DEPLOYED artifact, never the commit.** Cost: one bad deploy, caught in ~2 minutes. **Pri M.**
+
+- **REPRO-FIRST-1 (2026-09-22) — I nearly filed a bug report whose stated trigger does not exist. Building
+  the repro before writing the claim is what caught it.** My 3D log (F81) and a verification pass both said
+  `gltf-transform tangents` emits zero-length TANGENT values on **degenerate-UV** triangles, failing
+  glTF-Validator with `ACCESSOR_VECTOR3_NON_UNIT`. The symptom was real and logged from production. The cause
+  was not: MikkTSpace returns a valid `(1,0,0)` fallback for identical UVs **and** collinear UVs. A sweep of
+  11 degenerate inputs found the actual trigger is **collinear POSITIONS** (sliver triangles), which
+  generated and decimated meshes produce constantly. Had I filed the original theory, the maintainer would
+  have run it, seen unit-length tangents, and closed it — burning the one thing an upstream campaign is
+  accumulating, which is credibility. **A production symptom does not carry its cause with it. Reproduce on
+  the smallest possible input and let the sweep name the variable, because a report is a claim about a
+  MECHANISM, not about a bad day you had.** Bonus from the same sweep: `mikktspace@1.1.1` traps
+  (`unreachable`, `memory access out of bounds`) on fully-degenerate triangles — reported as adjacent, not
+  conflated. **Pri H.**
