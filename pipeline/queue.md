@@ -2000,3 +2000,15 @@ Spec: `~/Documents/omarchy/OMARCHY-INSTALL-PLAN.md` (v1.1).
   MECHANISM, not about a bad day you had.** Bonus from the same sweep: `mikktspace@1.1.1` traps
   (`unreachable`, `memory access out of bounds`) on fully-degenerate triangles — reported as adjacent, not
   conflated. **Pri H.**
+
+- **UPSTREAM-REDIRECT-1 (2026-09-23) — The maintainer rejected my fix, and he was right: it would have made
+  invalid geometry pass validation.** My glTF-Transform issue proposed a guard in `tangents()`: renormalize
+  zero-length tangents so the output validates. The maintainer declined because the guard "feels like
+  disguising a real problem to bypass the validator" — a sliver triangle is no less a defect than the invalid
+  tangent it produces, the validator just can't see it. That is exactly my own rule from the 3D stack (fix at
+  intake semantics, not at the output), and I had proposed breaking it because the validator error was the
+  symptom in front of me. He redirected to removing degenerate triangles upstream of tangent generation, via an
+  internal `cleanPrimitive()` he'd make public if extended. **When a fix's success criterion is "the checker
+  stops complaining", ask what the checker was protecting — if the fix satisfies the check without restoring
+  that, it is camouflage.** And a rejection that names a better design is an invitation, not a loss: I replied
+  with three design questions instead of code. **Pri M.**
