@@ -170,7 +170,7 @@ Format rules: PIPELINE.md.
 **Sources:** creative benchmarks COVERAGE.md sweep 2026-06-13; /tmp/sweep-results.csv; the 4 specific errors.
 **Targets:** linkedin, reddit:r/comfyui, reddit:r/StableDiffusion, hn
 
-## [queued] one-rtx-5090-how-many-users-the-honest-answer
+## [published 2026-09-23] one-rtx-5090-how-many-users-the-honest-answer
 **Angle:** "How many people can use a local LLM at once?" I stress-tested it instead of guessing. Sustained single-stream: 276 tok/s. Concurrency: 2 users=1.4x, 4=2.4x, KNEES at 8 concurrent (728 tok/s aggregate, flat after). vLLM continuous batching means throughput does NOT divide by user count, but KV-cache memory caps concurrent active generations at ~8 on 32GB. Translation: ~10-15 heavy or ~30-40 light chat users on one RTX 5090, latency under 2.5s.
 **Sources:** sovereign nemotron-stress.csv; stress test 2026-06-13.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
