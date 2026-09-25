@@ -2013,3 +2013,16 @@ Spec: `~/Documents/omarchy/OMARCHY-INSTALL-PLAN.md` (v1.1).
   stops complaining", ask what the checker was protecting — if the fix satisfies the check without restoring
   that, it is camouflage.** And a rejection that names a better design is an invitation, not a loss: I replied
   with three design questions instead of code. **Pri M.**
+
+- **NOTIFY-TRUTH-1 (2026-09-25) — I told the owner a maintainer comment "doesn't exist" because four API
+  queries couldn't see it. His email had it, and the email was right.** A pydriller reviewer left a comment
+  at 12:56 UTC asking me to move a class out of `commit.py`, then filed a formal CHANGES_REQUESTED review
+  14 minutes later. The review's three comments came back from `GET /pulls/{n}/comments` every time; the
+  earlier one never did, nor from `commits/{sha}/comments` or the issue timeline. It was presumably deleted
+  or absorbed when the review was filed, but it had already been mailed out and acted on by the human
+  reading it. **A notification is a durable record of something that WAS said; an API read only reports what
+  is still there. When they disagree, the notification is evidence and the API is a snapshot — ask for the
+  screenshot or the mail, do not tell the person their inbox is wrong.** Corollary from the same review: my
+  `# pragma: no cover` on a fallback for pre-2017 git versions was flagged by the maintainer as unnecessary,
+  and he was right. **A coverage pragma is usually a confession that a branch is unreachable; delete the
+  branch instead of excusing it.** **Pri H.**
