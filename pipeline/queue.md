@@ -175,7 +175,7 @@ Format rules: PIPELINE.md.
 **Sources:** sovereign nemotron-stress.csv; stress test 2026-06-13.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
 
-## [queued] i-built-an-avatar-that-introduces-itself-as-an-avatar
+## [published 2026-09-26] i-built-an-avatar-that-introduces-itself-as-an-avatar
 **Angle:** E2: photo + script -> cloned-voice talking head, fully local, ~5 min. Honest quality with frames: gross lip-sync correct (mouth tracks speech vs silence, verified against ffmpeg silencedetect), but lip-interior artifacts at full-frame zoom = social-grade not broadcast close-up. The script is meta: the avatar says it's an avatar made on one machine.
 **Sources:** audio benchmarks.md E2; public/avatar-lipsync-frames.png.
 **Targets:** linkedin, reddit:r/LocalLLaMA
