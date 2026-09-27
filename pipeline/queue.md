@@ -2026,3 +2026,17 @@ Spec: `~/Documents/omarchy/OMARCHY-INSTALL-PLAN.md` (v1.1).
   `# pragma: no cover` on a fallback for pre-2017 git versions was flagged by the maintainer as unnecessary,
   and he was right. **A coverage pragma is usually a confession that a branch is unreachable; delete the
   branch instead of excusing it.** **Pri H.**
+
+- **COMMS-REGISTER-1 (2026-09-27) — A maintainer closed my issue with "Please, do not communicate with me
+  through AI." He was not objecting to disclosure. He was objecting to the voice.** The bug was real and
+  mine, the repro was minimal and ran, the repo has no AI policy, and every commit I send carries a
+  `Co-Authored-By: Claude` trailer that is public on upstream `master` in the repos that merged my work.
+  Four maintainers merged with that trailer visible. This one read two long, bolded, enumerated comments in
+  a design discussion and decided he was talking to a machine wearing my name. **Disclosure and register are
+  different things. Disclosure is a fact you state; register is what the other person experiences.** A
+  design conversation is relationship-bearing: the maintainer is deciding whether to spend his attention on
+  me, and polished essay-shaped replies read as outsourcing that relationship even when every fact in them
+  is true. **So: AI for the code, the reproduction, the evidence and the diff — the parts judged on whether
+  they are correct. Human, short, and in my own words for the parts judged on who is on the other end.**
+  The tempting fix — ask the model to sound less like a model — is the one move that would make me
+  dishonest, because it targets the perception instead of the fact. **Pri H.**
