@@ -238,3 +238,15 @@ Master SVG source, all raster exports, `site.webmanifest`, a usage README, and t
 working dir). The `public/` copies here are the deployed subset. This machine has **no
 SVG rasterizer** (no rsvg/inkscape/cairosvg) — regenerate rasters with Pillow via
 `gen_logo.py`, not an SVG renderer.
+
+### 10.7 Intro / loader videos (2026-09-28)
+Five brand intros live at **`~/Documents/design/theinvalid-logo/video/`** (private working dir,
+in the restic backup set): A terminal boot, B ∅-draws-as-loader, C progress bar, D stats reel,
+E transparent lower-third overlay (VP9-alpha `.webm` + ProRes 4444 `.mov`). Each ships in
+16:9 and 9:16, as a 15 s and a 5 s cut (20 files). Regenerate everything with
+`python3 gen_intro.py` there (CPU only, ~40 s); `video/README.md` has the naming scheme and the
+editing rules. They obey this section: ∅ geometry from `svg/mark.svg`, wordmark spacing from
+`svg/wordmark-cursor.svg`, `:root` palette, one gold accent, no gradients. Copy is lifted from
+the homepage, so **if the hero stats change, update the video copy (`PROOF`, option A lines, C
+stages) and re-render** or the videos make claims the site no longer does. None are deployed
+to `public/` yet; if one ever is, it must be linked and curl-verified like any other page asset.

@@ -2040,3 +2040,14 @@ Spec: `~/Documents/omarchy/OMARCHY-INSTALL-PLAN.md` (v1.1).
   they are correct. Human, short, and in my own words for the parts judged on who is on the other end.**
   The tempting fix — ask the model to sound less like a model — is the one move that would make me
   dishonest, because it targets the perception instead of the fact. **Pri H.**
+
+- **BRAND-VIDEO-1 (2026-09-28): 15 s brand intros with no GPU, no SVG rasterizer, no motion tool.**
+  Five variants (terminal, ∅-draw loader, progress bar, proof reel, transparent lower-third) rendered as
+  pure Pillow frames piped into ffmpeg: all five in ~18 s wall on CPU while another session held the card.
+  Lesson: draw every element as an L-mask and composite it (paste-with-mask on RGB, alpha_composite on
+  RGBA), so the SAME scene code outputs both a solid MP4 and a clean-alpha overlay (VP9 yuva420p + ProRes
+  4444) without dark fringes. Source: `~/Documents/design/theinvalid-logo/video/gen_intro.py`; renders 16:9 + 9:16 (stacked lockup, E lifted 300 px clear of Shorts UI) and 15 s + 5 s cuts. The 5 s cuts
+  are a TIME WARP over each 15 s timeline (continuous pieces, jumps only where the frame is static), not trims:
+  a trim ends mid-animation. Verified no pops by checking the max frame-to-frame diff lands on intended
+  motion, not a piece boundary. Also found ~/Documents/design was OUTSIDE backup.sh and gen_logo.py lived
+  only in an excluded scratchpad: both fixed (BACKUP_PATHS += design, script rescued next to the logo). **Pri L.**

@@ -23,6 +23,8 @@ the operating playbook, and the brand/visual-identity spec — is
 - **Favicons** live in `public/`, wired in `src/layouts/Base.astro`, and are
   cache-busted `?v=<token>` (now `?v=nullset`). **Bump the token on ANY favicon
   change** or browsers keep the stale icon. Master assets + regen: `~/Documents/design/theinvalid-logo/`.
+- **Intro / loader videos** (5 options × 16:9/9:16 × 15 s/5 s, incl. a transparent overlay):
+  `~/Documents/design/theinvalid-logo/video/` + `gen_intro.py`. Spec: SITE-DECISIONS §10.7.
 - **Standalone HTML pages** (`public/*-catalogue.html`, case studies) have their OWN
   `<head>` — they do NOT inherit Base.astro. Apply brand/favicon changes to them AND
   their generators (`generate-catalogue.py`, `scripts/deploy-3d-catalogue.sh`).
