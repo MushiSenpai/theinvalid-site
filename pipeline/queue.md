@@ -200,6 +200,21 @@ Format rules: PIPELINE.md.
 **Sources:** EXECUTION-PLAN.md 2026-06-14 entries; queue §B PA-1..PA-9; /data/ai/08-portfolio/devkit.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
 
+## [queued] the-impact-of-inconsistent-gpu-driver-versions-on-performance
+**Angle:** Discovering that upgrading the GPU driver to `systemctl isolate multi-user.target` inadvertently re-opened the GPU in Docker containers, causing performance issues, underscores the critical role of careful script execution in system management.
+**Sources:** DRIVER-ISOLATE-1
+**Targets:** reddit:r/LocalLLaMA
+
+## [queued] fixing-the-bug-when-rebuilding-degenerate-UV-triangles
+**Angle:** I discovered why glTF-Transform emits zero-length TANGENT values on degenerate-UV triangles and how to fix it.
+**Sources:** REPRO-FIRST-1, UPSTREAM-REDIRECT-1
+**Targets:** linkedin, reddit:r/selfhosted
+
+## [queued] enhancing-resume-parsing-for-open-source-contributors
+**Angle:** I improved the ATS parser to accurately reflect open-source contributions in the EXPERIENCE section of resumes.
+**Sources:** ATS-SCORE-2
+**Targets:** hn, reddit:r/LocalLLaMA
+
 # §B — Lesson & decision backlog (comprehensive, all projects, forever)
 
 Priority: **H** = strong standalone post · **M** = good section/short post ·
