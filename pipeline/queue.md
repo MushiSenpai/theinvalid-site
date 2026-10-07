@@ -195,7 +195,7 @@ Format rules: PIPELINE.md.
 
 ---
 
-## [queued] i-built-an-ai-agent-company-on-my-own-hardware
+## [published 2026-10-07] i-built-an-ai-agent-company-on-my-own-hardware
 **Angle:** Stood up a Paperclip "company" (CEO/Builder/Reviewer) on a fully local Hermes+LiteLLM stack. It works — agents autonomously wrote code, tests, and a CI pipeline. But three honest lessons: (1) ~40s per-run overhead forces a two-tier design (fast Hermes-direct vs governed Paperclip); (2) the cheap CEO self-reviewed and APPROVED genuinely buggy code (an auth-less health check that reports a live service as DOWN) — mocked tests hid it; (3) model choice dominates everything (DeepSeek-Flash 0.8s vs Kimi 27-40s). Takeaway: a strong independent reviewer + a permanent human merge gate is load-bearing, not optional.
 **Sources:** EXECUTION-PLAN.md 2026-06-14 entries; queue §B PA-1..PA-9; /data/ai/08-portfolio/devkit.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
