@@ -215,6 +215,21 @@ Format rules: PIPELINE.md.
 **Sources:** ATS-SCORE-2
 **Targets:** hn, reddit:r/LocalLLaMA
 
+## [queued] driver-isolation-2
+**Angle:** The hidden pitfalls of `systemctl isolate multi-user.target` for GPU management in Docker.
+**Sources:** DRIVER-ISOLATE-1
+**Targets:** linkedin, reddit:r/selfhosted
+
+## [queued] vault-rule-guarded-sessions
+**Angle:** How a seemingly simple config path can bypass security rules in Obsidian.
+**Sources:** A path in config writes files just like a session does
+**Targets:** linkedin, reddit:r/selfhosted
+
+## [queued] reproducible-bug-reporting
+**Angle:** The importance of reproducing bugs on minimal inputs before filing a report.
+**Sources:** REPRO-FIRST-1
+**Targets:** linkedin, reddit:r/selfhosted
+
 # §B — Lesson & decision backlog (comprehensive, all projects, forever)
 
 Priority: **H** = strong standalone post · **M** = good section/short post ·
