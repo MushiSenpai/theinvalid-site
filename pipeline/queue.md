@@ -200,7 +200,7 @@ Format rules: PIPELINE.md.
 **Sources:** EXECUTION-PLAN.md 2026-06-14 entries; queue §B PA-1..PA-9; /data/ai/08-portfolio/devkit.
 **Targets:** linkedin, reddit:r/LocalLLaMA, hn
 
-## [queued] the-impact-of-inconsistent-gpu-driver-versions-on-performance
+## [published 2026-10-10] the-impact-of-inconsistent-gpu-driver-versions-on-performance
 **Angle:** Discovering that upgrading the GPU driver to `systemctl isolate multi-user.target` inadvertently re-opened the GPU in Docker containers, causing performance issues, underscores the critical role of careful script execution in system management.
 **Sources:** DRIVER-ISOLATE-1
 **Targets:** reddit:r/LocalLLaMA
