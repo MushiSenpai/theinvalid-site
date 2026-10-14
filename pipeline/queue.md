@@ -205,7 +205,7 @@ Format rules: PIPELINE.md.
 **Sources:** DRIVER-ISOLATE-1
 **Targets:** reddit:r/LocalLLaMA
 
-## [queued] fixing-the-bug-when-rebuilding-degenerate-UV-triangles
+## [published 2026-10-14] fixing-the-bug-when-rebuilding-degenerate-UV-triangles
 **Angle:** I discovered why glTF-Transform emits zero-length TANGENT values on degenerate-UV triangles and how to fix it.
 **Sources:** REPRO-FIRST-1, UPSTREAM-REDIRECT-1
 **Targets:** linkedin, reddit:r/selfhosted
