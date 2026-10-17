@@ -210,7 +210,7 @@ Format rules: PIPELINE.md.
 **Sources:** REPRO-FIRST-1, UPSTREAM-REDIRECT-1
 **Targets:** linkedin, reddit:r/selfhosted
 
-## [queued] enhancing-resume-parsing-for-open-source-contributors
+## [published 2026-10-17] enhancing-resume-parsing-for-open-source-contributors
 **Angle:** I improved the ATS parser to accurately reflect open-source contributions in the EXPERIENCE section of resumes.
 **Sources:** ATS-SCORE-2
 **Targets:** hn, reddit:r/LocalLLaMA
