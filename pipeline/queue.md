@@ -215,7 +215,7 @@ Format rules: PIPELINE.md.
 **Sources:** ATS-SCORE-2
 **Targets:** hn, reddit:r/LocalLLaMA
 
-## [queued] driver-isolation-2
+## [published 2026-10-21] systemctl-isolate-multi-user-starts-docker-too
 **Angle:** The hidden pitfalls of `systemctl isolate multi-user.target` for GPU management in Docker.
 **Sources:** DRIVER-ISOLATE-1
 **Targets:** linkedin, reddit:r/selfhosted
@@ -2082,3 +2082,93 @@ Spec: `~/Documents/omarchy/OMARCHY-INSTALL-PLAN.md` (v1.1).
   a trim ends mid-animation. Verified no pops by checking the max frame-to-frame diff lands on intended
   motion, not a piece boundary. Also found ~/Documents/design was OUTSIDE backup.sh and gen_logo.py lived
   only in an excluded scratchpad: both fixed (BACKUP_PATHS += design, script rescued next to the logo). **Pri L.**
+
+## UTSUSHIE film studio — one 32 GB card, ten image models, and the checks that lied (2026-10-18)
+Source: `/data/ai/01-workspace/film-studio/docs/LESSONS.md` (L-xx, by area) and `docs/FAILURE_LOG.md`
+(UF-nnn, chronological, same format as the 3D stack's F-log). Local-only project: blog material is drafted
+for the owner; nothing is published from the project itself. Credits: Nirup Divakaran (the filmmaker whose
+Mac AI Film Studio inspired it) and Claude.
+- **UTS-QC-1: My quality checker rejected good empty scenes and missed real extra figures. Both bugs
+  were in how I asked the detector, not in the detector.** Several phrases in one Grounding DINO prompt
+  split the score until nothing passed the cut-off, and species nouns misfire on drawings ("rabbit" fired
+  on a drawn hippo). One phrase, "a figure", at 0.3: 84/84 lone characters counted right, 3/3 planted fakes
+  caught. Separately, an empty scene still returns a weak box over the whole frame, so every "no people"
+  location failed until boxes over 60% of the frame were ignored (5/5 pass, scenes with people still fail).
+  **A detector's output depends on the question; test the query on known positives AND known empties
+  before trusting a reject.** (UF-042, UF-043) **Pri H.**
+- **UTS-PROMPT-1: "I asked for 2D and got 3D" was the prompt's first sentence.** Every still prompt opened
+  as "Casting reference photograph… 85mm lens" and put the project's look last. A deterministic compiler
+  (look first, restated at the end, photo words stripped in 2D) took the style pass from **6/18 to 18/18**
+  with the same seeds. The same bug hid in the costume step: person/photo wording turned a drawn hippo into
+  a person in jeans. **Models read the opening words as the medium. Put the look first and keep the
+  wrong-medium words out, before reaching for a bigger model.** (UF-047, UF-049) **Pri H.**
+- **UTS-MODEL-1: "Highest precision" is a hypothesis, and it cut both ways in one day.** The distilled
+  Turbo of an image model was in the shortlist as "bf16"; its undistilled Base at bf16 was far better (a
+  true crayon look) and the only fully commercial-safe model. On video the opposite: bf16 looked identical
+  to int8 and ran 45% slower, so 76 GB of full-precision weights were deleted. And one "base" checkpoint
+  rendered noise because its card says it is a training base, not for inference. **Test Base vs distilled
+  and precision per model, and read the model card before the benchmark.** (UF-054, UF-055, UF-059)
+  **Pri H.**
+- **UTS-MODEL-2: Two official repos ship different text encoders under the same file name.** FLUX 3 Klein's
+  and Krea 2's `qwen3vl_4b_bf16.safetensors` have different hashes; a shared models folder keyed by name
+  would silently run one model on the other's encoder, and our own "skip if the name exists" downloader would
+  have hidden it. **Compare hashes, not names, whenever a second repo ships a file you already have.**
+  (UF-057) **Pri M.**
+- **UTS-GPU-1: A film pipeline and a daily-driver LLM can share one 32 GB card only if the renderer knows
+  what it doesn't own.** The image engine crashed out of memory twice while the LLM held 29.5 GB, then the
+  queue sat silently at "waiting for the renderer". The fix was layered: the worker waits whenever a
+  foreign program holds more than 3 GB; the studio offers "switch the GPU to the studio" showing what will
+  stop and what is working right now (two clicks, "interrupt it" if busy); an opt-in auto-switch after 10
+  idle minutes; and it never stops a program that isn't a registered GPU mode. **Sharing a GPU is a
+  permission problem before it is a memory problem: only evict what you are registered to evict, and say
+  so on screen.** (UF-080, UF-081) **Pri H.**
+- **UTS-GPU-2: systemd services are invisible to docker-based GPU tooling, so I registered a
+  pseudo-tenant.** The studio's engine and worker run as `systemd --user` units; the estate's mode switcher
+  only knew `docker ps`. A pseudo-tenant in `gpu-tenants.sh` lists it, stops it through its own graceful
+  stop (renders re-queue), and reports "working" from the job database, never a process-name match. **When
+  your tooling enumerates one kind of process, every other kind is invisible until registered.** (UF-081)
+  **Pri M.**
+- **UTS-GPU-3: The phone Bridge's mode table had drifted for eight weeks, and its "current mode" said
+  "mixed / unknown".** A mode added to the desktop app on 2026-08-24 never reached the Bridge (32/33 tests);
+  fixing it surfaced a second gap, the live-mode name for two modes. Bridge 34/34 after. **A mirror is only
+  safe while something asserts it matches; run the guard tests after any change to the source table.**
+  (UF-082) **Pri M.**
+- **UTS-VIDEO-1: The prompt beautifier was better at acting and worse at keeping promises.** Kandinsky 6's
+  LLM beautifier improved staging but moved the spoken line out of its `<S>…<E>` tag (the frog's "Butterfly!"
+  came out as "Look! A booze!") and swapped crayon for "cartoon-style". Ours first, then theirs, with the
+  line and the look re-inserted if dropped: both locks fired. Separately, a full-size portrait image made the
+  same beautifier overflow a token index and abort the whole engine process; a 0.4 MP preview fixed it.
+  **Let an LLM rewrite a prompt only around locked spans you verify afterwards.** (UF-069, UF-070)
+  **Pri H.**
+- **UTS-PROC-1: `pgrep -f` matched my own shell three times in four days.** A wait loop waited on itself; a
+  kill took out the calling shell; two leftover waiters were still running. **Wait and kill by exact PID;
+  never by a pattern your own command line contains.** (UF-014) **Pri M.**
+- **UTS-PROC-2: A whole-file rewrite silently deleted a working function.** Adding the prompt compiler
+  overwrote `prompts.py` and lost the Ideogram adapter; it came back only because the session transcript
+  kept the original file. **Edit existing files; never rewrite them whole. A transcript is a last resort,
+  not a backup plan.** (UF-048) **Pri L.**
+- **UTS-OPEN-1 (open): Kandinsky 6 super-resolution OOMs on 32 GB even alone (27.7 GiB allocated, 3.2
+  requested); one SaveVideo `avcodec_send_frame() returned 22` in 12 clips; Kandinsky clips are fixed at
+  5 s.** Drafted as upstream candidates (owner-gated) in `docs/UPSTREAM_PR_CANDIDATES.md`, repro first.
+  (UF-068, UF-072, UF-073) **Pri L.**
+
+## [manual] one-32gb-gpu-a-whole-film-pipeline-and-a-daily-driver-llm (2026-10-18)
+**Angle:** A local AI film studio (script → faces → keyframes → video → voices → mix) on one RTX 5090 that
+also runs a 27B daily-driver LLM: two OOM crashes, then a renderer that waits for foreign holders, an
+ask-then-switch button that shows what it will stop, an opt-in idle auto-switch, and a pseudo-tenant so
+docker-based tooling can see systemd services.
+**Sources:** film-studio `docs/LESSONS.md` L-67..L-72 / `docs/FAILURE_LOG.md` UF-080..UF-082, §B UD-11/12;
+queue.md UTS-GPU-1..3; mushishi-mode `DESIGN.md` v1.6.0.
+**Targets:** linkedin, reddit:r/LocalLLaMA, reddit:r/selfhosted
+**Gate:** marked manual so the bot skips it; the owner changes the tag to queued after review (UTSUSHIE is local-only;
+no project code, assets, hostnames or client data in the post).
+
+## [manual] experiment-before-choosing-ab-testing-image-models-per-look (2026-10-18)
+**Angle:** Instead of picking a model, every stage ran every model with the same seeds and let the owner
+choose: a prompt compiler took 2D style from 6/18 to 18/18, a Base model beat its own distilled Turbo,
+bf16 video bought nothing over int8, one checkpoint was a training base that renders noise, and a quality
+checker had to be debugged before its rejects meant anything.
+**Sources:** film-studio `docs/LESSONS.md` L-01..L-20 / `docs/FAILURE_LOG.md`; `docs/research/ab/`;
+`PROGRESS.md` 2026-10-18 entries; queue.md UTS-QC-1, UTS-PROMPT-1, UTS-MODEL-1/2.
+**Targets:** linkedin, reddit:r/StableDiffusion, hn
+**Gate:** marked manual so the bot skips it; the owner changes the tag to queued after review.
