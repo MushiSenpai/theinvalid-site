@@ -220,7 +220,7 @@ Format rules: PIPELINE.md.
 **Sources:** DRIVER-ISOLATE-1
 **Targets:** linkedin, reddit:r/selfhosted
 
-## [queued] vault-rule-guarded-sessions
+## [published 2026-10-24] vault-rule-guarded-sessions
 **Angle:** How a seemingly simple config path can bypass security rules in Obsidian.
 **Sources:** A path in config writes files just like a session does
 **Targets:** linkedin, reddit:r/selfhosted
