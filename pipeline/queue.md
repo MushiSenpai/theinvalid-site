@@ -225,7 +225,7 @@ Format rules: PIPELINE.md.
 **Sources:** A path in config writes files just like a session does
 **Targets:** linkedin, reddit:r/selfhosted
 
-## [queued] reproducible-bug-reporting
+## [published 2026-10-28] reproducible-bug-reporting → build-the-repro-before-you-file-the-report
 **Angle:** The importance of reproducing bugs on minimal inputs before filing a report.
 **Sources:** REPRO-FIRST-1
 **Targets:** linkedin, reddit:r/selfhosted
