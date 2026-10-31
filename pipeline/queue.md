@@ -1527,7 +1527,7 @@ is a scope signal, not a capability signal — price the SKU class, not the pipe
 - **Bonus trap re-confirmed:** docker bind mounts can't see freshly created paths under the
   mergerfs /data pool (shadow-mount-until-reboot) — e2e scratch moved under $HOME.
 
-## [queued] the-best-osint-dashboard-i-could-build-with-zero-external-assets (2026-07-18)
+## [published 2026-10-31] the-best-osint-dashboard-i-could-build-with-zero-external-assets (2026-07-18)
 **Angle:** Tanyuu had four single-panel demo dashboards that all bound the same port and only ever
 showed synthetic data — so the substrate was collecting real intel nobody could see. Built ONE
 consolidated portal (overview/map/timeline/graph/entities/claims/sources/alerts) over the live
@@ -2172,3 +2172,21 @@ checker had to be debugged before its rejects meant anything.
 `PROGRESS.md` 2026-10-18 entries; queue.md UTS-QC-1, UTS-PROMPT-1, UTS-MODEL-1/2.
 **Targets:** linkedin, reddit:r/StableDiffusion, hn
 **Gate:** marked manual so the bot skips it; the owner changes the tag to queued after review.
+
+## "Up" for 107 days, working for zero: the secret step that didn't travel to the new box (2026-10-31)
+- **An out-of-band secret step is a deploy step, whether or not a script runs it.** GINKO's migration 0006
+  creates the `ginko_execd` DB role with NO password on purpose; the owner sets it from a 0600 creds file.
+  That was done on the home box in July. When the stack moved to intel-vps (07-16), the deploy script carried
+  the creds *file* over but nothing ran the `ALTER ROLE`. The execution daemon then retried a failed login
+  every 5 s for 107 days (~1.8M cycles). **If a step lives in a runbook but not in the deploy preflight, the
+  next box won't have it.** Fix: run it, then assert `rolpassword IS NOT NULL` in preflight (GINKO F21). **Pri H.**
+- **`Up` and green canaries hid a dead daemon.** The container was `Up`, every sibling was `healthy`, and the
+  L16 RUN-canary (built after the 07-17 "loops 100% dead" incident precisely to stop trusting container
+  health) passed, because it proves the *lanes* run, not execd. A retry loop that logs "skipped, retrying"
+  forever turns a hard failure into background noise. **Every daemon needs its own liveness signal that
+  fails on the error it swallows.** Found only by an estate-wide log sweep prompted by an unrelated advisory. **Pri M.**
+- **Unattended-upgrades patches; it does not reboot.** The Hetzner PHP advisory (CVE-2026-109618/109619)
+  turned out not to apply (no PHP anywhere), but the check found both VPSes 13–30 kernel builds behind with
+  `reboot-required` set for weeks while `apt list --upgradable | grep security` read 0. "Security updates
+  current" was true for packages and false for the running kernel. **Check `uname -r` against the newest
+  `/boot/vmlinuz`, not the apt queue.** **Pri M.**
