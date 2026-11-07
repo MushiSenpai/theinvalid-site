@@ -2264,3 +2264,30 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
 - **Decisions (postponed until the RAM fix):** RT-1 two used 64 GB hosts (range, then blue/forensics) · RT-2 a
   `tag:redteam` tailnet rule · RT-3 take the model proxy and Grafana off the home LAN, add no-trace lab aliases so
   engagement data never reaches tracing, and upgrade the proxy to a verified-clean release by digest.
+- **2026-11-07 — one model per task, from the specs, not the ledger (NAVARATNA TASK-MAP):** the owner asked
+  why the pool leant on one generalist and whether every project was considered. The first task map came from
+  the ledger's one-line statuses and missed whole classes (robot policies, generative media, forecasting) plus
+  ~30 tasks such as Sigma/YARA drafting and a <100 ms honeypot model. A sweep of every spec found them. Rule: a
+  task gets its own specialist only when a machine can check its output (renders, compiles, fires on replayed
+  logs, COMET); then 2–10K validated examples train a 4B one (ccore GLB-3D-Coder). Map from specs, not summaries.
+- **2026-11-08 — a project that lives outside the declared homes is a project with no backup (KOUJOU):** the dark-factory
+  rework grew for four days in `/home/mushi/koujou` and `~/.claude/projects`. Neither was in `backup.sh`
+  BACKUP_PATHS, and the last snapshot was a week old. That only came to light because the PC was about to leave for
+  RAM testing. Rule: the session that creates a project folder adds it to BACKUP_PATHS the same day. Agent
+  transcripts and memory are research records too, so back them up. **Pri H.**
+- **2026-11-07 — frontier directs, local executes; measure it (KOUJOU v3.3):** the strong model writes the spec, audits
+  it cold, coaches only after two failed tries (≤600 tokens, ≤2 per ticket) and judges. The local model does the
+  volume. A scripted scorecard per ticket plus a frozen private eval set turn "which local model?" into a monthly
+  keep-or-replace call with a +5-point promotion margin. Count coach turns, or hints flatter the local model.
+  Never put Claude-written text in training data (Consumer Terms). **Pri M.**
+- **2026-11-07 — borrow ideas from orchestrator tools, not the tool (Box Yard):** a chat Coordinator → Captain → task UI
+  assumes a frontier model and an owner who's awake. A dark factory needs gates, not judgement. Taken: alert levels
+  where unknown counts as broken, a read-only repo copy for questions, and a per-turn record of which model served
+  it. Left out: a second control plane, unsandboxed local agents, and rotating Claude logins. **Pri L.**
+
+- **2026-11-08 — a backup list of named folders silently drops every new folder (NAVARATNA handover sweep)**
+  Before the PC went out for RAM testing, a sweep of what has no off-disk copy found `~/Documents/security`,
+  `mentorship`, `karibusa`, `3D`, the Documents `.git` history (no remote), `~/.claude` memory and transcripts, and
+  five `~/projects` repos with unpushed work. `backup.sh` listed Documents subfolders one at a time, so each new
+  project folder was uncovered until someone remembered to add it. Fix: back up the parent (`~/Documents`, worktrees
+  excluded) so new folders are covered by default; run the backup by hand before any hardware handover. **Pri M.**
