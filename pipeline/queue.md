@@ -277,13 +277,13 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 |---|---|---|---|---|
 | H-1 | M | `fallback_providers` is top-level in profile YAML — nested form silently ignored | memory/litellm-lessons | unmined |
 | H-2 | M | Profile-scoped .env pre-empts global .env (HERMES_HOME set before dotenv) | same | unmined |
-| H-3 | L | Provider slug `custom` not `openai_compatible` (v0.14 canonical list) | same | unmined |
+| H-3 | L | Provider slug `custom` not `openai_compatible` (v0.14 canonical list) | same | published 2026-11-07 → four-litellm-docker-gotchas |
 | H-4 | M | LiteLLM image ignores mounted config without explicit `--config` flag → database-only mode, cryptic 400s | same | unmined |
-| H-5 | L | LiteLLM needs both docker networks (postgres bridge + phoenix) for OTEL | same | unmined |
-| H-6 | L | Phoenix OTLP = gRPC :4317, not HTTP :4318 | same | unmined |
+| H-5 | L | LiteLLM needs both docker networks (postgres bridge + phoenix) for OTEL | same | published 2026-11-07 → four-litellm-docker-gotchas |
+| H-6 | L | Phoenix OTLP = gRPC :4317, not HTTP :4318 | same | published 2026-11-07 → four-litellm-docker-gotchas |
 | H-7 | M | COOKIE_SECURE=0 required for PWA over HTTP-on-tailscale (cookie RFC) | §v1.6.3-1 | unmined |
 | H-8 | M | Pin HERMES_DASHBOARD_SESSION_TOKEN or every restart breaks remote pairing | §v1.7-1 | unmined |
-| H-9 | L | Port collisions: verify actual ports (DeerFlow :2026 not :3000) before reserving | §v1.6.1-1, §v1.6.4-5 | unmined |
+| H-9 | L | Port collisions: verify actual ports (DeerFlow :2026 not :3000) before reserving | §v1.6.1-1, §v1.6.4-5 | published 2026-11-07 → four-litellm-docker-gotchas |
 | H-10 | M | Cockpit churn: Aion UI → 3rd-party PWA → official Desktop in 6 weeks — UI layers are the least stable part of the stack | §v1.6-1, §v1.7-1 | unmined |
 | H-11 | M | Free-tier cloud cascade (Option B): budget caps + cooldowns make $0 inference reliable | §v1.6.4-2 | unmined |
 | H-12 | H | "0.0.0.0 ≠ exposed": a port scan showing `0.0.0.0` isn't a vuln if the firewall layer gates it — LiteLLM :4000 (Docker) is LAN-dropped by DOCKER-USER; Hermes :8642 (host proc) is UFW tailnet-only. Rebinding either would FIGHT the design / break localhost clients | 2026-06-29 infra pass | unmined |
@@ -991,6 +991,8 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | OPS-149 | M | **`installDist` under a running JVM service breaks it quietly (2026-11-03).** Rebuilding mujika-server's install dir while the service ran swapped the jars under the live JVM; the next lazily-loaded class failed and the API error body was just a class name (`MainKt$mujika$io$2`). Health still answered. Lesson: a JVM service built with `installDist` must be restarted in the same command; a health check is not enough, so hit a real route. | mujika-v1 (2026-11-03) | unmined |
 | OPS-150 | M | **An LLM picking 'the best 3' is a coin flip; let code pick and the LLM write (2026-11-03).** The Frontier Desk's first real run scored 118 items well but proposed 0 curriculum additions; the dry run minutes earlier had proposed 3. Fix: the LLM only scores and tags; code deterministically selects (score ≥3, worthy, new tag, max 3); a second call writes each module. Also: PyAV 16+ breaks faster-whisper 1.2.1 (`metadata_errors` kwarg), pin `av<16`. | mujika-v1 (2026-11-03) | unmined |
 | OPS-151 | S | **`tailscale serve` can proxy as a user but cannot serve a file/dir without root (2026-11-03).** `--set-path /x /some/dir` → `401 must be root, or be an operator`. Also: proposing a link is not creating it — the owner opened the proposed `/mujika-apk` URL and hit a 404. Fix: tiny loopback `python3 -m http.server` user unit on the project's port block + `tailscale serve --set-path /x http://127.0.0.1:PORT`; verify by downloading through the tailnet URL and matching sha256. | mujika-v1 (2026-11-03) | unmined |
+| OPS-152 | M | **A WAL-mode SQLite DB is not its .db file; back it up with the online-backup API, never by copying files (2026-11-04).** MUJIKA's `mujika.db` was 4 KB while the whole record sat in a 250 KB `-wal`; a file copy taken mid-write restores torn, and a stale `-wal` beside a swapped-in copy can corrupt it. Fix: `sqlite3.Connection.backup` → `integrity_check` → back up the snapshot (backup.sh step 0); cut-overs gate on per-table row counts. Also: an adversarial review of a 'stress-tested' plan found 14 more issues than live probes did — run both. | mujika-vps-plan (2026-11-04) | unmined |
+| OPS-153 | M | **A one-shot migration script plus a scheduled re-run is a data-loss trap (2026-11-05).** MUJIKA's cut-over ran early on owner request while a scheduled task still planned to run it at 03:40; the second run would have backed up the now-missing PC DB (SQLite creates an empty file on connect), passed the row-count gate (empty = empty) and overwritten the live VPS DB. Fix: the script refuses when the MOVED tombstone exists or the source DB is missing, and the scheduled task was deleted. Rule: every one-shot migration checks its own "already done" marker, and cancel its schedules the moment it runs by hand. Also: the tailnet ACL lets the PC reach intel-vps on SSH only, so test client paths from the client's network, not the server. | mujika-vps-move (2026-11-05) | unmined |
 
 ## 2026-07-16 — Segmentation rule ≠ unwrap rule: measure the flood, not the threshold [§B]
 - Rebuilding S6 (F128 charter): the "obvious" seam source — dihedral hard-edge components
@@ -2199,3 +2201,66 @@ checker had to be debugged before its rejects meant anything.
   `reboot-required` set for weeks while `apt list --upgradable | grep security` read 0. "Security updates
   current" was true for packages and false for the running kernel. **Check `uname -r` against the newest
   `/boot/vmlinuz`, not the apt queue.** **Pri M.**
+
+## NAVARATNA (specialist model pool) — decisions and lessons, plan stage (2026-11-04)
+Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build waits on the owner's decisions.
+- **Owner decisions (2026-11-04):** shared agent memory = self-hosted open-source Honcho (AGPL-3.0), every LLM
+  and embedding call routed through LiteLLM to local models, Mnemosyne as fallback. Decision models = build our own
+  on mmBERT-base, compared against Laya (Apache-2.0) and the Jev API only if needed, on non-private items. 128 GB
+  path kept alongside 256 GB in the plan. **Pri H.**
+- **The 2026-10-20 "mlock not holding" had a root cause:** `LimitMEMLOCK=infinity` in a `systemd --user` unit
+  cannot exceed the user manager's own limit (~15.4 GB), so nothing was ever locked and swappiness 60 swapped the
+  weights out. Fix = `user@.service` drop-in + verify with `prlimit`/`VmLck`. Not applied yet. **Pri H.**
+- **A router that switches models mid-session throws away the prompt cache;** on CPU that costs minutes of
+  prefill, not cents. Route once per session (sticky), change model only with a fresh session + recap. **Pri M.**
+- **Agent prompt size is the CPU first-token cost.** Hermes's profile + tool schemas ran ~13K tokens (v22: <7K);
+  set a per-profile prompt budget (≤8K) and measure with `/context all` before blaming the model. **Pri M.**
+- **UTSUSHIE renders cannot share the 5090:** jobs.sqlite shows most models peak at 20–32 GB VRAM, but pure render
+  time was 0.5–7.5 h/day (18 Oct–3 Nov). So the pool borrows the card when the queue is empty and drains to CPU
+  before a render (FREE/CLAIM/BUSY/RELEASE), never co-runs. KTransformers deferred (no Qwen3.6/gpt-oss/Gemma 4
+  support confirmed, no sm_120 wheels, no AMX on Zen 5); llama.cpp `--n-cpu-moe` hybrid instead. **Pri M.**
+- **A checkpoint named in a plan can vanish:** tasksource ModernBERT-JEV returned 401 a day after being cited.
+  Pin and mirror any third-party weights the plan depends on, after licence check. **Pri L.**
+- **2026-11-06 — the hardware you didn't choose (NAVARATNA rev 5):** the RTX 5090 runs at **PCIe x8**, not x16
+  (28.8 GB/s H2D measured, pinned 1 GiB copy). Cause: TUF X870-PLUS drops PCIEX16(G5) to x8 whenever M.2_2 holds a
+  drive, and two of the three 990 PROs sit on CPU lanes. Slot 2 is chipset x4 and is *disabled* by a drive in M.2_4,
+  so with three drives you get x16 or a second GPU, never both. Nobody chose this; it fell out of where the drives went.
+  Lesson: check `current_link_width` against `max_link_width` after any build or drive change, and treat slot layout
+  as a recorded decision (NAVARATNA decision 10, at the RAM visit). x8 hurts weight streaming (ComfyUI offload,
+  hybrid prefill), not resident models. **Pri M.**
+- **2026-11-06 — open routing model found (Techno Tim gateway review):** vllm-sr/Vela-2.0-0.3B (Apache-2.0) is the
+  options-at-request-time cross-encoder router we planned to build, on the same mmBERT-base backbone. Fine-tune from
+  it instead of from scratch, and keep from-scratch as the baseline that tests the shortcut. Also borrowed: a
+  request-shape check before semantic routing (a short prompt can carry 40 tool schemas), go up a size when unsure,
+  route headers to the client, any new classifier in shadow (log-only) for a month. **Pri M.**
+- **2026-11-06 — research miss, owner-flagged (NAVARATNA rev 6):** two rounds of planning missed vLLM Semantic
+  Router + Vela 2.0 (open, Apache-2.0, released 7 Oct), which already do sticky sessions, shape/capability checks,
+  routing models, replay and an honest routing benchmark — things the plan was going to hand-build. Causes:
+  (1) the decision-model search was framed as "Jev alternatives", which found Laya and stopped; Vela is tagged
+  `system-one` (Jev's own API name) and a search by *function* ("open routing model", "System One compatible")
+  finds it; (2) anchored on the incumbent gateway (LiteLLM's router) and never surveyed dedicated routers;
+  (3) the estate's own `vllm-qwen38` on the 5090 was filed as "a tenant not to stop" instead of the obvious GPU tier.
+  Rule: for each component, survey the whole ecosystem by job (incl. the incumbent's competitors) and inventory
+  what's already running on the machine before designing around it. **Pri H.**
+- **2026-11-06 — "latest" means latest verified-clean (NAVARATNA rev 6.2):** LiteLLM PyPI was compromised twice in
+  2026 (1.82.7–1.82.8 on 24 Mar; every 1.107.0 wheel on 21 Oct, plus the poisoned `latest`/`main-stable` Docker tags).
+  The estate's digest-pinned 1.82.6 dodged both, which is the lesson in favour of digest pins. But it then sat
+  four months behind ~30 advisories (critical SQL injection and auth bypass) while bound to 0.0.0.0:4000. Rule:
+  pin by digest, *and* review the advisories on a schedule; "pinned" must not turn into "forgotten". Router choice
+  (LiteLLM auto router vs vLLM SR) moved to a replay A/B, because independent evidence for both is thin. **Pri H.**
+
+## CHAKRAVYUHA (security testing lab) — decisions and lessons, plan stage (2026-11-06)
+- **2026-11-05 — a lab plan written without seeing the estate gets the estate wrong:** the first draft (scratch
+  session, no machine access) told the owner to buy a GPU for a "home AI box", install Ollama + Open WebUI, and run
+  the range on his PC. The workstation already had all three, and was the wrong host anyway (Docker, studio,
+  databases, secrets). Rule: inventory what's running before designing around it (same as NAVARATNA's rule). Range
+  goes on its own host and VLAN; the phone joins the tailnet on a narrow tag, never the admin tag. **Pri M.**
+- **2026-11-06 — named ~80 tools from memory, versions checked for none:** under the latest-version rule a scripted
+  check (GitHub releases + every published advisory, GitLab, Hugging Face) found one pick archived (URH), four stale
+  (ScoutSuite 2024, a 2024 Sysmon config, WinPmem 2020, WhiteRabbitNeo 2024), a model family two releases behind
+  (Foundation-Sec 1.1 / Reasoning), Ludus's real releases on GitLab with a stale GitHub mirror, and Trivy's March
+  2026 compromise. No pick had an unpatched advisory. Rule: a plan's tool list is a manifest of exact pins with a
+  re-runnable check, not a list of names. Re-check before install, because pins age. **Pri H.**
+- **Decisions (postponed until the RAM fix):** RT-1 two used 64 GB hosts (range, then blue/forensics) · RT-2 a
+  `tag:redteam` tailnet rule · RT-3 take the model proxy and Grafana off the home LAN, add no-trace lab aliases so
+  engagement data never reaches tracing, and upgrade the proxy to a verified-clean release by digest.
