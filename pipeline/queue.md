@@ -240,6 +240,11 @@ Format rules: PIPELINE.md.
 **Sources:** §B P-25, P-26, P-27, P-28
 **Targets:** linkedin, reddit:r/FlutterDev, hn
 
+## [published 2026-11-12] five-linux-ops-gotchas-on-a-self-hosted-stack
+**Angle:** Roundup of 5 L-priority Linux ops gotchas from §B (I-10, I-11, S-13, P-4, E-6): smartd alias quirk on Ubuntu (enable fails with real unit name), GitHub GH007 email-privacy push rejection (set noreply identity before first commit), llama.cpp missing nemotron_h_moe arch in builds <9283 (rebuild after pull), fresh VPS deploy script missing unzip, and Chrome extension blocking localhost while curl worked fine.
+**Sources:** §B I-10, I-11, S-13, P-4, E-6
+**Targets:** linkedin, reddit:r/selfhosted, hn
+
 # §B — Lesson & decision backlog (comprehensive, all projects, forever)
 
 Priority: **H** = strong standalone post · **M** = good section/short post ·
@@ -261,7 +266,7 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | S-10 | M | KV-cache ceiling: 3–5 concurrent agents max; "60-agent local swarm" claims = serialized or cloud fan-out | v1.4 analysis | unmined |
 | S-11 | H | Three profiles, three guarantees; client profile refuses fallback | §Routing | queued (sovereignty post) |
 | S-12 | M | Always-on CPU floor (llama.cpp, 60GB RAM): agents survive GPU purges | Phase 4.5 | unmined |
-| S-13 | L | llama.cpp builds <9283 lack nemotron_h_moe arch — rebuild after pulls | memory/lessons | unmined |
+| S-13 | L | llama.cpp builds <9283 lack nemotron_h_moe arch — rebuild after pulls | memory/lessons | published 2026-11-12 → five-linux-ops-gotchas-on-a-self-hosted-stack |
 | S-14 | M | Tool-evaluation checklist; "LLM recommends with zero trade-offs" = red flag | §6, v1.4 | unmined |
 | S-15 | L | Keep failed-attempt artifacts on disk deliberately (TRT-LLM dirs) — they're the receipts | §15 | unmined |
 | SEC-P1 | H | **A precision gate on LLM output is only safe when a deterministic engine is the invariant FLOOR.** NUI's metamorphic self-consistency suppression (D18) auto-drops any LLM vuln finding whose verdict flips under a semantics-preserving source transform (variable rename / statement reorder). Strict-all is the right rule — but a real finding with a merely-flaky LLM verdict would be false-suppressed. The fix isn't to weaken the rule; it's to only vet LLM-*only* findings: deterministic taint-proven findings are metamorphically invariant by construction (a rename can't change dataflow), so they're exempt. Result: the gate kills the model's unbacked hallucinations and never the engine's proofs. Reusable pattern for any "LLM-judge + deterministic-engine" hybrid. | NUI P1 (2026-07-08) | unmined |
@@ -346,8 +351,8 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | I-7 | M | Hetzner Storage Boxes ship with ALL access toggles off — looks like wrong password | same | queued (one-evening) |
 | I-8 | L | restic sftp needs relative path on storage boxes (`:./repo` not `:/repo`) | same | queued (one-evening) |
 | I-9 | L | Cloudflare Pages → Workers migration: new sites need wrangler.jsonc assets config | same | queued (one-evening) |
-| I-10 | L | smartd on Ubuntu: enable error is an alias quirk; real unit is smartmontools.service | 2026-06-10 | unmined |
-| I-11 | L | GitHub email-privacy rejects pushes with real email — use the noreply identity from commit #1 | same | unmined |
+| I-10 | L | smartd on Ubuntu: enable error is an alias quirk; real unit is smartmontools.service | 2026-06-10 | published 2026-11-12 → five-linux-ops-gotchas-on-a-self-hosted-stack |
+| I-11 | L | GitHub email-privacy rejects pushes with real email — use the noreply identity from commit #1 | same | published 2026-11-12 → five-linux-ops-gotchas-on-a-self-hosted-stack |
 | I-12 | M | Backup coverage inventory question: "can I re-download this?" — everything answering no goes in | backup.sh history | unmined |
 | I-13 | M | Docs referenced a script (agent-mode.sh) that never existed — phantom-reference drift | 2026-06-10 | unmined |
 | I-14 | M | GUI mode-picker at login: zenity + autostart beats remembering mode scripts | mode-picker.sh | unmined |
@@ -360,7 +365,7 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | P-1 | M | ffmpeg zoompan requires even-aligned dimensions (2.5D parallax gotcha) | comic narrator session | superseded → P-12 |
 | P-2 | M | Job-status contract between app and RQ gateway: design the status vocabulary first | comic narrator session | unmined |
 | P-3 | M | PocketBase as a one-binary leaderboard backend: anon-create capped + admin-only mutations | komorebi arena deploy | unmined |
-| P-4 | L | Fresh VPSes lack unzip — deploy scripts must self-install their tools | arena deploy.sh | unmined |
+| P-4 | L | Fresh VPSes lack unzip — deploy scripts must self-install their tools | arena deploy.sh | published 2026-11-12 → five-linux-ops-gotchas-on-a-self-hosted-stack |
 | P-5 | M | Local-first app + opt-in online features: the sync boundary as a privacy feature | komorebi SPEC | unmined |
 | P-6 | H | Models echo prompt notation as literal output keys ("dialogues[]"); normalize at parse, never only at prompt | comic-narrator LESSONS §1, bug 6 | queued (model-echo post) |
 | P-7 | M | Model variance is a distribution: coerce geometry, type-check parses (json_repair returns bare strings), retry once per item | LESSONS §2, bugs 3/9 | queued (model-echo post) |
@@ -405,7 +410,7 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | E-3 | M | ComfyUI container doesn't mount input/ — UI-uploaded videos die with container recreation; mount it or docker cp | compose inspection | unmined |
 | E-4 | M | creative-mode.sh pointed at a compose dir that never existed — phantom-path drift, found only when actually run | this session | unmined |
 | E-5 | M | VOID outputs half-resolution + caps frames — editing tier needs the upscale pass chained for deliverables | E1 bench | unmined |
-| E-6 | L | Chrome+extension refused a localhost port that curl could reach — when one client fails, try another before debugging the server | this session | unmined |
+| E-6 | L | Chrome+extension refused a localhost port that curl could reach — when one client fails, try another before debugging the server | this session | published 2026-11-12 → five-linux-ops-gotchas-on-a-self-hosted-stack |
 | E-7 | H | E1b: ghost root-caused — Vanisher uses image-mode SAM3_Detect (no temporal propagation) so masks drop when subject is occluded; same bug class as the Shapeshifter fix. Frame-cap and fill-prompt fixes verified (6s full duration) | E1b bench 2026-06-12 | unmined |
 | E-8 | M | Custom-node updates shift widget order — saved UI workflows silently misalign values into wrong slots (resolution=0); construct API prompts from live /object_info instead | crystalforge debugging | unmined |
 | E-9 | M | After restarting ComfyUI, the browser frontend keeps a stale node registry — reload the page or unknown-class nodes serialize without class_type | same | unmined |
