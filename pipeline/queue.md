@@ -235,6 +235,11 @@ Format rules: PIPELINE.md.
 **Sources:** §B C-8, C-9, C-10, C-17, E-11
 **Targets:** linkedin, reddit:r/comfyui, reddit:r/StableDiffusion, hn
 
+## [published 2026-11-12] four-flutter-linux-gotchas
+**Angle:** Roundup of 4 L-priority Flutter/komorebi gotchas from §B (P-25, P-26, P-27, P-28): /tmp too small kills flutter test mid-suite silently, Gradle "toolchain does not provide JAVA_COMPILER" from a JRE-only OpenJDK, ListView in bottom sheets is viewport-lazy so widget tests miss below-the-fold widgets, and Timer+CustomPainter outperforms Ticker+setState for a simple game loop on Linux desktop.
+**Sources:** §B P-25, P-26, P-27, P-28
+**Targets:** linkedin, reddit:r/FlutterDev, hn
+
 # §B — Lesson & decision backlog (comprehensive, all projects, forever)
 
 Priority: **H** = strong standalone post · **M** = good section/short post ·
@@ -387,10 +392,10 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | P-22 | H | Date-seeded RNG = async multiplayer with zero realtime infra: same daily piece sequence for everyone, scores compare fairly | komorebi arena_api.dart dailySeed | queued (date-seed post) |
 | P-23 | M | Overnight autonomous phases with CI gates; safety classifier correctly refused unattended prod-VPS installs → ship the deploy as an idempotent script to bless in the morning | komorebi overnight run 2026-06-12 | queued (slept-while-shipping post) |
 | P-24 | M | GitHub macOS runners give a Linux-only shop continuous iOS/macOS compile verification (free on public repos); signing stays the only Mac-bound step | komorebi ci.yml apple job | unmined |
-| P-25 | L | 800MB /tmp: flutter test/build scratch dirs fill it and runs die mid-suite or hang — export TMPDIR to the big disk | komorebi session | unmined |
-| P-26 | L | System openjdk was JRE-only → Gradle "toolchain does not provide JAVA_COMPILER"; user-space Temurin JDK + flutter config --jdk-dir fixes without sudo | komorebi android build | unmined |
-| P-27 | L | ListView(children:) in bottom sheets is viewport-lazy — scrollUntilVisible before asserting below-the-fold widgets in tests | komorebi widget tests | unmined |
-| P-28 | L | Game loops without an engine: event-loop Timer + CustomPainter repaint Listenable beats setState-per-frame from a Ticker (and sidesteps embedder quirks) | komorebi tower_view.dart | unmined |
+| P-25 | L | 800MB /tmp: flutter test/build scratch dirs fill it and runs die mid-suite or hang — export TMPDIR to the big disk | komorebi session | published 2026-11-12 → four-flutter-linux-gotchas |
+| P-26 | L | System openjdk was JRE-only → Gradle "toolchain does not provide JAVA_COMPILER"; user-space Temurin JDK + flutter config --jdk-dir fixes without sudo | komorebi android build | published 2026-11-12 → four-flutter-linux-gotchas |
+| P-27 | L | ListView(children:) in bottom sheets is viewport-lazy — scrollUntilVisible before asserting below-the-fold widgets in tests | komorebi widget tests | published 2026-11-12 → four-flutter-linux-gotchas |
+| P-28 | L | Game loops without an engine: event-loop Timer + CustomPainter repaint Listenable beats setState-per-frame from a Ticker (and sidesteps embedder quirks) | komorebi tower_view.dart | published 2026-11-12 → four-flutter-linux-gotchas |
 
 ## Bench & headless-ComfyUI session (E, 2026-06-12)
 | id | pri | lesson / decision | source | status |
