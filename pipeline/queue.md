@@ -2302,9 +2302,30 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
   project folder was uncovered until someone remembered to add it. Fix: back up the parent (`~/Documents`, worktrees
   excluded) so new folders are covered by default; run the backup by hand before any hardware handover. **Pri M.**
 
+- **2026-11-14 — budget bandwidth, not just RAM, and ask "what must stay on?" per block (NAVARATNA plan B rev B3)**
+  A "shared frontier mode" fitted in RAM (113/123 GB) but kept a CPU generalist decoding beside a 64 GB-tier MoE,
+  which halves both models' memory bandwidth, a rule the same plan already stated for its own planner. Rebuilding
+  the budget from measured use (VictoriaMetrics p95) with a stay-on/can-stop column gave one simpler mode. The
+  same pass found the outside "Restart=always + sudo systemctl stop" advice would fight the mode scripts, that the
+  "GPU lease" it leaned on is dry-run only, and that ollama.service can grab the card outside every guard. **Pri M.**
 - **2026-11-13 — a chatbot's model list is a lead list, not a plan (NAVARATNA plan B / Project Maya)**
   A Gemini chat on running frontier MoEs locally was half real: Project Maya, the DeepSeek/GLM/MiniMax Flash models and
   EmbeddingGemma 2 exist; Qwen-4-27B-Coder, Nous-Hermes-4-Qwen-27B, WhiteRabbitNeo-4 and two "base" models don't. Its
   headline "30 tok/s for 748B on a 5090" was a GLM-5.3-Flash measurement moved onto DeepSeek, and its cgroup and
   swappiness advice would have thrashed mmap'd weights. Checking each name against the HF API took minutes and turned up
   the real win the chat missed: Qwen3.8-Flash-Next at 160–180 tok/s replaces our 12–16 tok/s planner. **Pri M.**
+- **2026-11-13 — judge an outside idea by the literature, not by the chat's sample code (KOUJOU v3.4):** a
+  Gemini chat's RSI code was poor: unsandboxed, a reward of "contains def", and untested weights served the next
+  morning. I first threw out its ideas along with the code. Re-verification found that most ideas hold when
+  anchored to an evaluator the improver can't edit:
+  - self-play bug injection with tests anchored to known-good code (Meta SSR, +10.4);
+  - evolutionary search with a ~30B local model (CodeEvolve);
+  - GEPA prompt evolution on an 8B model (+9.6, no training);
+  - video LoRAs on one 5090.
+
+  The real failures were the code and the cadence, not the methods. Rule: a per-idea verdict table with evidence,
+  and "UNVERIFIED" where unchecked. **Pri H.**
+- **2026-11-13 — a local frontier model's best job is independence, not speed (KOUJOU §18):** GLM-5.3-Flash on
+  Project Maya is slower than the 27B builder and scores below the cloud architect, but it is a different family,
+  free and offline. That makes it the right spec auditor, holdout writer and judge, because a spec writer that
+  checks its own spec shares its own blind spots. **Pri M.**
