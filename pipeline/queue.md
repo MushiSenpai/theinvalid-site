@@ -2301,3 +2301,10 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
   five `~/projects` repos with unpushed work. `backup.sh` listed Documents subfolders one at a time, so each new
   project folder was uncovered until someone remembered to add it. Fix: back up the parent (`~/Documents`, worktrees
   excluded) so new folders are covered by default; run the backup by hand before any hardware handover. **Pri M.**
+
+- **2026-11-13 — a chatbot's model list is a lead list, not a plan (NAVARATNA plan B / Project Maya)**
+  A Gemini chat on running frontier MoEs locally was half real: Project Maya, the DeepSeek/GLM/MiniMax Flash models and
+  EmbeddingGemma 2 exist; Qwen-4-27B-Coder, Nous-Hermes-4-Qwen-27B, WhiteRabbitNeo-4 and two "base" models don't. Its
+  headline "30 tok/s for 748B on a 5090" was a GLM-5.3-Flash measurement moved onto DeepSeek, and its cgroup and
+  swappiness advice would have thrashed mmap'd weights. Checking each name against the HF API took minutes and turned up
+  the real win the chat missed: Qwen3.8-Flash-Next at 160–180 tok/s replaces our 12–16 tok/s planner. **Pri M.**
