@@ -385,12 +385,12 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | P-22 | H | Per-clip AAC slices + -c copy concat = boundary clicks AND long dead-audio spans; mux ONE continuous narration over the assembled video instead | comic-narrator session 10 | unmined |
 | P-23 | M | A camera move that "works in one scene and not the next" is the wrong primitive — a static frame + speaker spotlight halo beats zoom-roulette | session 10 review | unmined |
 | P-24 | M | We built a forensic vision extractor then drove the render from crude bboxes; the unlock is asking for director signals (shot_type, action_intensity, reading_path) | TTS-RESEARCH.md | unmined |
-| P-25 | L | SFX one-shots must be trimmed (~2.5s) or N action cues stretch a panel to ~19s of dwell | session 10 | unmined |
+| P-25 | L | SFX one-shots must be trimmed (~2.5s) or N action cues stretch a panel to ~19s of dwell | session 10 | published 2026-11-14 → three-comic-narrator-audio-assembly-gotchas |
 | P-26 | H | Character voice consistency = comic re-identification: emit an `appearance` per character + feed the running cast sheet back to the VLM so it REUSES labels (Manga Whisperer approach); fixed 23 labels → 8 identities, 0 inconsistent voices | comic-narrator session 11 | unmined |
 | P-27 | M | Role-based casting: protagonist→fixed lead voice, leads→distinct pool, faceless crowd→shared voice; prominence hierarchy AND caps the cast explosion | session 11 | unmined |
 | P-28 | H | The "double run" (expressive TTS → voice conversion) is the established technique to decouple ACTING from IDENTITY; Seed-VC zero-shot beats RVC for a reference-clip bank (no per-voice training) | TTS-RESEARCH.md | unmined |
 | P-29 | H | Validate a risky install in an ISOLATED venv first: parler-tts pulls torch-stable which would downgrade the worker's nightly-cu130 and break the RTX-5090 stack — caught before touching the container | session 11 torch trap | unmined |
-| P-18 | L | concat demuxer wants uniform streams (the establishing shot carries silent AAC for this); alpha intermediates need ProRes4444/VP9 — libx264 cannot | LESSONS §5, §11 | unmined |
+| P-18 | L | concat demuxer wants uniform streams (the establishing shot carries silent AAC for this); alpha intermediates need ProRes4444/VP9 — libx264 cannot | LESSONS §5, §11 | published 2026-11-14 → three-comic-narrator-audio-assembly-gotchas |
 | P-19 | H | Flutter Stack sizes to its largest NON-positioned child — a conditional SizedBox.shrink() collapsed a game view to 0×0; red-box bisection beat three days of GPU/engine theories | komorebi 3ed3b9d, CHANGELOG 1.1.1 | queued (zero-size-stack post) |
 | P-20 | M | When the verification tool might lie, verify the verifier: blank X11 captures of a live GL window spawned a false lesson; a human eyewitness falsified it — keep eyewitnesses in the loop | komorebi session 2026-06-12 | queued (zero-size-stack post) |
 | P-21 | M | drift stream `.first` inside mutations/dialogs deadlocks under widget-test fake-async (bit twice); reads in write paths use one-shot get() | komorebi CHANGELOG 0.3.0 + 0.6.0 fixes | unmined |
@@ -624,7 +624,7 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | CN-2 | M | **Expression = the ability to MOVE between registers, measurable as dynamic range.** Same line, same character ref: Fish Speech sat flat at -28 dB RMS regardless of emotion; IndexTTS-2 climbed -16.6 → -11.6 → -10.3 dB across neutral → determined → emotion-text. The "lifeless" complaint wasn't timbre — it was a single fixed register. A flat RMS across emotional takes is the signature of a TTS that reads instead of acts. | comic-narrator TTS A/B | unmined |
 | CN-3 | M | **A limiter, not a normalizer — preserve the loudness RELATIONSHIP.** Per-line peak-normalizing would flatten a shout to the same level as a whisper, deleting the acting. Scale down ONLY when peak exceeds -1 dBFS; leave quieter lines alone. The dynamics between lines ARE the performance. | comic-narrator IndexTTS-2 save shim | unmined |
 | CN-4 | M | **Short pages must score the PEAK beat, not the average.** A music-mood vote that needed ≥2 intense lines scored a shocked "WHAT? DUNGEON?!" page as calm (one shout drowned by neutral exposition). Comic pages are 1-4 lines; the underscore should track the most dramatic moment. Fix: peak-driven priority (one intense line → tense, ≥2 → action). Averaging is wrong when the sample is tiny and the signal is the outlier. | comic-narrator music.mood_from_tones | unmined |
-| CN-5 | L | **Container mounts are not the host FS — a script ran "successfully" against a path that didn't exist.** ACE-Step runs inside creative-audio-worker (its venv reuses the container's SM_120 torch via --system-site-packages), but that container mounts only some /data/ai subdirs — not 08-portfolio or 06-configs. `docker exec … python /data/ai/08-portfolio/…/gen.py` failed with "No such file" despite exit 0 on the wrapper. Run from a mounted path, output to a mounted dir, host-copy the rest. | comic-narrator music-bed generation | unmined |
+| CN-5 | L | **Container mounts are not the host FS — a script ran "successfully" against a path that didn't exist.** ACE-Step runs inside creative-audio-worker (its venv reuses the container's SM_120 torch via --system-site-packages), but that container mounts only some /data/ai subdirs — not 08-portfolio or 06-configs. `docker exec … python /data/ai/08-portfolio/…/gen.py` failed with "No such file" despite exit 0 on the wrapper. Run from a mounted path, output to a mounted dir, host-copy the rest. | comic-narrator music-bed generation | published 2026-11-14 → three-comic-narrator-audio-assembly-gotchas |
 
 ## Comic Narrator — v7 publish pass + adversarial QC (CN, 2026-06-29)
 | id | pri | lesson / decision | source | status |
@@ -2302,6 +2302,12 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
   project folder was uncovered until someone remembered to add it. Fix: back up the parent (`~/Documents`, worktrees
   excluded) so new folders are covered by default; run the backup by hand before any hardware handover. **Pri M.**
 
+- **2026-11-14 — the best checker is a different family, not the strongest model; audit role tables per data class (KOUJOU §18.5)**
+  "Why not run DeepSeek locally as the checker?" Because the cloud architect is the same weights (V4.1-Flash-1017),
+  so a quantised copy would repeat its blind spots. A weaker model from another family (GLM) is the better
+  referee. Re-reading the role table per data class turned up a quiet self-review: on sovereign tickets GLM wrote
+  the spec *and* audited it. Check "who checks whom" separately for each data class and each fallback path, not
+  only for the main path. **Pri M.**
 - **2026-11-14 — budget bandwidth, not just RAM, and ask "what must stay on?" per block (NAVARATNA plan B rev B3)**
   A "shared frontier mode" fitted in RAM (113/123 GB) but kept a CPU generalist decoding beside a 64 GB-tier MoE,
   which halves both models' memory bandwidth, a rule the same plan already stated for its own planner. Rebuilding
