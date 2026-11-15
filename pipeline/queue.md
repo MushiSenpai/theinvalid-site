@@ -2302,6 +2302,19 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
   project folder was uncovered until someone remembered to add it. Fix: back up the parent (`~/Documents`, worktrees
   excluded) so new folders are covered by default; run the backup by hand before any hardware handover. **Pri M.**
 
+- **2026-11-16 — a safety cap must sit above normal use, and a drain must fit the handover promise (NAVARATNA plan B rev B4)**
+  Second instance of the lesson below, same Fable review. Rev B3 gave Maya a 70 GB budget but a 68 GB `MemoryHigh`,
+  so the backstop would have throttled ordinary use, and a 120 s drain sat under a 60 s "render gets the card"
+  promise. Fix: 60 GB tier (66 GB use) and a 30 s drain. Rule: list every cap and timeout in one table and check
+  each pair before publishing. **Pri L.**
+
+- **2026-11-15 — cross-check each number against the limits stated elsewhere in the plan (KOUJOU v3.5, Fable review)**
+  An outside reviewer reading the whole estate found what four rounds of self-review missed. The v3.4 night needed 3
+  swaps under its own "≤2" rule, because the Reader model was a separate model two sections earlier. The training
+  data rate assumed 2 builds a night while intake is capped at 2 picks a week (7× too high). A stopgap had the
+  builder auditing its own future spec. Each new section was right on its own and wrong against an older one. Fix:
+  when a plan states a limit (swaps, intake, RAM, budget), re-derive every dependent number from that limit in the
+  same pass. **Pri M.**
 - **2026-11-14 — the best checker is a different family, not the strongest model; audit role tables per data class (KOUJOU §18.5)**
   "Why not run DeepSeek locally as the checker?" Because the cloud architect is the same weights (V4.1-Flash-1017),
   so a quantised copy would repeat its blind spots. A weaker model from another family (GLM) is the better
