@@ -2,7 +2,7 @@
 title: "One YAML file to rule my estate"
 description: "How PROJECT-STATUS.yaml became the single source of truth for 22 projects, and the fail-open trap where a stray quote made the dashboard serve convincing lies."
 date: 2026-08-07
-project: estate-ops
+project: karibusa
 tags: ["yaml", "ops", "homelab", "monitoring", "tooling"]
 ---
 

@@ -34,7 +34,7 @@ AI infrastructure engineer who designs, deploys, and operates **sovereign, on-pr
 - **Data & graph:** PostgreSQL, pgvector, Apache AGE (graph), DuckDB, DVC, provenance and licence ledgers
 - **Infrastructure & ops:** Docker, FastAPI, Ubuntu, systemd, UFW, Tailscale, restic (3-2-1 backups), monitoring & alerting
 - **Quantum ML (assessment):** PennyLane, Qiskit, runs on IBM Quantum and IonQ hardware, always against classical baselines
-- **Languages:** Python, Bash, Dart / Flutter
+- **Languages:** Python, Bash, Dart / Flutter, Kotlin (Compose Multiplatform, Android)
 
 ---
 
@@ -93,9 +93,13 @@ A comic page goes in; a dramatized video comes out: panel detection (vision LLM 
 **Komorebi** → [github.com/MushiSenpai/komorebi](https://github.com/MushiSenpai/komorebi)
 A Studio Ghibli-inspired productivity suite in Flutter (tasks, kanban, calendar, notes, pomodoro, and a physics tower-stacking break game with online leaderboards). Local-first SQLite; built with the same spec-driven, phase-gated method, visible in its public phase table.
 
-### In progress: private repos, public write-ups
+### In progress and planned: private repos, public write-ups
 
-Newer builds whose code stays private (security, commercial, or my own data). Each has a write-up with the numbers and the failures at [theinvalid.me/projects](https://theinvalid.me/projects).
+Newer builds whose code stays private (security, commercial, or my own data). Each has a page with the numbers and the failures at [theinvalid.me/projects](https://theinvalid.me/projects).
+
+- **UTSUSHIE (local AI film studio):** script to keyframes to video to voices to mix on one RTX 5090 that also runs a daily-driver LLM. Models chosen per stage by same-seed A/B; a deterministic prompt compiler took the style pass from **6/18 to 18/18**; the renderer waits for any GPU holder it does not own instead of crashing it
+- **KARIBUSA (estate ledger):** one canonical status file for 20+ tracks, a dashboard that renders it against the plan and the live machine and flags drift; shipped after a fail-open bug served sample data as truth
+- **KOUJOU (software dark factory):** frontier models write and judge specs, a local model does the volume, and a scripted scorecard plus a frozen eval set make "which local model?" a monthly keep-or-replace decision; the auditor is deliberately a different model family
 
 - **BHAIRAVA (security audit orchestration):** variant engine, sandboxed proof capsules, signed SARIF, and OWASP LLM Top-10 detectors for agent apps. Published its own losses: **0 of 12** recall on in-scope post-cutoff Django CVEs with the root cause named; one real CVE verified end to end; 0 high-severity false positives on the clean-control gate
 - **GINKO (trading intelligence):** shadow predictions scored on an append-only, hash-chained ledger (Brier / ECE); LLMs may not calculate, every number carries row-level provenance; **zero live orders by design** until calibration passes
@@ -103,6 +107,7 @@ Newer builds whose code stays private (security, commercial, or my own data). Ea
 - **ADASHINO (fitness planner):** deterministic solver owns the numbers, the LLM is only the conversational shell; safety invariants property-tested at 10,000 examples each
 - **ISAZA (Mizo ↔ English translation):** a licence audit found the standard low-resource models are non-commercial, so the stack runs two tracks that never share weights, enforced by a build-failing licence gate
 - **VISHWAKARMA (robotics):** software gate before any hardware purchase; simulation and dataset round-trip running headless, 43 tests green
+- **Planned, not built:** NAVARATNA (a routed pool of specialist local models, sticky per session, borrowing the GPU only when idle) and CHAKRAVYUHA (an isolated security testing lab on its own hosts and network segment, tools pinned by a re-runnable manifest)
 
 ---
 
@@ -132,7 +137,7 @@ Upstream fixes submitted to the tools I run in production — each links to the 
 - **3-2-1 backups:** local restic repo + encrypted offsite (Hetzner Storage Box) + originals
 - **Network discipline:** default-deny UFW, Tailscale-only service exposure, and the DOCKER-USER iptables fix for the documented gap where Docker bypasses UFW, verified from an untrusted device, not assumed
 - **Spec-driven, gate-verified:** every build phase has a written spec and a verification gate; snapshots before changes
-- **One source of truth for status:** a single ledger for 22 tracks with drift detection between what the plan says and what is running; a GPU mode switch that refuses to evict a model mid-request
+- **One source of truth for status:** a single ledger for 20+ tracks with drift detection between what the plan says and what is running; a GPU mode switch that refuses to evict a model mid-request
 
 ---
 

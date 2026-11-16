@@ -2,7 +2,7 @@
 title: "I built an AI agent company on my own hardware"
 description: "Running Paperclip multi-agent on a local Hermes+LiteLLM stack: the overhead tax you don't see coming, the code review that passed a broken health check, and why 'you are a coordinator, never implement' is not a rule."
 date: 2026-10-07
-project: sovereign-ai-stack
+project: paperclip
 tags: ["agents", "paperclip", "hermes", "litellm", "local-llm"]
 ---
 

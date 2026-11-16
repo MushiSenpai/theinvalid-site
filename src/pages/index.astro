@@ -16,9 +16,11 @@ const latest = byRecency.slice(0, 3);
 const rest = byRecency
   .slice(3)
   .sort((a, b) => a.data.order - b.data.order);
-const lab = projects
+const priv = projects
   .filter(isPrivate)
   .sort((a, b) => a.data.order - b.data.order);
+const lab = priv.filter((p) => p.data.status !== 'planned');
+const board = priv.filter((p) => p.data.status === 'planned');
 
 // Build-time GitHub snapshot (fail-soft); a scheduled rebuild keeps it fresh.
 const gh = await repoStatuses(projects.map((p) => p.data.repo).filter(Boolean));
@@ -96,7 +98,7 @@ const fmt = (d: Date) =>
   <h2>In the lab · private builds, written up in public</h2>
   <p style="color: var(--muted); margin-top: 0.4rem">
     Newer work whose repos stay private (commercial, security, or built on my
-    own data). Each one has a public write-up, numbers and failures included.
+    own data). The method, the numbers and the failures are still published.
   </p>
   <ul class="projrows">
     {lab.map((p) => (
@@ -108,6 +110,22 @@ const fmt = (d: Date) =>
             {p.data.writeup && <a href={p.data.writeup}>write-up →</a>}
             {p.data.repo && <a href={p.data.repo}>results ↗</a>}
           </span>
+        </span>
+        <p class="one">{p.data.oneliner}</p>
+      </li>
+    ))}
+  </ul>
+
+  <h2>On the drawing board</h2>
+  <p style="color: var(--muted); margin-top: 0.4rem">
+    Designed and decided, nothing built yet. Planning mistakes included.
+  </p>
+  <ul class="projrows">
+    {board.map((p) => (
+      <li>
+        <span class="row-top">
+          <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
+          <span class={`badge ${p.data.status}`}>{p.data.status}</span>
         </span>
         <p class="one">{p.data.oneliner}</p>
       </li>

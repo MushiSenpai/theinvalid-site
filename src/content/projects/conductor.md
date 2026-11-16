@@ -5,7 +5,7 @@ status: building
 private: true
 stack: ["FastAPI", "VRAM-lease scheduler", "LiteLLM", "OpenTelemetry", "Phoenix", "Docker"]
 started: 2026-07-01
-order: 10
+order: 8
 ---
 
 Four stacks on one workstation each believe the GPU is theirs. Conductor is the layer that settles it: every workload goes through one job API, and a scheduler leases the card to one heavy tenant at a time (use, flush, load). The bet is temporal scheduling on a single GPU, where most tooling only offers spatial sharing across several.

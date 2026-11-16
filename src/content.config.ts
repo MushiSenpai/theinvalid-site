@@ -6,7 +6,8 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     oneliner: z.string(),
-    status: z.enum(['building', 'shipped', 'parked']),
+    // planned = designed and decided, nothing built yet. Said plainly.
+    status: z.enum(['building', 'shipped', 'parked', 'planned']),
     // Optional: a project can exist before its repo is public (e.g. QLAB).
     repo: z.string().url().optional(),
     // Optional: site-relative path to the project's flagship case study.

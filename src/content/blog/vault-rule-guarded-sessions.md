@@ -2,7 +2,7 @@
 title: "My vault rule guarded sessions, not tools"
 description: "I added a rule: no authoring inside the Obsidian vault. Then my own sync script broke it automatically for weeks. Prose rules bind humans; config paths need code."
 date: 2026-10-24
-project: estate-ops
+project: karibusa
 tags: ["ops", "obsidian", "automation", "failure", "karibusa"]
 ---
 

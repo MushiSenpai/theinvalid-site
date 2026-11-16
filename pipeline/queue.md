@@ -1705,7 +1705,7 @@ lessons about **trusting sources vs verifying them**.
   `curl -s "https://huggingface.co/api/models/$R?blobs=true"` → read `gated` and sum
   `siblings[].size`. Cheap, and it killed a 25 GB download that would have failed anyway.
 - **Model cards go stale within hours.** The chosen checkpoint was **re-quantized the
-  same day we pulled it** (ablation narrowed to layers 18–51), which *resolved* a
+  same day we pulled it**, which *resolved* a
   documented `reasoning_effort: xhigh` runaway gotcha. Docs written from the previous
   revision would have shipped a stale workaround. Read the card at pull time, not from
   a cached summary — and record which revision you validated against.

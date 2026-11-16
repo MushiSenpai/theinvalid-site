@@ -99,9 +99,13 @@ owner's own data) sets `private: true` and, instead of a repo link, a `writeup:`
 pointing at its public blog post (or `repo:` pointing at a public results-only
 sibling, as Legal RAG does). Private entries never lead the homepage: they get
 their own "In the lab" rows and a second section on `/projects`, each labelled
-`private repo`. A private card may only state what its public write-up or public
-results repo already states. No ports, hostnames, pricing or client detail. The
-hero project count is computed from the collection, not hardcoded.
+`private repo`. A private card may only state what is already public: its
+write-up, its public results repo, or its rows in `pipeline/queue.md` (this repo
+is public, so the lesson log is too). No ports, hostnames, pricing or client
+detail. `status: planned` (dashed badge) marks work that is designed but not
+built; those sit in an "On the drawing board" section. Deliberately absent: the
+private catalogue and the business/pricing tracks. The hero project count is
+computed from the collection, not hardcoded.
 
 **Navigation — 5 tabs (since 2026-06-23):** `start here · work with me ·
 projects · field guide · knowledge base`. GitHub is a footer logo + username
