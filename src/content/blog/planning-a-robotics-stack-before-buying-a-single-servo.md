@@ -2,6 +2,7 @@
 title: "Planning a robotics stack before buying a single servo"
 description: "VISHWAKARMA P0: Isaac Sim quarantined for sm_120 Blackwell bugs, the target drone discontinued, and GR00T weights carrying a non-commercial license the Apache badge did not show."
 date: 2026-07-25
+project: vishwakarma
 tags: ["robotics", "lerobot", "vla", "simulation", "planning"]
 ---
 

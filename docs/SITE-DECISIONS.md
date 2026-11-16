@@ -61,7 +61,8 @@ src/
 ├── content.config.ts        # zod schemas for both collections
 ├── content/
 │   ├── projects/*.md         # ONE file per project (frontmatter: title,
-│   │                         #   oneliner, status, repo, stack[], started, order)
+│   │                         #   oneliner, status, repo, stack[], started, order,
+│   │                         #   + optional caseStudy, writeup, private)
 │   ├── blog/*.md             # ONE file per post (title, description, date,
 │   │                         #   project?, tags[])
 │   └── resume.md             # canonical resume (rendered at /resume)
@@ -69,8 +70,9 @@ src/
 ├── styles/global.css         # all design tokens, ~200 lines, no framework
 ├── lib/github.js             # build-time repo status (fail-soft) → "updated X ago"
 └── pages/
-    ├── index.astro           # hero + CTA row + Latest work (3 newest by `started`)
-    │                         #   + compact earlier-builds rows + self-hosting strip
+    ├── index.astro           # hero + CTA row + Latest work (3 newest PUBLIC by
+    │                         #   `started`) + compact earlier-builds rows + "In the
+    │                         #   lab" rows (private builds) + self-hosting strip
     │                         #   + latest posts + contact band (since 2026-07-12)
     ├── start-here.astro      # plain-English intro (non-technical buyers)
     ├── services.astro        # "Work with me" — the offer, pricing, contact
@@ -90,6 +92,16 @@ public/resume.md              # downloadable copy — keep in sync with content/
 (`building` / `shipped` / `parked`) drive the homepage sections automatically.
 Posts link to projects via the `project:` frontmatter key matching the project
 filename.
+
+**Private builds (since 2026-11-16).** A project whose repo must stay private
+(commercial deliverable, security or intelligence tooling, or it runs on the
+owner's own data) sets `private: true` and, instead of a repo link, a `writeup:`
+pointing at its public blog post (or `repo:` pointing at a public results-only
+sibling, as Legal RAG does). Private entries never lead the homepage: they get
+their own "In the lab" rows and a second section on `/projects`, each labelled
+`private repo`. A private card may only state what its public write-up or public
+results repo already states. No ports, hostnames, pricing or client detail. The
+hero project count is computed from the collection, not hardcoded.
 
 **Navigation — 5 tabs (since 2026-06-23):** `start here · work with me ·
 projects · field guide · knowledge base`. GitHub is a footer logo + username
@@ -114,7 +126,11 @@ related project's filename. Push. (Post ideas queue: the "Blog Content Mine"
 table in the sovereign stack doc.)
 
 **Update the resume:** edit `src/content/resume.md`, then
-`cp src/content/resume.md public/resume.md`. Push. (The copy in
+`cp src/content/resume.md public/resume.md` and `bash scripts/make-resume-pdf.sh`
+(regenerates `public/resume.pdf`). Push. Leave the `oss-auto` block alone: it is
+generated. Heading text feeds the `/resume#how-i-work-read-this-first` anchor
+linked from the footer and Work-with-me, so renaming that heading means updating
+both links. (The copy in
 `~/Documents/resume/` is the working-draft archive.)
 
 **Preview locally:** `npm run dev` (port 4321). **Verify:** `npm run build`

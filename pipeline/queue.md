@@ -185,8 +185,8 @@ Format rules: PIPELINE.md.
 **Sources:** scripts/workflow-validate.py + generate-catalogue.py + workflow-maintenance.sh; COVERAGE.md; benchmarks.csv.
 **Targets:** linkedin, reddit:r/comfyui, hn
 
-## [published 2026-10-03] my-uncensored-llm-was-leaking-raw-tokenizer-output
-**Angle:** Benchmarking my two unrestricted local LLMs (the creative-pipeline script writers): CPU Nemotron PRISM ran clean at 18 tok/s, no refusals. But GPU Dolphin 24B AWQ — same uncensored role — came back at ~2 tok/s with `Ġ` and `Ċ` BPE artifacts leaking into the output text. Classic symptom of a chat-template/decode misconfig at the serving layer (awq_marlin @ 0.25 GPU-mem). Lesson: "it responds" isn't "it works" — inspect the actual bytes, and benchmark every model you rely on, because a misconfigured serving config produces plausible-looking garbage.
+## [published 2026-10-03] my-local-llm-was-leaking-raw-tokenizer-output
+**Angle:** Benchmarking my two local script-writer LLMs for the creative pipeline: the CPU-floor Nemotron ran clean at 18 tok/s. But a GPU 24B AWQ model in the same role came back at ~2 tok/s with `Ġ` and `Ċ` BPE artifacts leaking into the output text. Classic symptom of a chat-template/decode misconfig at the serving layer (awq_marlin @ 0.25 GPU-mem). Lesson: "it responds" isn't "it works" — inspect the actual bytes, and benchmark every model you rely on, because a misconfigured serving config produces plausible-looking garbage.
 **Sources:** COSTING.md encoder section (private numbers); /tmp/encoder-bench.py; 2026-06-14.
 **Targets:** linkedin, reddit:r/LocalLLaMA
 ## [manual] why-theinvalid-dot-me
@@ -446,9 +446,9 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | H-17 | M | Credential rotation: keys pasted into an LLM chat for handover were rotated to openssl rand -hex 32 — documented rotation procedure now exists | §v1.6.2-1 side effect | unmined |
 | H-18 | M | Hermes Desktop remote-gateway: pin HERMES_DASHBOARD_SESSION_TOKEN (else fresh uncopyable token each start) + dashboard MUST run --tui or chat WebSocket silently fails (#1 failure mode) | §v1.7-1 two requirements | unmined |
 | S-16 | L | Tailscale travel test: direct peer path held through lid-close on mobile hotspot, no DERP; CGNAT/corp-FW may force DERP — re-test if encountered | §v1.6.4-6 | unmined |
-| S-17 | L | CPU Nemotron is the PRISM abliterated/unrestricted variant — deliberate: unrestricted local floor, never client-routed | §v1.6.4-1 | unmined |
+| S-17 | L | CPU Nemotron floor model is a separate local variant, deliberate: local-only, never client-routed | §v1.6.4-1 | unmined |
 
-**Audit verdict:** sovereign Decision Log §v1.6.x now ~fully captured (was the main gap). Creative glossary (C-1..15), audio LESSONS (A-1..6), infra (I-1..14), products (P-1..8) confirmed covered. Tier-6/uncensored creative doc: finishing lessons in C-11; uncensored intentionally private (COSTING Tier-5 note), not a public gap. **Coverage now ~95%+.**
+**Audit verdict:** sovereign Decision Log §v1.6.x now ~fully captured (was the main gap). Creative glossary (C-1..15), audio LESSONS (A-1..6), infra (I-1..14), products (P-1..8) confirmed covered. Tier-6 creative doc: finishing lessons in C-11. **Coverage now ~95%+.**
 
 ## E4 forensic bridge (first end-to-end run, 2026-06-13)
 | id | pri | lesson / decision | source | status |
@@ -540,7 +540,7 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | id | pri | lesson / decision | source | status |
 |---|---|---|---|---|
 | PC-1 | M | A derived/private view must be GENERATED from the canonical source, not hand-copied. The private catalogue was a manual copy of the public one and went stale within hours (missed Sterling, kept the wrong Ledger licence). Fix: a generator that re-runs the upstream public generator + lifts its DATA verbatim, then appends the private-only tiles — so it always mirrors live. Host local-only views on 127.0.0.1 via a `systemd --user` unit + `enable-linger` (survives reboot, no login), never tailnet/public; a daily user-timer keeps it regenerated. | private-catalogue generator + localhost host | unmined |
-| PC-2 | H | Catalogue honesty — a hand-written tile claimed a capability the code deliberately does NOT run: the auteur/uncensored I2V path's add-on LoRAs hang the renderer's HTTP during the fp8 merge (reproducible), so the orchestrator animates the keyframe with the plain graph instead. A description written by hand drifts from what the pipeline executes; verify every tile against the actual code path before quoting it as a capability. | auteur I2V LoRA reconcile (BIZ-1) | unmined |
+| PC-2 | H | Catalogue honesty — a hand-written tile claimed a capability the code deliberately does NOT run: the auteur I2V path's add-on LoRAs hang the renderer's HTTP during the fp8 merge (reproducible), so the orchestrator animates the keyframe with the plain graph instead. A description written by hand drifts from what the pipeline executes; verify every tile against the actual code path before quoting it as a capability. | auteur I2V LoRA reconcile (BIZ-1) | unmined |
 | PC-3 | M | cinematic-orchestrator `--stage all` scores via native ACE-Step in ComfyUI (~8s), NOT the separate YuE worker path that also exists in the file (`render_music`). When two code paths implement the same stage, confirm which one the entry point actually calls before quoting a wall-clock — the auteur end-to-end is 669s (ACE-Step), not the ~767s an older YuE-assumption implied. | auteur end-to-end measure | unmined |
 
 ## theinvalid.me design review — Stitch export (2026-06-22)
@@ -642,7 +642,7 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | MB-2 | H | **Aider's diff format sidesteps the tool-call leak — so the "way out" is the loop + the oracle, not a Claude-Code clone.** Aider edits via SEARCH/REPLACE text blocks, not tool-calls, so the parser leak never applies. Wire it to a cheap oracle (`--auto-test` running pytest/lint/build): the local model can be wrong N times, the oracle catches it free, and Opus only reviews the GREEN diff. Proven twice incl. a real helper added to the Bridge's own codebase, zero Opus tokens in the loop. Gotcha: install Aider in its OWN venv — into system Python it clobbered hermes-agent's pinned deps. | qwenaider dogfood | unmined |
 | MB-3 | M | **A build spec is only fair to a junior model if it's model-agnostic OR paired with a verification loop.** The Bridge spec was Opus-calibrated (read files, follow nuanced rules, self-verify); grading a 30B against it measured senior-ness it doesn't have. Either prescribe exact code, or attach an oracle that defines "done." | bridge SPEC vs local-model output | unmined |
 | MB-4 | M | **Adversarial verification catches your own agents derailing — not just bad code.** In a fan-out workflow one implementation agent silently returned "output-style" meta-text and made zero edits; the integrate phase's independent check flagged `all_pass:false` and named the missing change, so I fixed it directly. Always add a verify/integrate phase, fan out by non-overlapping files, and know workflow subagents share the account session limit (a whole review round can die mid-flight and report 0 findings — which means 0 reviewers ran, not "clean"). | bridge D+B implement + review workflows | unmined |
-| MB-5 | M | **To surface private data without spreading it: parser-in-repo, data-in-its-private-home, read live + auth-gated.** The Bridge's Creative tab lists the uncensored workflow catalogue, but the repo holds only the PARSER (`catalogue.py`); the private content stays in `~/Documents/business/` and is read at request time behind a bearer token, tailnet-only. The repo never carries the secret content. | bridge Creative tab | unmined |
+| MB-5 | M | **To surface private data without spreading it: parser-in-repo, data-in-its-private-home, read live + auth-gated.** The Bridge's Creative tab lists a private workflow catalogue, but the repo holds only the PARSER (`catalogue.py`); the private content stays in `~/Documents/business/` and is read at request time behind a bearer token, tailnet-only. The repo never carries the secret content. | bridge Creative tab | unmined |
 
 ## Ops fix batch + execution fan-out (OPS, 2026-07-02)
 | id | pri | lesson / decision | source | status |
@@ -1692,7 +1692,7 @@ don't obey either.
 
 ## Qwen3.8-27B NVFP4 on one 5090 — sourcing a model stack (2026-08-24)
 
-Setting up an abliterated Qwen3.8-27B (NVFP4, single RTX 5090) surfaced a cluster of
+Setting up a local Qwen3.8-27B (NVFP4, single RTX 5090) surfaced a cluster of
 lessons about **trusting sources vs verifying them**.
 
 - **Verify HF repos against the API, never against search results or model cards.**
@@ -2335,3 +2335,10 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
   Project Maya is slower than the 27B builder and scores below the cloud architect, but it is a different family,
   free and offline. That makes it the right spec auditor, holdout writer and judge, because a spec writer that
   checks its own spec shares its own blind spots. **Pri M.**
+- **2026-11-16 — a portfolio that only lists public repos under-reports the work (SITE refresh):** by November the
+  site showed 8 projects while the estate ran 20-odd tracks, because the project schema assumed "repo is public".
+  Fix: a `private: true` flag plus a `writeup:` link, a separate "In the lab" section, and one rule: a private card
+  may only repeat what its public write-up already says. Same pass found three drifts that no check had caught: a
+  hero stat (268 tok/s) with no source anywhere (repo and posts say 275/276), a "repo goes public after its release
+  pass" line four months after the repo went public, and a hardcoded project count. Hardcoded numbers on a
+  generated site rot; compute them or cite them. **Pri M.**

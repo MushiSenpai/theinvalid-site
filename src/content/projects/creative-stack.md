@@ -10,4 +10,4 @@ order: 2
 
 Six named, tested workflows — from seed-locked fast iteration (⚡ Flashfire) to object removal that takes the object *and its reflection* (🫥 Vanisher). The interesting engineering is upstream: a multimodal "forensic mode" produces dense scene constraints *before* any diffusion model runs, so generators obey specifications instead of inventing shadows.
 
-Quality benchmarking against client-grade standards is happening in public — the benchmark table ships with empty cells and fills in weekly, pass or fail.
+Quality benchmarking against client-grade standards happens in public: the benchmark table shipped with empty cells and fills in as runs complete, pass or fail. A monthly job re-validates every workflow against upstream drift and regenerates the [live catalogue](/workflow-catalogue.html).

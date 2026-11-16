@@ -10,4 +10,4 @@ order: 5
 
 The proof that the infrastructure ships products: this is an application built entirely on the three stacks above. A vision LLM detects and reads panels, the audio stack acts the dialogue in cloned voices, and ffmpeg drives a Ken Burns + 2.5D parallax camera across the page.
 
-First end-to-end run is complete; voice direction, SFX beds, and pacing are being tuned.
+Seven tagged releases so far (v0.1.0 to v0.7.0), each carrying the actual demo video from that pass, so the quality curve is public. Voice direction, SFX beds, and pacing are still being tuned.

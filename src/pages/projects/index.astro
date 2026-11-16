@@ -6,21 +6,30 @@ import { repoStatuses, ago } from '../../lib/github.js';
 const projects = (await getCollection('projects')).sort(
   (a, b) => a.data.order - b.data.order,
 );
-const gh = await repoStatuses(projects.map((p) => p.data.repo).filter(Boolean));
+const open = projects.filter((p) => !p.data.private);
+const lab = projects.filter((p) => p.data.private);
+const gh = await repoStatuses(open.map((p) => p.data.repo).filter(Boolean));
 ---
 
-<Base title="Projects — theinvalid.me">
+<Base
+  title="Projects — theinvalid.me"
+  description="Four AI infrastructure stacks on one RTX 5090, the control plane over them, the products built on top, and the newer private builds. Statuses are honest."
+>
   <h1>Projects</h1>
   <p style="color: var(--muted)">
-    Four infrastructure stacks and the products built on them. Every repo is
-    public; statuses are honest — <code>building</code> means building.
+    Four infrastructure stacks, the products built on them, and the newer builds
+    that grew out of both. Statuses are honest: <code>building</code> means
+    building. Where a repo is private, the page says why and links the public
+    write-up instead.
   </p>
   <p style="margin:1.3rem 0 0.4rem">
     <a class="btn" href="/workflow-catalogue.html">Live workflow catalogue ↗</a>
     <a class="btn" href="/3d-catalogue">3D asset catalogue ↗</a>
   </p>
-  <p class="meta" style="margin:0 0 1.6rem">Every creative workflow with real measured benchmarks, auto-refreshed monthly — plus the 3D asset foundry's own catalogue.</p>
-  {projects.map((p) => (
+  <p class="meta" style="margin:0 0 1.6rem">Every creative workflow with real measured benchmarks, auto-refreshed monthly, plus the 3D asset foundry's own catalogue.</p>
+
+  <h2 id="public">Public repos</h2>
+  {open.map((p) => (
     <article class="card">
       <h3>
         <a href={`/projects/${p.id}`}>{p.data.title}</a>
@@ -32,6 +41,28 @@ const gh = await repoStatuses(projects.map((p) => p.data.repo).filter(Boolean));
         {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
         {p.data.repo && <a href={p.data.repo}>repo ↗</a>}
         {p.data.caseStudy && <a href={p.data.caseStudy}>case study →</a>}
+      </p>
+    </article>
+  ))}
+
+  <h2 id="private">Private builds, written up in public</h2>
+  <p style="color: var(--muted)">
+    These repos stay private: one is the commercial deliverable, some are
+    security or intelligence tooling, some run on my own data. The method, the
+    numbers and the failures are still published.
+  </p>
+  {lab.map((p) => (
+    <article class="card">
+      <h3>
+        <a href={`/projects/${p.id}`}>{p.data.title}</a>
+        <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+      </h3>
+      <p class="oneliner">{p.data.oneliner}</p>
+      <p class="meta">
+        <span>{p.data.stack.join(' · ')}</span>
+        <span>private repo</span>
+        {p.data.writeup && <a href={p.data.writeup}>write-up →</a>}
+        {p.data.repo && <a href={p.data.repo}>public results ↗</a>}
       </p>
     </article>
   ))}

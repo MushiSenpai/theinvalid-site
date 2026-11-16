@@ -11,6 +11,9 @@ export default defineConfig({
   redirects: {
     '/knowledge-base': '/blog',
     '/case-studies': '/blog#case-studies',
+    // Post renamed 2026-11-16; keep the old URL alive.
+    '/blog/my-uncensored-llm-was-leaking-raw-tokenizer-output':
+      '/blog/my-local-llm-was-leaking-raw-tokenizer-output',
   },
   integrations: [
     sitemap({

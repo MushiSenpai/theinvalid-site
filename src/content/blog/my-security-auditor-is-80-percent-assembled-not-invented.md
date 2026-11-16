@@ -2,7 +2,7 @@
 title: "My security auditor is 80 percent assembled, not invented"
 description: "How BHAIRAVA shipped as a real one-person security product: 80% existing measured components, 20% new connective tissue, and Stage V honest failures including 0/12 recall on real Django CVEs."
 date: 2026-08-01
-project: sovereign-code-auditor
+project: bhairava
 tags: ["security", "code-audit", "owasp-llm", "validation", "sscai"]
 ---
 

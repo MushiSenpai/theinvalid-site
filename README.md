@@ -24,7 +24,7 @@ include the losses, case studies include the dead ends.
 | Path | What lives there |
 |---|---|
 | `src/content/blog/` | posts + case studies (failure logs included) |
-| `src/content/projects/` | project pages — the stacks, apps, and experiments |
+| `src/content/projects/` | project pages: the stacks, apps, experiments, and private builds (write-up only) |
 | `src/pages/` | routes: index, blog, projects, services, resume |
 | `public/` | static assets + standalone catalogue pages |
 | `pipeline/` | editorial queue + publishing checklist |

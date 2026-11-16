@@ -6,13 +6,18 @@ import { repoStatuses, ago } from '../lib/github.js';
 
 const projects = await getCollection('projects');
 
-// Newest work leads; everything else collapses to compact rows.
-const byRecency = [...projects].sort(
-  (a, b) => b.data.started.valueOf() - a.data.started.valueOf(),
-);
+// Public work leads (newest three as cards, the rest as compact rows).
+// Private builds get their own honest section: no repo link, a write-up instead.
+const isPrivate = (p) => p.data.private;
+const byRecency = projects
+  .filter((p) => !isPrivate(p))
+  .sort((a, b) => b.data.started.valueOf() - a.data.started.valueOf());
 const latest = byRecency.slice(0, 3);
 const rest = byRecency
   .slice(3)
+  .sort((a, b) => a.data.order - b.data.order);
+const lab = projects
+  .filter(isPrivate)
   .sort((a, b) => a.data.order - b.data.order);
 
 // Build-time GitHub snapshot (fail-soft); a scheduled rebuild keeps it fresh.
@@ -38,7 +43,8 @@ const fmt = (d: Date) =>
     </p>
     <p class="sub">
       No code hand-written: I spec, direct LLMs, and verify. Everything below is
-      public, operating daily, and documented. Benchmarks, failures, and all.
+      documented in public: benchmarks, failures, and all. Where a repo has to
+      stay private, the page says so.
     </p>
     <p class="cta-row">
       <a class="btn solid" href="/services">Work with me</a>
@@ -46,8 +52,8 @@ const fmt = (d: Date) =>
       <a class="btn" href="/start-here">New here? Plain-English version</a>
     </p>
     <p class="proof">
-      <span><strong>8</strong> projects, documented in public</span>
-      <span><strong>268 tok/s</strong> local LLM, measured</span>
+      <span><strong>{projects.length}</strong> projects, documented in public</span>
+      <span><strong>275 tok/s</strong> local LLM, measured</span>
       <span><strong>2</strong> real quantum computers</span>
       <span><strong>0</strong> manufactured wins</span>
     </p>
@@ -80,6 +86,27 @@ const fmt = (d: Date) =>
           <span class="meta">
             {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
             {p.data.repo && <a href={p.data.repo}>repo ↗</a>}
+          </span>
+        </span>
+        <p class="one">{p.data.oneliner}</p>
+      </li>
+    ))}
+  </ul>
+
+  <h2>In the lab · private builds, written up in public</h2>
+  <p style="color: var(--muted); margin-top: 0.4rem">
+    Newer work whose repos stay private (commercial, security, or built on my
+    own data). Each one has a public write-up, numbers and failures included.
+  </p>
+  <ul class="projrows">
+    {lab.map((p) => (
+      <li>
+        <span class="row-top">
+          <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
+          <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+          <span class="meta">
+            {p.data.writeup && <a href={p.data.writeup}>write-up →</a>}
+            {p.data.repo && <a href={p.data.repo}>results ↗</a>}
           </span>
         </span>
         <p class="one">{p.data.oneliner}</p>

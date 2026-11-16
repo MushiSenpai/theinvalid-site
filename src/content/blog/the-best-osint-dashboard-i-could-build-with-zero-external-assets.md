@@ -2,6 +2,7 @@
 title: "The best OSINT dashboard I could build with zero external assets"
 description: "Building a sovereign no-egress OSINT portal in one self-contained HTML file: geospatial maps without tile servers, and why the AI code reviewer's top finding about Apache AGE parameterized LIMIT was wrong."
 date: 2026-10-31
+project: tanyuu
 tags: ["osint", "vanilla-js", "apache-age", "postgres", "dashboard"]
 ---
 
