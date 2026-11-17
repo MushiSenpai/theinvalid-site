@@ -37,81 +37,109 @@ render() { # $1 = slug, stdin = body html
   ls -lh "public/briefs/$1.pdf"
 }
 
-FOOT='<p class="foot">Madhan Kumar Reddy · Singapore · reddy.madhankumar.sg@gmail.com · theinvalid.me — every number above is a measured run on one RTX 5090 (32 GB); benchmarks and failure logs are public in the repo. Generated 2026-07-02.</p>'
+FOOT='<p class="foot">Madhan Kumar Reddy · Singapore · reddy.madhankumar.sg@gmail.com · theinvalid.me · every number above is a measured run on one RTX 5090 (32 GB); benchmarks and failure logs are public in the repo. Updated 2026-11-17.</p>'
 
 render sovereign-stack-brief <<EOF
-<h1>Sovereign AI Stack — one-page brief</h1>
+<h1>Sovereign AI Stack: one-page brief</h1>
 <p class="sub">A private LLM that physically can't leak: self-hosted multimodal serving where "client data never touches a cloud API" is enforced by routing, not policy. Public repo: github.com/MushiSenpai/mushishi-sovereign-ai-stack</p>
 <h2>What it is</h2>
 <ul>
-  <li><b>Routing-enforced privacy tiers</b> — the "client" profile refuses to fall back to cloud at all; it fails loudly instead of degrading silently. Auditable, because the whole configuration is public.</li>
+  <li><b>Routing-enforced privacy tiers:</b> the "client" profile refuses to fall back to cloud at all; it fails loudly instead of degrading silently. Auditable, because the whole configuration is public.</li>
   <li>vLLM + Nemotron (NVFP4) on one RTX 5090; always-on CPU fallback (llama.cpp) so agents survive GPU mode-switches; optional cloud budget layer for the tiers your data rules allow.</li>
-  <li>Operations included: default-deny firewall, Tailscale-only exposure, monitored 3-2-1 backups, runbook handover.</li>
+  <li>Operations included: default-deny firewall, Tailscale-only exposure, monitored 3-2-1 backups with an offsite copy, request tracing (OpenTelemetry), runbook handover.</li>
 </ul>
 <h2>Measured (not projected)</h2>
 <table>
 <tr><th>Metric</th><th>Measured</th><th>Note</th></tr>
 <tr><td>Single-stream throughput</td><td class="num">276 tok/s</td><td>real multimodal load</td></tr>
 <tr><td>Context window</td><td class="num">180K tokens</td><td>FP8 KV cache, ~28–30 GB of 32 GB</td></tr>
-<tr><td>Concurrency knee</td><td class="num">~8 concurrent</td><td>~2.65× aggregate; past it, users just wait</td></tr>
+<tr><td>Aggregate at 8 concurrent users</td><td class="num">728 tok/s</td><td>2.6× the solo rate; past 8, users queue</td></tr>
 <tr><td>Practical users / card</td><td class="num">10–15 heavy</td><td>~30–40 light chat users, &lt;2.5 s latency</td></tr>
 </table>
-<div class="honest"><b>What it isn't:</b> a 30B local model is not a frontier model. The stack is honest about that — sensitive work stays local by architecture; anything routed to cloud is a tier your data rules explicitly allow. The decision log (including six hours of failed TensorRT-LLM debugging) is published.</div>
+<div class="honest"><b>What it isn't:</b> a 30B local model is not a frontier model. The stack is honest about that: sensitive work stays local by architecture; anything routed to cloud is a tier your data rules explicitly allow. The decision log (including six hours of failed TensorRT-LLM debugging) is published.</div>
 <h2>Engagement</h2>
 <ul>
-  <li><b>AI Readiness Audit</b> — SGD 500–1,000: two hours + a written gap analysis and roadmap. The low-commitment first step.</li>
-  <li><b>Deployment</b> — SGD 3,000–8,000 by scope: ~2 weeks spec + staging, delivered remotely onto your hardware; on-site sprints available for overseas engagements. Hardware spec'd to buy or deployed on yours.</li>
-  <li><b>Health retainer</b> — SGD 800–1,500/mo: backups verified, watchdog reviewed, dependencies current.</li>
+  <li><b>AI Readiness Audit:</b> SGD 500–1,000: two hours + a written gap analysis and roadmap. The low-commitment first step.</li>
+  <li><b>Deployment:</b> SGD 3,000–8,000 by scope: ~2 weeks spec + staging, delivered remotely onto your hardware; on-site sprints available for overseas engagements. Hardware spec'd to buy or deployed on yours.</li>
+  <li><b>Health retainer:</b> SGD 800–1,500/mo: backups verified, watchdog reviewed, dependencies current.</li>
 </ul>
 $FOOT
 EOF
 
 render creative-stack-brief <<EOF
-<h1>Creative Stack — one-page brief</h1>
-<p class="sub">Local AI video production — generation, surgical editing, 4K finishing — on hardware you control. Unreleased footage never leaves the building. Public repo: github.com/MushiSenpai/mushishi-creative-stack</p>
+<h1>Creative Stack: one-page brief</h1>
+<p class="sub">Local AI video production (generation, surgical editing, 4K finishing) on hardware you control. Unreleased footage never leaves the building. Public repo: github.com/MushiSenpai/mushishi-creative-stack</p>
 <h2>What it is</h2>
 <ul>
   <li><b>Generation:</b> FLUX.2 stills, Wan 2.2 / HunyuanVideo video, shipped as six named, tested ComfyUI workflows (importable JSON).</li>
-  <li><b>Editing:</b> object removal (VOID) with SAM3 video-mask tracking — including the object's reflection; masked edits (SAM3 + VACE); a <b>forensic bridge</b> where a local vision LLM measures the scene first and writes the mask + fill constraints itself, so the diffusion model gets specifications to obey, not room to hallucinate.</li>
+  <li><b>Editing:</b> object removal (VOID) with SAM3 video-mask tracking, including the object's reflection; masked edits (SAM3 + VACE); a <b>forensic bridge</b> where a local vision LLM measures the scene first and writes the mask + fill constraints itself, so the diffusion model gets specifications to obey, not room to hallucinate.</li>
   <li><b>Finishing:</b> 60 fps interpolation (RIFE) + 4K upscale (SeedVR2).</li>
+  <li><b>Kept working:</b> a monthly job re-validates every workflow against upstream changes and republishes the catalogue, after 4 of 9 broke from upstream drift. A dedicated video lane (LTX-2.5) joined in August.</li>
 </ul>
 <h2>Measured (not projected)</h2>
 <table>
 <tr><th>Job</th><th>Measured</th><th>Note</th></tr>
-<tr><td>Object removal, representative clip</td><td class="num">180 s</td><td>clean — no ghost, background reconstructed</td></tr>
-<tr><td>Object removal, worst case</td><td class="num">residue</td><td>subject behind glassware, low light — stated up front</td></tr>
+<tr><td>Object removal, representative clip</td><td class="num">180 s</td><td>clean: no ghost, background reconstructed</td></tr>
+<tr><td>Object removal, worst case</td><td class="num">residue</td><td>subject behind glassware, low light: stated up front</td></tr>
 <tr><td>Forensic-bridge pipeline, end to end</td><td class="num">203 s</td><td>analysis → auto mask/fill prompts → render, unattended</td></tr>
 </table>
-<div class="honest"><b>What it can't do yet:</b> liquids, heavy occlusion, and low-light targets defeat the mask — the published case studies show the failures, not just the wins. Hard footage is quoted only after a <b>free sample frame</b>, and I'll say honestly if the tech isn't there.</div>
+<div class="honest"><b>What it can't do yet:</b> liquids, heavy occlusion, and low-light targets defeat the mask; the published case studies show the failures, not just the wins. Hard footage is quoted only after a <b>free sample frame</b>, and I'll say honestly if the tech isn't there.</div>
 <h2>Engagement</h2>
 <ul>
   <li><b>Object removal:</b> Draft SGD 12/sec (min 80) · Production SGD 25/sec (min 150) · Delivery 4K SGD 40/sec (min 240), revision included.</li>
-  <li><b>Turnkey pipeline deployment</b> for studios/agencies — the whole stack on your hardware, with the workflow catalogue and runbook.</li>
+  <li><b>Turnkey pipeline deployment</b> for studios/agencies: the whole stack on your hardware, with the workflow catalogue and runbook.</li>
 </ul>
 $FOOT
 EOF
 
 render audio-stack-brief <<EOF
-<h1>Audio Stack — one-page brief</h1>
-<p class="sub">Fully local voice cloning, TTS, lip-sync avatars, music, and auto-dubbing — job-queue architecture, every model MIT/Apache-2.0. A face and a voice are the most privacy-sensitive inputs there are; here they never leave the machine. Public repo: github.com/MushiSenpai/mushishi-audio-stack</p>
-<h2>Measured (not projected) — 34.5 s reference clip</h2>
+<h1>Audio Stack: one-page brief</h1>
+<p class="sub">Fully local voice cloning, TTS, lip-sync avatars, music, and auto-dubbing on a job-queue architecture, every model MIT/Apache-2.0. A face and a voice are among the most privacy-sensitive inputs there are; here they never leave the machine. Public repo: github.com/MushiSenpai/mushishi-audio-stack</p>
+<h2>Measured (not projected): 34.5 s reference clip</h2>
 <table>
 <tr><th>Job</th><th>Measured</th><th>Note</th></tr>
 <tr><td>Voice clone (Demucs + Fish Speech)</td><td class="num">5 s</td><td>reusable profile, ~4 GB</td></tr>
 <tr><td>TTS narration, cloned voice</td><td class="num">25 s</td><td>34.5 s WAV, ~145 wpm</td></tr>
 <tr><td>Transcription (WhisperX, word-aligned)</td><td class="num">15 s</td><td>~2.3× realtime</td></tr>
-<tr><td>Avatar — draft (MuseTalk)</td><td class="num">78 s</td><td>1024², 25 fps, ~7.7 GB</td></tr>
-<tr><td>Avatar — production (LatentSync 1.6)</td><td class="num">242 s</td><td>~20 GB; cleaner blend, teeth a tie with draft</td></tr>
-<tr><td>Avatar — cinematic (Hallo2)</td><td class="num">1197 s</td><td>~35× slower than realtime; real head motion</td></tr>
-<tr><td>Music — 30 s stereo clip (ACE-Step)</td><td class="num">10 s</td><td>incl. model load</td></tr>
-<tr><td>Music — 15 s song w/ vocals (YuE)</td><td class="num">176 s</td><td>mono is a model limit, stated</td></tr>
+<tr><td>Avatar, draft (MuseTalk)</td><td class="num">78 s</td><td>1024², 25 fps, ~7.7 GB</td></tr>
+<tr><td>Avatar, production (LatentSync 1.6)</td><td class="num">242 s</td><td>~20 GB; cleaner blend, teeth a tie with draft</td></tr>
+<tr><td>Avatar, cinematic (Hallo2)</td><td class="num">1197 s</td><td>~35× slower than realtime; real head motion</td></tr>
+<tr><td>Music, 30 s stereo clip (ACE-Step)</td><td class="num">10 s</td><td>incl. model load</td></tr>
+<tr><td>Music, 15 s song w/ vocals (YuE)</td><td class="num">176 s</td><td>mono is a model limit, stated</td></tr>
 <tr><td>Dub, same language</td><td class="num">20 s</td><td>cross-language 3–4 min (phased VRAM)</td></tr>
 </table>
-<div class="honest"><b>The honest ceiling:</b> avatar quality is social-grade across all three engines. Broadcast close-ups still go to a cloud path — I say that before you pay, not after. The three lip-sync engines run as isolated, version-pinned services; the 25+ install lessons are public.</div>
+<div class="honest"><b>The honest ceiling:</b> avatar quality is social-grade across all three engines. Broadcast close-ups still go to a cloud path. I say that before you pay, not after. The three lip-sync engines run as isolated, version-pinned services; the 25+ install lessons are public. The demo avatar opens by saying it is an avatar.</div>
 <h2>Engagement</h2>
 <ul>
   <li><b>Avatar video:</b> Draft SGD 80 · Production SGD 150 · Cinematic quoted per job.</li>
-  <li><b>Turnkey deployment</b> — the pipeline on your hardware (marketing ad-reads, narration, dubbing), with runbook and quality-tier guidance.</li>
+  <li><b>Turnkey deployment:</b> the pipeline on your hardware (marketing ad-reads, narration, dubbing), with runbook and quality-tier guidance.</li>
+</ul>
+$FOOT
+EOF
+
+render legal-rag-brief <<EOF
+<h1>Sovereign Legal RAG: one-page brief</h1>
+<p class="sub">Private document search and Q&amp;A for legal teams, on hardware the firm controls. Answers cite the exact clause, and the system says "the documents don't contain that" instead of guessing. Public results: github.com/MushiSenpai/sovereign-legal-rag-results</p>
+<h2>What it is</h2>
+<ul>
+  <li><b>Hybrid retrieval:</b> semantic search and exact-term search (defined terms, party names, section numbers) fused into one ranked list, then reranked for precision.</li>
+  <li><b>Pinpoint citations and refusal discipline:</b> answers only from retrieved text, every answer cites document and section.</li>
+  <li><b>The controls a firm needs:</b> matter-level ethical walls (walled documents can't surface in an answer or a citation) and an append-only, hash-chained audit log of every query.</li>
+  <li><b>Zero egress:</b> no cloud API, no per-token bills. The only network call is to the firm's own LLM.</li>
+</ul>
+<h2>Measured (not projected): 150 clause questions, real commercial contracts (CUAD v1)</h2>
+<table>
+<tr><th>Retrieval mode</th><th>MRR</th><th>Recall@1</th><th>Recall@5</th></tr>
+<tr><td>Semantic only (the usual "chat with your PDFs")</td><td class="num">0.434</td><td class="num">0.307</td><td class="num">0.587</td></tr>
+<tr><td>Keyword only</td><td class="num">0.551</td><td class="num">0.393</td><td class="num">0.747</td></tr>
+<tr><td>Hybrid</td><td class="num">0.531</td><td class="num">0.380</td><td class="num">0.767</td></tr>
+<tr><td><b>Hybrid + rerank</b></td><td class="num"><b>0.564</b></td><td class="num"><b>0.440</b></td><td class="num">0.740</td></tr>
+</table>
+<div class="honest"><b>What the numbers say:</b> semantic-only search is the weakest mode on legal text, because clause language is exact-term heavy. Fusion alone doesn't fix that; the reranker is what turns recall into first-result precision, at a small cost in deep recall. An experimental page-image retrieval tier beat text hybrid on a separate page-level eval (MRR 0.649 vs 0.521).</div>
+<h2>Engagement</h2>
+<ul>
+  <li>Deployed as part of a <b>Sovereign AI Deployment</b> onto the firm's hardware, scoped and quoted per firm after an <b>AI Readiness Audit</b>.</li>
+  <li>The engine is private; a live walkthrough on real public contracts is available on request.</li>
 </ul>
 $FOOT
 EOF

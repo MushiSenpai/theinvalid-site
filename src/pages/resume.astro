@@ -13,6 +13,7 @@ const gh = await repoStatuses(projects.map((p) => p.data.repo).filter(Boolean));
 const stamp = new Date().toISOString().slice(0, 7); // YYYY-MM
 const pdfName = `Madhan-Kumar-Reddy-Resume-${stamp}.pdf`;
 const mdName = `Madhan-Kumar-Reddy-Resume-${stamp}.md`;
+const shortName = `Madhan-Kumar-Reddy-Resume-2-page-${stamp}.pdf`;
 ---
 
 <Base
@@ -42,8 +43,9 @@ const mdName = `Madhan-Kumar-Reddy-Resume-${stamp}.md`;
 
   <hr class="no-print" />
   <p class="no-print" style="font-family: var(--mono); font-size: 0.85rem; color: var(--muted)">
-    Want this as a file? <a href="/resume.pdf" download={pdfName}>Download PDF</a> ·
+    Want this as a file? <a href="/resume-2page.pdf" download={shortName}>2-page PDF</a> (for applications) ·
+    <a href="/resume.pdf" download={pdfName}>full PDF</a> ·
     <a href="/resume.md" download={mdName}>markdown</a>.
-    Same content either way, no tracking pixel, nothing hidden in the formatting.
+    No tracking pixel, nothing hidden in the formatting.
   </p>
 </Base>

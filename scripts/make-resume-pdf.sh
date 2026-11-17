@@ -1,22 +1,25 @@
 #!/bin/bash
-# make-resume-pdf.sh — regenerate public/resume.pdf from src/content/resume.md
+# make-resume-pdf.sh — regenerate the résumé PDFs from markdown.
+#   public/resume.pdf       <- src/content/resume.md       (full, linked from /resume)
+#   public/resume-2page.pdf <- src/content/resume-2page.md (2 pages, for applications)
 # Print-friendly (white) styling, distinct from the dark site theme.
-# Run after every resume edit: bash scripts/make-resume-pdf.sh && git add -A && git commit && git push
+# Run after every resume edit: bash scripts/make-resume-pdf.sh, then commit and push.
 set -e
 cd "$(dirname "$0")/.."
 
+render() { # $1 = source markdown, $2 = output pdf, $3 = base font size
 TMP_HTML=$(mktemp /tmp/resume-XXXX.html)
 
-pandoc src/content/resume.md --standalone --metadata title="Madhan Kumar Reddy — Resume" \
+pandoc "$1" --standalone --metadata title="Madhan Kumar Reddy — Resume" \
   --css /dev/null -o "$TMP_HTML"
 
 # Inject print stylesheet
-python3 - "$TMP_HTML" << 'EOF'
+python3 - "$TMP_HTML" "$3" << 'EOF'
 import sys
 css = """
 <style>
   body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-         font-size: 10.5pt; line-height: 1.45; color: #1a1a1a;
+         font-size: SIZEpt; line-height: 1.45; color: #1a1a1a;
          max-width: 7.3in; margin: 0 auto; }
   h1 { font-size: 19pt; margin-bottom: 2pt; }
   h1 + p { margin-top: 2pt; }
@@ -33,12 +36,17 @@ css = """
 </style>
 """
 p = sys.argv[1]
+css = css.replace("SIZE", sys.argv[2])
 html = open(p).read().replace("</head>", css + "</head>")
 open(p, "w").write(html)
 EOF
 
 google-chrome --headless --disable-gpu --no-pdf-header-footer \
-  --print-to-pdf=public/resume.pdf "file://$TMP_HTML" 2>/dev/null
+  --print-to-pdf="$2" "file://$TMP_HTML" 2>/dev/null
 
 rm -f "$TMP_HTML"
-ls -lh public/resume.pdf
+ls -lh "$2"
+}
+
+render src/content/resume.md public/resume.pdf 10.5
+render src/content/resume-2page.md public/resume-2page.pdf 9.6

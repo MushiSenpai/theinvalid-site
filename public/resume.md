@@ -11,7 +11,7 @@ Singapore | +65 8179 6884 | reddy.madhankumar.sg@gmail.com
 
 I work spec-first: I author the architecture and specifications, direct LLMs (Claude primarily; Gemini / Grok / Kimi / DeepSeek as a review council) to implement against them, and verify the result with benchmarks and gates. B.E. Computer Science. I read code fluently and own the parts that decide whether a system is trustworthy: design, tool evaluation, verification, and day-2 operations. The proof is public: documented repositories where the method, the failures, and the fixes are all visible.
 
-If a role needs hand-written algorithms on a whiteboard, I'm not the fit, and this paragraph just saved us both an interview. If it needs someone who takes an idea to a running, secured, monitored, honestly-operated system, keep reading.
+If a role needs someone who takes an idea to a running, secured, monitored, honestly-operated system, keep reading.
 
 ---
 
@@ -145,7 +145,7 @@ Upstream fixes submitted to the tools I run in production — each links to the 
 ## EXPERIENCE
 
 **Shop Assistant**, Indian mini-mart, Singapore (Sep 2026 – present)
-Customer-facing retail role on a Work Permit. The AI systems in Selected Work, and the open-source contributions below, continue alongside it.
+Run the shop floor end to end: cashier and till, stocking and shelf rotation, supplier orders, and whatever manual work the day needs. The AI systems in Selected Work, and the open-source contributions below, continue alongside it.
 
 **Open-Source Contributor**, upstream AI/ML infrastructure projects, remote (Jun 2026 – present)
 Submitted 13 upstream pull requests to widely-used AI and developer tooling I run in production (qdrant-client, colpali, YuE, FlagEmbedding, whisperX, ComfyUI-WanVideoWrapper, fish-speech, MuseTalk, PyDriller, trimesh, xFormers), 5 merged as of 2026-09-26. Every fix came from a real production bug I hit and root-caused, with a regression test or a documented before/after reproduction. Links to every PR are in the open-source section above.
@@ -195,7 +195,7 @@ Fast learner, comfortable in roles I haven't done before; equally at home as a o
 
 ## WORK PASS & AVAILABILITY
 
-Indian National | Singapore Dependant's Pass (DP), currently working on a Work Permit (WP) with my present employer. A new Singapore employer would apply for its own work pass (for example an EP). **Remote contract work with overseas clients** needs no sponsorship. **Open to project-based travel** to client facilities and secure sites worldwide.
+Indian National | Singapore Dependant's Pass (DP) with a DP-linked Work Permit for my current employer. A new Singapore employer applies for its own pass (Employment Pass, S Pass or Work Permit). **Open to remote contract work for overseas clients** and **to project-based travel** to client facilities and secure sites worldwide.
 
 ---
 
