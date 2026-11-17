@@ -17,7 +17,7 @@ If a role needs hand-written algorithms on a whiteboard, I'm not the fit, and th
 
 ## SUMMARY
 
-AI infrastructure engineer who designs, deploys, and operates **sovereign, on-premises LLM systems** on hardware the client controls: private RAG, local serving (vLLM), multi-agent pipelines, air-gapped where data never leaves the building. Ten+ years in quality control, security governance (GRC), and client services, now applied to operating a documented AI estate on a single RTX 5090 (32GB, 128GB DDR5, Ubuntu 24.04): **four inference stacks** (LLM, video, audio, 3D), **one control plane** that time-shares the card between them, and the products built on top. Based in Singapore; **available for project-based travel** to client facilities, data centres, and secure sites worldwide.
+AI infrastructure engineer who designs, deploys, and operates **sovereign, on-premises LLM systems** on hardware the client controls: private RAG, local serving (vLLM), multi-agent pipelines, air-gapped where data never leaves the building. About seven years in quality control, security governance (GRC), and client services, now applied to operating a documented AI estate on a single RTX 5090 (32GB, 128GB DDR5, Ubuntu 24.04): **four inference stacks** (LLM, video, audio, 3D), **one control plane** that time-shares the card between them, and the products built on top. Based in Singapore; **available for project-based travel** to client facilities, data centres, and secure sites worldwide.
 
 **Core:** Retrieval-Augmented Generation (RAG) · LLM serving (vLLM, llama.cpp, LiteLLM) · GPU scheduling on constrained hardware · multi-agent / tool use · evaluation and benchmarking · on-prem & air-gapped deployment · Docker · FastAPI · Python · Linux · security governance.
 
@@ -144,6 +144,9 @@ Upstream fixes submitted to the tools I run in production — each links to the 
 
 ## EXPERIENCE
 
+**Shop Assistant**, Indian mini-mart, Singapore (Sep 2026 – present)
+Customer-facing retail role on a Work Permit. The AI systems in Selected Work, and the open-source contributions below, continue alongside it.
+
 **Open-Source Contributor**, upstream AI/ML infrastructure projects, remote (Jun 2026 – present)
 Submitted 13 upstream pull requests to widely-used AI and developer tooling I run in production (qdrant-client, colpali, YuE, FlagEmbedding, whisperX, ComfyUI-WanVideoWrapper, fish-speech, MuseTalk, PyDriller, trimesh, xFormers), 5 merged as of 2026-09-26. Every fix came from a real production bug I hit and root-caused, with a regression test or a documented before/after reproduction. Links to every PR are in the open-source section above.
 
@@ -192,7 +195,7 @@ Fast learner, comfortable in roles I haven't done before; equally at home as a o
 
 ## WORK PASS & AVAILABILITY
 
-Indian National | Singapore Dependant's Pass (DP). **Authorized for remote contract work with overseas clients:** no sponsorship needed for remote engagements; Singapore on-site employment requires employer sponsorship (EP). **Open to project-based travel** to client facilities and secure sites worldwide.
+Indian National | Singapore Dependant's Pass (DP), currently working on a Work Permit (WP) with my present employer. A new Singapore employer would apply for its own work pass (for example an EP). **Remote contract work with overseas clients** needs no sponsorship. **Open to project-based travel** to client facilities and secure sites worldwide.
 
 ---
 
