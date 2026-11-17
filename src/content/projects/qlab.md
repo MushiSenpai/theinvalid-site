@@ -1,5 +1,5 @@
 ---
-title: "QLAB — Honest Quantum-ML Lab"
+title: "QLAB: Honest Quantum-ML Lab"
 oneliner: "A local-first quantum machine-learning lab with one rule: a quantum number is never shown alone. Eleven experiments, every one raced against a classical baseline, two runs on real quantum hardware, zero manufactured wins."
 status: shipped
 repo: "https://github.com/MushiSenpai/qlab"

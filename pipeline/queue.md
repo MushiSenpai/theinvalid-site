@@ -2349,3 +2349,8 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
   link-rewriting script. Ask whether a new design replaces the site or sits beside it before restyling shared
   CSS. Also: a canvas that only draws while on screen leaves a blank river in full-page screenshots; draw one still
   frame on load. **Pri L.**
+- **2026-11-17 — project pages written at launch go stale while the posts keep moving (SITE refresh):** the eight
+  original project pages still described June and July, while 20+ later posts on the same projects (concurrency at
+  728 tok/s, the video lane, the one-pass comic narrator, drift validation) never flowed back. Each now ends with a
+  dated "Since launch" block linking those posts. Cheap habit: when a post ships with `project:` set, add one line
+  to that project's page in the same session. **Pri L.**

@@ -61,6 +61,24 @@ const cases = [
     subject: 'Air-gapped code security audit',
   },
   {
+    title: 'Private legal search that cites the clause and refuses to guess',
+    outcome:
+      'Measured on 150 clause questions over real commercial contracts: hybrid search plus a reranker scored <strong>MRR 0.564 against 0.434</strong> for semantic-only search, the usual "chat with your PDFs" recipe and the weakest mode on legal text. Ethical walls and a hash-chained audit log; zero egress.',
+    meta: 'BGE-M3 dense + sparse · Qdrant · cross-encoder rerank · CUAD v1 · engine private, results public',
+    link: '/projects/sovereign-legal-rag',
+    linkLabel: 'the project',
+    subject: 'Private document search for my firm',
+  },
+  {
+    title: 'How many people can one RTX 5090 actually serve?',
+    outcome:
+      'A concurrency sweep on the sovereign stack: aggregate throughput climbs to <strong>728 tok/s at 8 concurrent users</strong>, then flattens when the KV cache fills. Users 9 to 16 queue rather than run.',
+    meta: 'vLLM continuous batching · Nemotron NVFP4 · measured, not estimated',
+    link: '/blog/one-rtx-5090-how-many-users-the-honest-answer',
+    linkLabel: 'full write-up',
+    subject: 'Sizing a private LLM for my team',
+  },
+  {
     title: 'A talking-head avatar from a photo and a voice sample, three quality tiers',
     outcome:
       'For a 34.5s narration, measured: <strong>MuseTalk 78s, LatentSync 242s, Hallo2 1197s</strong>. Honest ceiling: social-grade; broadcast close-ups still go to a cloud path, and I say so up front.',

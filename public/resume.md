@@ -50,6 +50,7 @@ A fully air-gapped AI code-security auditor for codebases that can't leave the n
 ### Sovereign AI Stack → [github.com/MushiSenpai/mushishi-sovereign-ai-stack](https://github.com/MushiSenpai/mushishi-sovereign-ai-stack)
 Self-hosted multimodal LLM infrastructure with **routing-enforced privacy**: three fallback chains where "client data never touches a cloud API" is guaranteed by architecture, not policy, including a client profile that refuses to fall back, because failing loudly beats degrading silently.
 - vLLM + Nemotron NVFP4 on RTX 5090: **275 tok/s measured**, 180K context at FP8 KV cache, ~28–30GB of a 32GB budget, including moving the display to onboard graphics to reclaim VRAM for inference
+- Concurrency measured, not assumed: aggregate throughput climbs to **728 tok/s at 8 concurrent users**, then flattens when the KV cache fills
 - Always-on CPU fallback (llama.cpp, 60GB of system RAM) so agents survive GPU mode-switches
 - Cloud budget layer (LiteLLM) cascading across free-tier providers under zero-budget constraints
 - Full Decision Log published, including six hours of TensorRT-LLM debugging that ended in choosing vLLM, and why
