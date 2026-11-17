@@ -1,24 +1,14 @@
 ---
 // Homepage ("light vein" design, 2026-11-17). The 32 GB card is the hero: each stack is
-// a tenant you load onto it. Everything below the card is generated from the content
-// collections, except the curated tenant numbers, the CPU-floor rows and the loss column,
-// which are hand-picked and each trace to a post, a repo or the public lesson log.
-import Base from '../layouts/Base.astro';
+// a tenant you load onto it. The tenant numbers, CPU-floor rows and loss column are
+// hand-picked and each trace to a post, a repo or the public lesson log. Every other page
+// keeps the classic design; the header and footer (layouts/Home.astro) link to them.
+import Home from '../layouts/Home.astro';
 import { getCollection } from 'astro:content';
-import { repoStatuses, ago } from '../lib/github.js';
 
 const projects = await getCollection('projects');
 const byOrder = (a, b) => a.data.order - b.data.order;
-const open = projects.filter((p) => !p.data.private).sort(byOrder);
-const lab = projects.filter((p) => p.data.private && p.data.status !== 'planned').sort(byOrder);
 const board = projects.filter((p) => p.data.status === 'planned').sort(byOrder);
-const gh = await repoStatuses(open.map((p) => p.data.repo).filter(Boolean));
-
-const posts = (await getCollection('blog'))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 6);
-const fmt = (d: Date) =>
-  d.toLocaleDateString('en-SG', { year: 'numeric', month: 'short', day: '2-digit' });
 
 const MAIL = 'reddy.madhankumar.sg@gmail.com';
 const mail = (subject: string) => `mailto:${MAIL}?subject=${encodeURIComponent(subject)}`;
@@ -86,7 +76,7 @@ const losses = [
 ];
 ---
 
-<Base wide>
+<Home>
   <canvas id="motes" aria-hidden="true"></canvas>
   <div class="home">
     <div class="hero">
@@ -103,6 +93,7 @@ const losses = [
         <a class="btn solid" href="/services">Work with me</a>
         <a class="btn" href={mail('Private AI for my team')}>Email me</a>
         <a class="btn" href="/start-here">New here? Plain-English version</a>
+        <a class="btn" href="/classic/">Classic site</a>
       </p>
       <p class="proof">
         <span><strong>{projects.length}</strong> projects, documented in public</span>
@@ -165,58 +156,6 @@ const losses = [
       </ul>
     </section>
 
-    <section id="all">
-      <div class="sec-head">
-        <span class="glyph" aria-hidden="true">全</span>
-        <h2>Every project</h2>
-        <p>{projects.length} of them, statuses honest: <code>building</code> means building, <code>planned</code> means nothing is built yet. Private repos say so and link the public write-up instead.</p>
-      </div>
-      <div class="groups">
-        <div>
-          <h3 class="label">Public repos · {open.length}</h3>
-          <ul class="projrows">
-            {open.map((p) => (
-              <li>
-                <span class="row-top">
-                  <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
-                  <span class={`badge ${p.data.status}`}>{p.data.status}</span>
-                  <span class="meta">
-                    {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
-                    {p.data.repo && <a href={p.data.repo}>repo ↗</a>}
-                    {p.data.caseStudy && <a href={p.data.caseStudy}>case study →</a>}
-                  </span>
-                </span>
-                <p class="one">{p.data.oneliner}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h3 class="label">In the lab · private builds · {lab.length}</h3>
-          <ul class="projrows">
-            {lab.map((p) => (
-              <li>
-                <span class="row-top">
-                  <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
-                  <span class={`badge ${p.data.status}`}>{p.data.status}</span>
-                  <span class="meta">
-                    {p.data.writeup && <a href={p.data.writeup}>write-up →</a>}
-                    {p.data.repo && <a href={p.data.repo}>results ↗</a>}
-                  </span>
-                </span>
-                <p class="one">{p.data.oneliner}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      <p class="meta" style="margin-top:1.2rem">
-        <a href="/projects">all projects with their stacks →</a> ·
-        <a href="/workflow-catalogue.html">live workflow catalogue ↗</a> ·
-        <a href="/3d-catalogue">3D asset catalogue ↗</a>
-      </p>
-    </section>
-
     <section id="losses">
       <div class="sec-head">
         <span class="glyph" aria-hidden="true">失</span>
@@ -244,39 +183,6 @@ const losses = [
             <p>{p.data.oneliner}</p>
           </div>
         ))}
-      </div>
-    </section>
-
-    <section id="kb">
-      <div class="sec-head">
-        <span class="glyph" aria-hidden="true">記</span>
-        <h2>The knowledge base</h2>
-        <p>Case studies, the failure log and an interactive field guide to running LLMs on your own hardware, measured on this card.</p>
-      </div>
-      <div class="groups">
-        <div>
-          <h3 class="label">Latest from the failure log</h3>
-          <ul class="postlist">
-            {posts.map((post) => (
-              <li>
-                <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
-                <a href={`/blog/${post.id}`}>{post.data.title}</a>
-              </li>
-            ))}
-          </ul>
-          <p class="meta"><a href="/blog">case studies + the whole log →</a> · <a href="/blog/topics">by topic →</a> · <a href="/rss.xml">RSS</a></p>
-        </div>
-        <div>
-          <h3 class="label">Running LLMs on your own hardware?</h3>
-          <ul class="postlist">
-            <li><span class="kicker">guide</span><a href="/calculator">The local-AI field guide: VRAM math, GPU tiers, users per card, cloud break-even</a></li>
-            <li><span class="kicker">users</span><a href="/blog/one-rtx-5090-how-many-users-the-honest-answer">One RTX 5090, how many users? The honest answer</a></li>
-            <li><span class="kicker">kv cache</span><a href="/blog/i-had-my-kv-cache-math-14x-wrong">I had my KV-cache math 14x wrong</a></li>
-            <li><span class="kicker">vram</span><a href="/blog/a-32gb-gpu-is-a-budget-not-a-suggestion">A 32GB GPU is a budget, not a suggestion</a></li>
-            <li><span class="kicker">serving</span><a href="/blog/six-hours-in-tensorrt-llm-so-you-dont-have-to">Six hours in TensorRT-LLM so you don't have to</a></li>
-          </ul>
-          <p class="meta"><a href="/calculator">open the field guide →</a></p>
-        </div>
       </div>
     </section>
 
@@ -555,4 +461,4 @@ const losses = [
       .home .hero h1 { max-width: 80%; }
     }
   </style>
-</Base>
+</Home>

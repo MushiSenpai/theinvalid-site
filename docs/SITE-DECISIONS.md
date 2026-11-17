@@ -20,30 +20,27 @@ Hero tagline: terminal prompt `$ they called me invalid_` answered by
 technical double meaning (what systems call rejected input) — the site is the
 counter-evidence.
 
-## 3a. Redesign: "light vein" (2026-11-17, owner decision)
+## 3a. A second design for the homepage only: "light vein" (2026-11-17, owner decision)
 
-The owner asked for a bolder design to become the live site, with the previous one
-still reachable. What changed and what held:
+The owner wanted a bolder homepage, with the rest of the site kept exactly in its
+classic style. The split:
 
-- **The homepage is the machine.** A 32 GB rail is the hero: each stack is a tenant
-  you load onto the card, and the card shows what it holds, what it measured and
-  where it lost. Below it: the CPU floor, every project (generated), the loss column,
-  the drawing board, the knowledge base, and the offer. The rail is a canvas
-  "river of light" (KOUMYAKU, the light vein, is the LLM floor's codename).
-- **Type and colour.** Shippori Mincho for display, Zen Kaku Gothic New for text,
-  DM Mono for UI; night-forest dark default, paper-toned light theme. Still one
-  accent (gold). Traditional pigments mark GPU tenants on the card only.
-- **What gave way:** "system fonts only" (now self-hosted woff2 subsets, ~170 KB if
-  every face loads, latin + 8 kanji only) and "no client JS" (the homepage card, inline,
-  ~6 KB, paused off-screen and under reduced motion). The page is complete without JS:
-  the first tenant renders server-side and a plain bar stands in for the river.
-- **What held:** no third-party requests, no trackers, no frameworks, static build,
-  the ∅ mark, honest statuses, every number traceable.
-- **The previous design** is frozen at `/classic/` (noindex, a banner links each page
-  to its current version). `scripts/snapshot-classic.sh <ref>` rebuilds it from a git
-  ref; it is a snapshot, so new posts appear only in the current design.
-
-The reasoning in §3 below is the original 2026-06 case for restraint, kept for history.
+- **`/` is the new design.** A 32 GB rail is the hero: each stack is a tenant you load
+  onto the card, and the card shows what it holds, what it measured and where it lost.
+  Then the CPU floor, the loss column, the drawing board (generated from `planned`
+  projects) and the offer. Own layout (`layouts/Home.astro`) and stylesheet
+  (`styles/home.css`), so nothing leaks into other pages. Shippori Mincho / Zen Kaku
+  Gothic New / DM Mono, self-hosted subsets (~170 KB if every face loads, latin + 8
+  kanji); a ~6 KB inline canvas script, paused off-screen and under reduced motion; the
+  first tenant renders server-side so the page is complete without JS.
+- **Everything else stays classic** (`Base.astro` + `global.css`, the constraints in §3
+  and §10 below unchanged). The classic homepage moved to `/classic/` and stays live,
+  so it keeps picking up new projects and posts.
+- **Navigation between them.** The homepage header links projects, blog, field guide,
+  résumé, work with me and the classic site; its footer lists every classic page. Classic
+  pages' brand link opens `/`, and their footer links both homepages.
+- **What held on both:** no third-party requests, no trackers, no frameworks, static
+  build, honest statuses, every number traceable.
 
 ## 3. Design philosophy — why NOT a 3D animated showpiece
 
@@ -109,8 +106,10 @@ src/
     ├── calculator.astro      # "Field guide" — VRAM/fit/tier/concurrency + cloud-vs-local
     ├── resume.astro          # content/resume.md + live project list + dated download
     └── rss.xml.js            # RSS feed
-public/classic/               # frozen previous design (scripts/snapshot-classic.sh)
-public/fonts/                 # self-hosted font subsets + OFL licences
+src/layouts/Home.astro        # homepage-only layout (light vein, §3a)
+src/styles/home.css           # homepage-only tokens + styles
+src/pages/classic/index.astro # the classic homepage, still live at /classic/
+public/fonts/                 # self-hosted font subsets for the homepage + OFL licences
 public/resume.md              # downloadable copy — keep in sync with content/resume.md
 .github/workflows/scheduled-rebuild.yml  # daily redeploy → fresh GitHub-status snapshot
 ```
@@ -212,9 +211,9 @@ system monospace. The constraints in §3 ARE the identity — the discipline is 
 adding to them. Any visual change must hold all of these.
 
 ### 10.1 Design tokens — source of truth is `src/styles/global.css :root`
-**Superseded 2026-11-17 by the light-vein tokens (§3a; read the values in
-`global.css`).** The table below is the classic palette, still used by `/classic/`.
-Never hardcode a new hex or font; use the CSS variable. Classic values:
+These are the classic tokens, used by every page except the homepage (§3a; the
+homepage's own tokens live in `home.css`).
+Never hardcode a new hex or font; use the CSS variable. Current values:
 
 | token | value | use |
 |---|---|---|

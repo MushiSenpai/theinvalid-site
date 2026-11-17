@@ -1,0 +1,176 @@
+---
+import Base from '../../layouts/Base.astro';
+import Contact from '../../components/Contact.astro';
+import { getCollection } from 'astro:content';
+import { repoStatuses, ago } from '../../lib/github.js';
+
+const projects = await getCollection('projects');
+
+// Public work leads (newest three as cards, the rest as compact rows).
+// Private builds get their own honest section: no repo link, a write-up instead.
+const isPrivate = (p) => p.data.private;
+const byRecency = projects
+  .filter((p) => !isPrivate(p))
+  .sort((a, b) => b.data.started.valueOf() - a.data.started.valueOf());
+const latest = byRecency.slice(0, 3);
+const rest = byRecency
+  .slice(3)
+  .sort((a, b) => a.data.order - b.data.order);
+const priv = projects
+  .filter(isPrivate)
+  .sort((a, b) => a.data.order - b.data.order);
+const lab = priv.filter((p) => p.data.status !== 'planned');
+const board = priv.filter((p) => p.data.status === 'planned');
+
+// Build-time GitHub snapshot (fail-soft); a scheduled rebuild keeps it fresh.
+const gh = await repoStatuses(projects.map((p) => p.data.repo).filter(Boolean));
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 5);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-SG', { year: 'numeric', month: 'short', day: '2-digit' });
+---
+
+<Base
+  title="theinvalid — Madhan Kumar Reddy (classic homepage)"
+  description="The classic homepage of theinvalid.me: AI Infrastructure Operator. Latest work, every project, the self-hosting guides and the newest posts."
+>
+  <section class="hero">
+    <p class="called">$ they called me invalid_</p>
+    <h1 class="thisisme">This is <span class="accent">me</span>.</h1>
+    <p class="sub">
+      I'm <strong>Madhan Kumar Reddy</strong>, an AI Infrastructure Operator in
+      Singapore. <strong>I build private, on-premises AI systems that never send
+      your data to the cloud</strong>: for firms that need AI but can't hand
+      sensitive data to OpenAI or Anthropic.
+    </p>
+    <p class="sub">
+      No code hand-written: I spec, direct LLMs, and verify. Everything below is
+      documented in public: benchmarks, failures, and all. Where a repo has to
+      stay private, the page says so.
+    </p>
+    <p class="cta-row">
+      <a class="btn solid" href="/services">Work with me</a>
+      <a class="btn" href="mailto:reddy.madhankumar.sg@gmail.com?subject=Private%20AI%20for%20my%20team">Email me</a>
+      <a class="btn" href="/start-here">New here? Plain-English version</a>
+    </p>
+    <p class="proof">
+      <span><strong>{projects.length}</strong> projects, documented in public</span>
+      <span><strong>275 tok/s</strong> local LLM, measured</span>
+      <span><strong>2</strong> real quantum computers</span>
+      <span><strong>0</strong> manufactured wins</span>
+    </p>
+  </section>
+
+  <h2>Latest work</h2>
+  {latest.map((p) => (
+    <article class="card">
+      <h3>
+        <a href={`/projects/${p.id}`}>{p.data.title}</a>
+        <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+      </h3>
+      <p class="oneliner">{p.data.oneliner}</p>
+      <p class="meta">
+        <span>{p.data.stack.slice(0, 4).join(' · ')}</span>
+        {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
+        {p.data.repo && <a href={p.data.repo}>repo ↗</a>}
+        {p.data.caseStudy && <a href={p.data.caseStudy}>case study →</a>}
+      </p>
+    </article>
+  ))}
+
+  <h2>Operating daily · earlier builds</h2>
+  <ul class="projrows">
+    {rest.map((p) => (
+      <li>
+        <span class="row-top">
+          <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
+          <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+          <span class="meta">
+            {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
+            {p.data.repo && <a href={p.data.repo}>repo ↗</a>}
+          </span>
+        </span>
+        <p class="one">{p.data.oneliner}</p>
+      </li>
+    ))}
+  </ul>
+
+  <h2>In the lab · private builds, written up in public</h2>
+  <p style="color: var(--muted); margin-top: 0.4rem">
+    Newer work whose repos stay private (commercial, security, or built on my
+    own data). The method, the numbers and the failures are still published.
+  </p>
+  <ul class="projrows">
+    {lab.map((p) => (
+      <li>
+        <span class="row-top">
+          <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
+          <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+          <span class="meta">
+            {p.data.writeup && <a href={p.data.writeup}>write-up →</a>}
+            {p.data.repo && <a href={p.data.repo}>results ↗</a>}
+          </span>
+        </span>
+        <p class="one">{p.data.oneliner}</p>
+      </li>
+    ))}
+  </ul>
+
+  <h2>On the drawing board</h2>
+  <p style="color: var(--muted); margin-top: 0.4rem">
+    Designed and decided, nothing built yet. Planning mistakes included.
+  </p>
+  <ul class="projrows">
+    {board.map((p) => (
+      <li>
+        <span class="row-top">
+          <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
+          <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+        </span>
+        <p class="one">{p.data.oneliner}</p>
+      </li>
+    ))}
+  </ul>
+  <p class="meta"><a href="/projects">all projects, statuses honest →</a></p>
+
+  <h2>Running LLMs on your own hardware?</h2>
+  <p style="color: var(--muted); margin-top: 0.4rem">
+    The self-hosting numbers people actually search for, measured on one RTX 5090:
+  </p>
+  <ul class="postlist">
+    <li>
+      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">guide</span>
+      <a href="/calculator">The local-AI field guide: VRAM math, GPU tiers, users per card, cloud break-even</a>
+    </li>
+    <li>
+      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">kv cache</span>
+      <a href="/blog/i-had-my-kv-cache-math-14x-wrong">I had my KV-cache math 14x wrong</a>
+    </li>
+    <li>
+      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">vram</span>
+      <a href="/blog/a-32gb-gpu-is-a-budget-not-a-suggestion">A 32GB GPU is a budget, not a suggestion</a>
+    </li>
+    <li>
+      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">serving</span>
+      <a href="/blog/six-hours-in-tensorrt-llm-so-you-dont-have-to">Six hours in TensorRT-LLM so you don't have to</a>
+    </li>
+  </ul>
+
+  <h2>Latest from the knowledge base</h2>
+  <ul class="postlist">
+    {posts.map((post) => (
+      <li>
+        <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
+        <a href={`/blog/${post.id}`}>{post.data.title}</a>
+      </li>
+    ))}
+  </ul>
+  <p class="meta">
+    <a href="/blog">the knowledge base: case studies + the failure log →</a>
+  </p>
+
+  <Contact subject="Private AI for my team" lead="Want one of these running on your hardware?" />
+</Base>

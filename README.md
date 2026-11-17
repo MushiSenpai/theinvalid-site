@@ -14,10 +14,10 @@ include the losses, case studies include the dead ends.
 ## What this repo is
 
 - **Astro 6, content-as-files, zero JS frameworks, no third-party requests.** Posts and
-  project pages are markdown in `src/content/`; the build is fully static. Fonts are
-  self-hosted subsets; the only script is the homepage GPU card and the field guide.
-- **Two designs.** The current "light vein" design, and the previous one frozen at
-  [`/classic/`](https://theinvalid.me/classic/).
+  project pages are markdown in `src/content/`; the build is fully static.
+- **Two designs.** The homepage is the "light vein" design (self-hosted fonts, one small
+  inline canvas script); every other page keeps the classic system-font design, and the
+  classic homepage is still at [`/classic/`](https://theinvalid.me/classic/).
 - **Deploy = push to `main`.** Cloudflare rebuilds and ships in about a minute.
 - **One accent color.** If a design needs a second one, the design is wrong.
 
