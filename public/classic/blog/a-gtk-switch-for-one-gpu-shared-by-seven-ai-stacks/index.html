@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="en"> <head><meta name="robots" content="noindex"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>A GTK switch for one GPU shared by seven AI stacks — theinvalid.me</title><meta name="description" content="GTK4 mode switcher for an RTX 5090 shared across seven local AI stacks: the idle-vs-busy detection problem, an SM-util false positive from reverse-PRIME graphics, and why the app is a front-end only."><link rel="icon" type="image/svg+xml" href="/favicon.svg?v=nullset"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=nullset"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=nullset"><link rel="icon" href="/favicon.ico?v=nullset" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=nullset"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0e14"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f3ea"><link rel="alternate" type="application/rss+xml" title="theinvalid blog" href="/rss.xml"><meta property="og:title" content="A GTK switch for one GPU shared by seven AI stacks — theinvalid.me"><meta property="og:description" content="GTK4 mode switcher for an RTX 5090 shared across seven local AI stacks: the idle-vs-busy detection problem, an SM-util false positive from reverse-PRIME graphics, and why the app is a front-end only."><meta property="og:type" content="website"><meta property="og:url" content="https://theinvalid.me/blog/a-gtk-switch-for-one-gpu-shared-by-seven-ai-stacks/"><meta property="og:image" content="https://theinvalid.me/og-image.png"><meta property="og:site_name" content="theinvalid.me"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="A GTK switch for one GPU shared by seven AI stacks — theinvalid.me"><meta name="twitter:description" content="GTK4 mode switcher for an RTX 5090 shared across seven local AI stacks: the idle-vs-busy detection problem, an SM-util false positive from reverse-PRIME graphics, and why the app is a front-end only."><meta name="twitter:image" content="https://theinvalid.me/og-image.png"><link rel="stylesheet" href="/classic/_astro/Base.nn49UcG2.css"></head> <body><div style="font-family:var(--mono);font-size:0.78rem;background:var(--bg-raise);border-bottom:1px solid var(--line);padding:0.55rem 1.25rem;text-align:center;color:var(--muted)">Classic design, frozen on 17 Nov 2026. <a href="/blog/a-gtk-switch-for-one-gpu-shared-by-seven-ai-stacks/">See this page in the current design →</a></div> <nav class="site"> <a class="brand" href="/classic/"><span class="prompt">&gt;</span>theinvalid<span style="color: var(--accent)">.me</span></a> <a href="/classic/start-here">start here</a> <a href="/classic/services">work with me</a> <a href="/classic/projects">projects</a> <a href="/classic/calculator">field guide</a> <a href="/classic/blog" aria-current="page">knowledge base</a> </nav> <main>  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"A GTK switch for one GPU shared by seven AI stacks","description":"GTK4 mode switcher for an RTX 5090 shared across seven local AI stacks: the idle-vs-busy detection problem, an SM-util false positive from reverse-PRIME graphics, and why the app is a front-end only.","datePublished":"2026-08-08T00:00:00.000Z","keywords":"linux, gtk4, gpu, local-llm, ops","author":{"@type":"Person","name":"Madhan Kumar Reddy","url":"https://theinvalid.me"},"url":"https://theinvalid.me/blog/a-gtk-switch-for-one-gpu-shared-by-seven-ai-stacks/"}</script> <article> <h1>A GTK switch for one GPU shared by seven AI stacks</h1> <p style="font-family: var(--mono); font-size: 0.85rem; color: var(--muted)"> <time datetime="2026-08-08T00:00:00.000Z">8 August 2026</time>  · <a href="/classic/projects/estate-ops">estate-ops</a>  · linux, gtk4, gpu, local-llm, ops </p> <hr> <p>Seven AI stacks, one 32GB RTX 5090, and a rule: only one runs at a time.</p>
+<p>The rule is easy to state. Enforcing it without accidentally killing a running render, without remembering which Docker containers each mode owns, and without re-deriving the kill sequence every time I add a new stack: that is the problem Mushishi Mode solves.</p>
+<p>The predecessor was a <code>zenity</code> dialog. Pick a mode, confirm, a script runs. It worked. But it couldn’t show VRAM state, couldn’t warn when something was actually in flight, and couldn’t distinguish a model that was loaded-but-idle (safe to purge) from one mid-request (not safe to kill). So I built a native GTK4 + libadwaita switcher.</p>
+<h2 id="the-modes">The modes</h2>
+<p>Seven operating modes share the card, never concurrently:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Mode</th><th>Stack</th><th>VRAM estimate</th></tr></thead><tbody><tr><td>Coding</td><td>Qwen3-Coder 30B-AWQ (:8000)</td><td>~29 GB</td></tr><tr><td>Forensic</td><td>Nemotron omni 30B (:8000, 180K ctx)</td><td>~30 GB</td></tr><tr><td>Agent</td><td>Nemotron light (:8000) + Fish Speech</td><td>~22 GB</td></tr><tr><td>Creative</td><td>ComfyUI (FLUX / Wan / Hunyuan)</td><td>~14-24 GB</td></tr><tr><td>Audio</td><td>Fish Speech + WhisperX + lipsync tiers</td><td>varies</td></tr><tr><td>Music</td><td>YuE 7B</td><td>~16 GB</td></tr><tr><td>3D Foundry</td><td>TRELLIS.2 + mesh ops + rigging</td><td>~5-31 GB</td></tr></tbody></table>
+<p>Two CPU floor models (Nemotron :8001, Qwen-coder :8002) stay up through every switch. The mode scripts know to leave them alone.</p>
+<h2 id="the-design-line-front-end-only">The design line: front-end only</h2>
+<p>The app never calls <code>docker stop</code> itself. Applying a mode runs <code>scripts/*-mode.sh</code>, the same scripts cron and a terminal would use. All stop/start logic lives in those scripts, not in the GUI.</p>
+<p><code>gpu-tenants.sh</code> is the single source of truth: one file, sourced by every mode script, declaring the full list of containers that can be stopped (<code>GPU_TENANTS</code>). Mode scripts only act on names in that array. A foreign process, a container from a different project, a model someone else loaded: none of them are touched. The constraint is structural, not a convention that drifts when memory fades.</p>
+<h2 id="the-real-problem-idle-vs-busy">The real problem: idle vs busy</h2>
+<p>A model holding 28GB of VRAM and doing nothing is safe to evict. A model serving a request is not. These are not the same condition, and “is the container running?” answers neither.</p>
+<p><code>gpu_busy_report()</code> in <code>gpu-tenants.sh</code> checks in this order:</p>
+<ol>
+<li><strong>vLLM <code>/metrics</code></strong>: <code>vllm:num_requests_running</code> + <code>vllm:num_requests_waiting</code> (exact)</li>
+<li><strong>ComfyUI <code>/queue</code></strong>: running and pending items (exact)</li>
+<li><strong>Audio RQ (<code>creative-redis</code>)</strong>: started/queued registries across stt/voice/lipsync/music/dub queues (exact)</li>
+<li><strong>3D RQ (<code>td-redis</code>)</strong>: jobs across s3-s10/chain queues (exact)</li>
+<li><strong>SM-utilization backstop</strong>: only reached if 1-4 are all quiet</li>
+</ol>
+<h2 id="the-error-hiding-in-step-5">The error hiding in step 5</h2>
+<p>The SM-util backstop has a trap specific to this hardware. My display runs over reverse-PRIME: the AI GPU has no monitor port, so the compositor offloads to it via PRIME. Desktop graphics activity spikes SM-util to 23-27% with zero CUDA compute processes. A raw threshold would report BUSY every time a window animates.</p>
+<p>The fix is one AND:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># F79-CORR: desktop graphics spike util with no compute process</span></span>
+<span class="line"><span style="color:#F97583">local</span><span style="color:#E1E4E8"> peak; peak</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">$(</span><span style="color:#B392F0">gpu_sm_peak</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> [ </span><span style="color:#9ECBFF">"${</span><span style="color:#E1E4E8">peak</span><span style="color:#F97583">:-</span><span style="color:#E1E4E8">0</span><span style="color:#9ECBFF">}"</span><span style="color:#F97583"> -gt</span><span style="color:#79B8FF"> 15</span><span style="color:#E1E4E8"> ]; </span><span style="color:#F97583">then</span></span>
+<span class="line"><span style="color:#F97583">  local</span><span style="color:#E1E4E8"> capps</span></span>
+<span class="line"><span style="color:#E1E4E8">  capps</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">$(</span><span style="color:#B392F0">nvidia-smi</span><span style="color:#79B8FF"> --query-compute-apps=pid,process_name,used_memory</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">            --format=csv,noheader,nounits</span><span style="color:#F97583"> 2></span><span style="color:#9ECBFF">/dev/null</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> sed</span><span style="color:#9ECBFF"> '/^[[:space:]]*$/d'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> [ </span><span style="color:#F97583">-n</span><span style="color:#9ECBFF"> "</span><span style="color:#E1E4E8">$capps</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8"> ]; </span><span style="color:#F97583">then</span></span>
+<span class="line"><span style="color:#E1E4E8">    out</span><span style="color:#F97583">+=</span><span style="color:#9ECBFF">"GPU compute active: ${</span><span style="color:#E1E4E8">peak</span><span style="color:#9ECBFF">}% SM util ..."</span></span>
+<span class="line"><span style="color:#F97583">  fi</span></span>
+<span class="line"><span style="color:#F97583">fi</span></span></code></pre>
+<p>If <code>--query-compute-apps</code> returns nothing, the util spike is graphics, not a workload. This distinction matters on any headless AI box running a compositor over PRIME offload.</p>
+<h2 id="three-bugs-that-hit-before-the-first-week-was-out">Three bugs that hit before the first week was out</h2>
+<p><strong><code>Gtk.ListBox</code> single-click auto-apply.</strong> <code>Gtk.ListBox</code> defaults to <code>activate-on-single-click=TRUE</code>. Clicking any mode row fired <code>row-activated</code>, which called <code>_apply()</code>. The Apply button was never used because every click was already a commit. Fix:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#79B8FF">self</span><span style="color:#E1E4E8">.mode_list.set_activate_on_single_click(</span><span style="color:#79B8FF">False</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<p><strong>Python <code>str.splitlines()</code> eating <code>\x1d</code>.</strong> <code>probe.sh</code> used ASCII Group Separator (<code>\x1d</code>) as a field delimiter between process records. Python’s <code>str.splitlines()</code> treats <code>\x1d</code>, <code>\x1c</code>, and <code>\x1e</code> as line boundaries, so every telemetry process record was split into fragments and the list always showed empty. Fix: switch to TAB (<code>\x09</code>), which is not a splitlines boundary.</p>
+<p><strong>Stale busy verdict at Apply time.</strong> Pressing Apply used <code>self.busy</code>, populated at last probe and up to 4 seconds stale. A session that started a job after the last refresh could be killed without a warning. Fix: Apply re-probes and decides on a fresh verdict before launching anything.</p>
+<h2 id="what-id-tell-you-to-check-today">What I’d tell you to check today</h2>
+<p>If you run multiple AI stacks on one GPU:</p>
+<ol>
+<li>Write one canonical stop-list. Not a <code>grep</code> in each script that drifts when you add a container.</li>
+<li>Keep stop/start logic in scripts the CLI can run directly. If the UI is the only way to switch modes, the UI becomes load-bearing infrastructure.</li>
+<li>SM-utilization is not a workload signal on a machine running a display compositor over PRIME. AND it with <code>nvidia-smi --query-compute-apps</code>.</li>
+<li>Check whether your “safe to switch” guard uses a fresh probe or a cached one.</li>
+</ol>
+<p>The app source is private (it encodes the GPU-tenancy layout for the whole estate), but the design spec lives in <code>DESIGN.md</code> alongside the rest of the estate docs.</p>
+<hr>
+<p><em>The AI workstation this switcher manages is documented at <a href="https://github.com/MushiSenpai/mushishi-sovereign-ai-stack">github.com/MushiSenpai/mushishi-sovereign-ai-stack</a>.</em></p> </article>  </main> <footer class="site"> <p>
+Built by directing LLMs against specs: <a href="/classic/resume#how-i-work-read-this-first">here's exactly how</a>.
+        No trackers, no cookies, no JavaScript frameworks.
+</p> <p>
+Talk to me: <a href="mailto:reddy.madhankumar.sg@gmail.com">reddy.madhankumar.sg@gmail.com</a> </p> <p>
+© 2026 Madhan Kumar Reddy ·
+<a href="https://github.com/MushiSenpai" rel="me" aria-label="GitHub: MushiSenpai"> <svg viewBox="0 0 16 16" width="1em" height="1em" aria-hidden="true" style="vertical-align:-0.15em;fill:currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+MushiSenpai</a> ·
+<a href="https://huggingface.co/MushiSenpai" rel="me" aria-label="Hugging Face: MushiSenpai"> <svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true" style="vertical-align:-0.15em;fill:currentColor"><path d="M12.025 1.13c-5.77 0-10.449 4.647-10.449 10.378 0 1.112.178 2.181.503 3.185.064-.222.203-.444.416-.577a.96.96 0 0 1 .524-.15c.293 0 .584.124.84.284.278.173.48.408.71.694.226.282.458.611.684.951v-.014c.017-.324.106-.622.264-.874s.403-.487.762-.543c.3-.047.596.06.787.203s.31.313.4.467c.15.257.212.468.233.542.01.026.653 1.552 1.657 2.54.616.605 1.01 1.223 1.082 1.912.055.537-.096 1.059-.38 1.572.637.121 1.294.187 1.967.187.657 0 1.298-.063 1.921-.178-.287-.517-.44-1.041-.384-1.581.07-.69.465-1.307 1.081-1.913 1.004-.987 1.647-2.513 1.657-2.539.021-.074.083-.285.233-.542.09-.154.208-.323.4-.467a1.08 1.08 0 0 1 .787-.203c.359.056.604.29.762.543s.247.55.265.874v.015c.225-.34.457-.67.683-.952.23-.286.432-.52.71-.694.257-.16.547-.284.84-.285a.97.97 0 0 1 .524.151c.228.143.373.388.43.625l.006.04a10.3 10.3 0 0 0 .534-3.273c0-5.731-4.678-10.378-10.449-10.378M8.327 6.583a1.5 1.5 0 0 1 .713.174 1.487 1.487 0 0 1 .617 2.013c-.183.343-.762-.214-1.102-.094-.38.134-.532.914-.917.71a1.487 1.487 0 0 1 .69-2.803m7.486 0a1.487 1.487 0 0 1 .689 2.803c-.385.204-.536-.576-.916-.71-.34-.12-.92.437-1.103.094a1.487 1.487 0 0 1 .617-2.013 1.5 1.5 0 0 1 .713-.174m-10.68 1.55a.96.96 0 1 1 0 1.921.96.96 0 0 1 0-1.92m13.838 0a.96.96 0 1 1 0 1.92.96.96 0 0 1 0-1.92M8.489 11.458c.588.01 1.965 1.157 3.572 1.164 1.607-.007 2.984-1.155 3.572-1.164.196-.003.305.12.305.454 0 .886-.424 2.328-1.563 3.202-.22-.756-1.396-1.366-1.63-1.32q-.011.001-.02.006l-.044.026-.01.008-.03.024q-.018.017-.035.036l-.032.04a1 1 0 0 0-.058.09l-.014.025q-.049.088-.11.19a1 1 0 0 1-.083.116 1.2 1.2 0 0 1-.173.18q-.035.029-.075.058a1.3 1.3 0 0 1-.251-.243 1 1 0 0 1-.076-.107c-.124-.193-.177-.363-.337-.444-.034-.016-.104-.008-.2.022q-.094.03-.216.087-.06.028-.125.063l-.13.074q-.067.04-.136.086a3 3 0 0 0-.135.096 3 3 0 0 0-.26.219 2 2 0 0 0-.12.121 2 2 0 0 0-.106.128l-.002.002a2 2 0 0 0-.09.132l-.001.001a1.2 1.2 0 0 0-.105.212q-.013.036-.024.073c-1.139-.875-1.563-2.317-1.563-3.203 0-.334.109-.457.305-.454m.836 10.354c.824-1.19.766-2.082-.365-3.194-1.13-1.112-1.789-2.738-1.789-2.738s-.246-.945-.806-.858-.97 1.499.202 2.362c1.173.864-.233 1.45-.685.64-.45-.812-1.683-2.896-2.322-3.295s-1.089-.175-.938.647 2.822 2.813 2.562 3.244-1.176-.506-1.176-.506-2.866-2.567-3.49-1.898.473 1.23 2.037 2.16c1.564.932 1.686 1.178 1.464 1.53s-3.675-2.511-4-1.297c-.323 1.214 3.524 1.567 3.287 2.405-.238.839-2.71-1.587-3.216-.642-.506.946 3.49 2.056 3.522 2.064 1.29.33 4.568 1.028 5.713-.624m5.349 0c-.824-1.19-.766-2.082.365-3.194 1.13-1.112 1.789-2.738 1.789-2.738s.246-.945.806-.858.97 1.499-.202 2.362c-1.173.864.233 1.45.685.64.451-.812 1.683-2.896 2.322-3.295s1.089-.175.938.647-2.822 2.813-2.562 3.244 1.176-.506 1.176-.506 2.866-2.567 3.49-1.898-.473 1.23-2.037 2.16c-1.564.932-1.686 1.178-1.464 1.53s3.675-2.511 4-1.297c.323 1.214-3.524 1.567-3.287 2.405.238.839 2.71-1.587 3.216-.642.506.946-3.49 2.056-3.522 2.064-1.29.33-4.568 1.028-5.713-.624"></path></svg>
+Hugging Face</a> ·
+<a href="https://www.linkedin.com/in/reddymk/">LinkedIn</a> ·
+<a href="/rss.xml">RSS</a> </p> </footer> </body></html>

@@ -6,20 +6,27 @@ the operating playbook, and the brand/visual-identity spec — is
 **[docs/SITE-DECISIONS.md](docs/SITE-DECISIONS.md)**. Read it before non-trivial work.
 
 ## Non-negotiables — the brand IS the constraints (SITE-DECISIONS §3, §10)
-- **One accent only:** lantern gold `--accent #e8a33d`. If a design needs a second
-  color to work, the design is wrong.
-- **Tokens are defined in `src/styles/global.css :root`** — that's the source of
-  truth. Use the vars (`var(--accent)` …), never hardcode a new hex. Palette:
-  bg `#0b0e14` · raise `#11151f` · fg `#e6e1d7` · muted `#8a8f98` · line `#1e2430`.
-- **System fonts only** (`--mono` / `--sans`). No webfonts, no client JS, no
-  frameworks, no gradients/shadows. Performance is the flex (100/100 Lighthouse).
+- **Design = "light vein" (owner decision 2026-11-17).** Night-forest ink, one
+  lantern-gold accent, a Mincho display face. The previous design is frozen at
+  `/classic/` (`public/classic/`, built by `scripts/snapshot-classic.sh`); never
+  hand-edit it and never add new pages to it.
+- **One accent only:** lantern gold `--accent #f2c14e` (light theme `#8f6500`).
+  The `--p-*` stack pigments name a GPU tenant on the homepage card and nowhere else.
+- **Tokens are defined in `src/styles/global.css :root`** — the source of truth. Use
+  the vars, never hardcode a new hex. Dark: bg `#0a100e` · raise `#101915` · fg
+  `#ebe6d6` · muted `#8d998c` · line `#22312a`.
+- **Fonts are self-hosted subsets** in `public/fonts/` (DM Mono, Shippori Mincho,
+  Zen Kaku Gothic New; OFL files beside them). No font CDN, no third-party request
+  of any kind. A new kanji glyph needs a regenerated `shippori-mincho-kanji` subset.
+- **JavaScript only where it earns it:** the homepage GPU card and the field guide,
+  inline, no frameworks, every page complete without it, `prefers-reduced-motion`
+  respected. No shadows; the only gradient is the card's light vein.
 
 ## Brand marks (full spec: SITE-DECISIONS §10)
-- **Mark = the empty set ∅** (invalid / null). Used ONLY as favicon / app icon /
-  social card — deliberately NOT on the page.
-- **On-page identity = the wordmark** `>theinvalid.me` (nav `.brand`: gold `>`
-  prompt, cream name, gold `.me`). Keep it tight — the `max-width:46rem` nav wraps
-  if the brand grows.
+- **Mark = the empty set ∅** (invalid / null). Favicon / app icon / social card,
+  the nav brand, and the contact band.
+- **On-page identity = the nav brand**: the ∅ mark + `theinvalid` + gold `.me`
+  (since 2026-11-17; the classic `>theinvalid.me` prompt lives on in `/classic/`).
 - **Favicons** live in `public/`, wired in `src/layouts/Base.astro`, and are
   cache-busted `?v=<token>` (now `?v=nullset`). **Bump the token on ANY favicon
   change** or browsers keep the stale icon. Master assets + regen: `~/Documents/design/theinvalid-logo/`.

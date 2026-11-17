@@ -2342,3 +2342,10 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
   hero stat (268 tok/s) with no source anywhere (repo and posts say 275/276), a "repo goes public after its release
   pass" line four months after the repo went public, and a hardcoded project count. Hardcoded numbers on a
   generated site rot; compute them or cite them. **Pri M.**
+- **2026-11-17 — keep the old design reachable by snapshot, not by maintaining two themes (SITE redesign):**
+  the owner wanted the new "light vein" design live and the previous one still accessible. Two live themes
+  would double every future page change. Instead the old design is built once from a git ref and frozen
+  under `/classic/` with links re-pointed, noindex, and a banner to each page's current version. Gotcha
+  hit on the way: Astro's `base` option only prefixes generated asset URLs, not the hand-written `href="/…"`
+  links in pages, so the snapshot needed its own link rewrite. Second gotcha: a canvas that only draws while
+  on screen left a blank river in full-page screenshots; always draw one still frame on load. **Pri L.**

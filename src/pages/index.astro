@@ -1,173 +1,558 @@
 ---
+// Homepage ("light vein" design, 2026-11-17). The 32 GB card is the hero: each stack is
+// a tenant you load onto it. Everything below the card is generated from the content
+// collections, except the curated tenant numbers, the CPU-floor rows and the loss column,
+// which are hand-picked and each trace to a post, a repo or the public lesson log.
 import Base from '../layouts/Base.astro';
-import Contact from '../components/Contact.astro';
 import { getCollection } from 'astro:content';
 import { repoStatuses, ago } from '../lib/github.js';
 
 const projects = await getCollection('projects');
-
-// Public work leads (newest three as cards, the rest as compact rows).
-// Private builds get their own honest section: no repo link, a write-up instead.
-const isPrivate = (p) => p.data.private;
-const byRecency = projects
-  .filter((p) => !isPrivate(p))
-  .sort((a, b) => b.data.started.valueOf() - a.data.started.valueOf());
-const latest = byRecency.slice(0, 3);
-const rest = byRecency
-  .slice(3)
-  .sort((a, b) => a.data.order - b.data.order);
-const priv = projects
-  .filter(isPrivate)
-  .sort((a, b) => a.data.order - b.data.order);
-const lab = priv.filter((p) => p.data.status !== 'planned');
-const board = priv.filter((p) => p.data.status === 'planned');
-
-// Build-time GitHub snapshot (fail-soft); a scheduled rebuild keeps it fresh.
-const gh = await repoStatuses(projects.map((p) => p.data.repo).filter(Boolean));
+const byOrder = (a, b) => a.data.order - b.data.order;
+const open = projects.filter((p) => !p.data.private).sort(byOrder);
+const lab = projects.filter((p) => p.data.private && p.data.status !== 'planned').sort(byOrder);
+const board = projects.filter((p) => p.data.status === 'planned').sort(byOrder);
+const gh = await repoStatuses(open.map((p) => p.data.repo).filter(Boolean));
 
 const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 5);
-
+  .slice(0, 6);
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-SG', { year: 'numeric', month: 'short', day: '2-digit' });
+
+const MAIL = 'reddy.madhankumar.sg@gmail.com';
+const mail = (subject: string) => `mailto:${MAIL}?subject=${encodeURIComponent(subject)}`;
+
+// The GPU tenants. min/max = VRAM held (GB). Sources: project pages + posts.
+const tenants = [
+  { id: 'llm', name: 'Light vein', c: '--p-yamabuki', pig: 'yamabuki · sovereign LLM', min: 30, max: 30, read: '~30 GB',
+    kind: 'LLM serving · vLLM + Nemotron NVFP4', title: 'Sovereign AI Stack',
+    line: 'Self-hosted LLM infrastructure where "client data never touches a cloud API" is enforced by routing. The client profile refuses to fall back, because failing loudly beats degrading silently.',
+    loss: 'Six hours of TensorRT-LLM debugging ended in choosing vLLM. The display had to move to onboard graphics to reclaim VRAM.',
+    stats: [['275 tok/s', 'single-stream, measured'], ['180K', 'context at FP8 KV cache'], ['76–89 s', 'cold load into this tenant']],
+    sw: 'measured cold load 75.8–89.2 s', link: ['the stack →', '/projects/sovereign-ai-stack'] },
+  { id: 'creative', name: 'Creative', c: '--p-akane', pig: 'akane · image and video', min: 14, max: 24, read: '14–24 GB',
+    kind: 'Video and image · ComfyUI', title: 'Creative Stack',
+    line: 'Generation, object removal that takes the object and its reflection, masked edits, 4K60 finishing. A vision LLM writes the scene constraints before any diffusion model runs.',
+    loss: 'Four of nine tested workflows broke from upstream drift. Glassware in low light still leaves a residue, and clients hear that first.',
+    stats: [['180 s', 'clean object removal'], ['203 s', 'forensic scan to edit, unattended'], ['16', 'mask targets found, 13 of them reflections and shadows']],
+    sw: 'measured switch 41–44 s', link: ['the stack →', '/projects/creative-stack'] },
+  { id: 'film', name: 'Film studio', c: '--p-wakaba', pig: 'wakaba · UTSUSHIE', min: 20, max: 32, read: '20–32 GB',
+    kind: 'Script to screen · UTSUSHIE', title: 'A local film studio',
+    line: 'Script, faces, keyframes, video, voices and mix on the same card that runs a daily-driver LLM. Every stage picks its model by same-seed experiment, not reputation.',
+    loss: 'The image engine crashed out of memory twice while the LLM held 29.5 GB. One video model still runs out of memory at super-resolution, even alone.',
+    stats: [['18 of 18', 'style passes, up from 6, after the prompt compiler'], ['84 of 84', 'lone characters counted right by the fixed checker'], ['76 GB', 'of full-precision weights deleted: no visible gain, 45% slower']],
+    sw: 'the renderer waits for any holder it does not own', link: ['the project →', '/projects/utsushie'] },
+  { id: 'audio', name: 'Audio', c: '--p-asagi', pig: 'asagi · voice and avatars', min: 0, max: 12, read: 'varies by tier',
+    kind: 'Voice, avatars, dubbing', title: 'Audio Stack',
+    line: 'A photo and a voice sample go in; a lip-synced, voice-cloned narration comes out. Three lip-sync engines, isolated and pinned, every model MIT or Apache-2.0.',
+    loss: 'Broadcast close-ups still go to a cloud path. The install deviated from its spec in 25+ places, all published.',
+    stats: [['78 s', 'MuseTalk, for a 34.5 s narration'], ['242 s', 'LatentSync, same clip'], ['1,197 s', 'Hallo2, same clip']],
+    sw: 'measured switch 25–35 s', note: 'footprint depends on the lip-sync tier, so the vein is not drawn to scale',
+    link: ['the stack →', '/projects/audio-stack'] },
+  { id: 'music', name: 'Music', c: '--p-fuji', pig: 'fuji · YuE 7B', min: 16, max: 16, read: '~16 GB',
+    kind: 'Music generation · YuE 7B', title: 'Music mode',
+    line: 'Part of the audio stack with its own tenancy. Fresh containers pass an end-to-end music-generation job with zero manual intervention.',
+    loss: 'The documented checkpoint clone silently produced 133-byte pointer stubs. Fixed upstream, merged.',
+    stats: [['~16 GB', 'resident while generating'], ['1', 'upstream fix merged into YuE']],
+    sw: 'switch time not benchmarked', link: ['the stack →', '/projects/audio-stack'] },
+  { id: '3d', name: '3D foundry', c: '--p-gunjo', pig: 'gunjo · image to 3D', min: 5, max: 31, read: '5–31 GB',
+    kind: 'Image to 3D · TRELLIS.2 / Hunyuan3D', title: '3D Stack',
+    line: "One product photo in; a spec-checked 3D asset and a compliance report out. The gate refuses assets that fail a marketplace's published rules.",
+    loss: 'On a real five-SKU batch, one asset was refused and one flagged: 703 mm reconstructed against 650 mm listed.',
+    stats: [['3 of 5', 'SKUs passed clean'], ['63–154 s', 'generation per SKU'], ['0.76–1.33 MB', 'delivered, against a 4 MB cap']],
+    sw: 'switch time not benchmarked', link: ['the stack →', '/projects/three-d-stack'] },
+];
+const first = tenants[0];
+const pct = (gb: number) => `${(gb / 32) * 100}%`;
+
+const floor = [
+  ['SovereignSec-AI', '', '/projects/sovereign-code-auditor', 'Air-gapped code auditor. The deterministic taint core runs with no GPU and no network, and the whole system beats the LLM alone.', '0.97 vs 0.90'],
+  ['Sovereign Legal RAG', 'engine private', '/projects/sovereign-legal-rag', 'Embeddings and reranker sit on the CPU so they never fight the serving GPU. Semantic-only search was the weakest mode on legal text.', 'MRR 0.564'],
+  ['QLAB', '', '/projects/qlab', 'Eleven quantum-ML experiments, each raced against a classical baseline. The GPU ran small circuits about 60× slower than the CPU.', '0 manufactured wins'],
+  ['KARIBUSA', 'private', '/projects/karibusa', 'The estate ledger. One file is the canonical status of every track, rendered against the live machine with the drift shown, not hidden.', '20+ tracks'],
+  ['Conductor', 'private', '/projects/conductor', 'The scheduler behind the vein above: one job API and one VRAM lease across all the stacks.', '20 switches, 0 failures'],
+  ['GINKO', 'private', '/projects/ginko', 'Trading intelligence, CPU-only by design. Predictions are scored on a hash-chained ledger and LLMs are not allowed to calculate.', '0 live orders'],
+  ['ADASHINO', 'private', '/projects/adashino', 'A fitness planner where a deterministic solver owns the numbers and the LLM only talks.', '10,000 examples per invariant'],
+];
+
+const losses = [
+  ['0 / 12', 'Recall on real Django CVEs.', 'The security auditor found none of the in-scope set. Framework-internal rewrites leave no taint signature.', '/blog/my-security-auditor-is-80-percent-assembled-not-invented'],
+  ['1.00 → 0.00', 'Fixtures versus the wild.', 'A perfect score on my own test fixtures, then zero on real code.', '/blog/my-code-auditor-scored-1-00-on-fixtures-and-0-00-in-the-wild'],
+  ['17 days', 'A backup failing silently.', 'A cron PATH bug. The fix was a watchdog that checks outcomes, not exit codes.', '/blog/my-backup-failed-silently-for-17-days'],
+  ['14×', 'How wrong my KV-cache math was.', 'The context budget for the whole card rested on it.', '/blog/i-had-my-kv-cache-math-14x-wrong'],
+  ['0.9954', 'Quantum hybrid, losing to logistic regression at 0.9962.', 'Published as measured.', '/case-studies-honest-qml-lab/'],
+  ['6 / 18', "Style passes before the film studio's prompt was fixed.", "It asked for 2D and got 3D. The bug was the prompt's first sentence. After: 18 of 18.", '/projects/utsushie'],
+];
 ---
 
-<Base>
-  <section class="hero">
-    <p class="called">$ they called me invalid_</p>
-    <h1 class="thisisme">This is <span class="accent">me</span>.</h1>
-    <p class="sub">
-      I'm <strong>Madhan Kumar Reddy</strong>, an AI Infrastructure Operator in
-      Singapore. <strong>I build private, on-premises AI systems that never send
-      your data to the cloud</strong>: for firms that need AI but can't hand
-      sensitive data to OpenAI or Anthropic.
-    </p>
-    <p class="sub">
-      No code hand-written: I spec, direct LLMs, and verify. Everything below is
-      documented in public: benchmarks, failures, and all. Where a repo has to
-      stay private, the page says so.
-    </p>
-    <p class="cta-row">
-      <a class="btn solid" href="/services">Work with me</a>
-      <a class="btn" href="mailto:reddy.madhankumar.sg@gmail.com?subject=Private%20AI%20for%20my%20team">Email me</a>
-      <a class="btn" href="/start-here">New here? Plain-English version</a>
-    </p>
-    <p class="proof">
-      <span><strong>{projects.length}</strong> projects, documented in public</span>
-      <span><strong>275 tok/s</strong> local LLM, measured</span>
-      <span><strong>2</strong> real quantum computers</span>
-      <span><strong>0</strong> manufactured wins</span>
-    </p>
-  </section>
-
-  <h2>Latest work</h2>
-  {latest.map((p) => (
-    <article class="card">
-      <h3>
-        <a href={`/projects/${p.id}`}>{p.data.title}</a>
-        <span class={`badge ${p.data.status}`}>{p.data.status}</span>
-      </h3>
-      <p class="oneliner">{p.data.oneliner}</p>
-      <p class="meta">
-        <span>{p.data.stack.slice(0, 4).join(' · ')}</span>
-        {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
-        {p.data.repo && <a href={p.data.repo}>repo ↗</a>}
-        {p.data.caseStudy && <a href={p.data.caseStudy}>case study →</a>}
+<Base wide>
+  <canvas id="motes" aria-hidden="true"></canvas>
+  <div class="home">
+    <div class="hero">
+      <span class="kanji" aria-hidden="true">光脈</span>
+      <p class="called">$ they called me invalid_</p>
+      <h1>One card. Six stacks. <em>One at a time.</em></h1>
+      <p class="sub">
+        I'm <strong>Madhan Kumar Reddy</strong>, an AI infrastructure operator in Singapore.
+        <strong>I build private AI systems that never send your data to the cloud</strong>, and
+        I run my own on a single 32 GB card. I call its LLM floor the light vein: everything else
+        drinks from it. Load a stack below to see what it holds, what it measured, and where it lost.
       </p>
-    </article>
-  ))}
+      <p class="cta-row">
+        <a class="btn solid" href="/services">Work with me</a>
+        <a class="btn" href={mail('Private AI for my team')}>Email me</a>
+        <a class="btn" href="/start-here">New here? Plain-English version</a>
+      </p>
+      <p class="proof">
+        <span><strong>{projects.length}</strong> projects, documented in public</span>
+        <span><strong>275 tok/s</strong> local LLM, measured</span>
+        <span><strong>2</strong> real quantum computers</span>
+        <span><strong>0</strong> manufactured wins</span>
+      </p>
+    </div>
 
-  <h2>Operating daily · earlier builds</h2>
-  <ul class="projrows">
-    {rest.map((p) => (
-      <li>
-        <span class="row-top">
-          <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
-          <span class={`badge ${p.data.status}`}>{p.data.status}</span>
-          <span class="meta">
-            {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
-            {p.data.repo && <a href={p.data.repo}>repo ↗</a>}
-          </span>
-        </span>
-        <p class="one">{p.data.oneliner}</p>
-      </li>
-    ))}
-  </ul>
+    <div class="gpu" id="card" style={`--tenant: var(${first.c})`}>
+      <div class="gpu-head">
+        <span class="label">RTX 5090 · 32 GB · one heavy tenant at a time</span>
+        <span class="status" id="status" aria-live="polite"><b>serving</b> {first.name.toLowerCase()}</span>
+      </div>
+      <div class="rail-box">
+        <div class="rail-read"><small id="pigment">{first.pig}</small><span id="read">{first.read}</span></div>
+        <div class="rail" role="img" aria-label="VRAM held by the loaded stack">
+          <span class="rail-fill" id="rail-fill" style={`width:${pct(first.max)}`}></span>
+          <canvas id="vein"></canvas>
+        </div>
+        <div class="ticks" aria-hidden="true"><span>0</span><span>4</span><span>8</span><span>12</span><span>16</span><span>20</span><span>24</span><span>28</span><span>32 GB</span></div>
+      </div>
+      <div class="tenants" id="tenants" role="group" aria-label="Load a stack onto the card">
+        {tenants.map((t, i) => (
+          <button type="button" data-id={t.id} style={`--c: var(${t.c})`} aria-pressed={i === 0 ? 'true' : 'false'}><i></i>{t.name}</button>
+        ))}
+      </div>
+      <div class="detail">
+        <div>
+          <span class="label" id="d-kind">{first.kind}</span>
+          <h2 id="d-title">{first.title}</h2>
+          <p id="d-line">{first.line}</p>
+          <p class="lossline"><span class="label">Where it lost</span><span id="d-loss">{first.loss}</span></p>
+          <p class="mono"><a id="d-link" href={first.link[1]}>{first.link[0]}</a></p>
+        </div>
+        <div>
+          <span class="label">Measured on this card</span>
+          <ul class="stats" id="d-stats">
+            {first.stats.map((s) => <li><b>{s[0]}</b><span>{s[1]}</span></li>)}
+          </ul>
+        </div>
+      </div>
+      <div class="log" id="log" aria-hidden="true"><div>card ready · llm resident</div></div>
+    </div>
 
-  <h2>In the lab · private builds, written up in public</h2>
-  <p style="color: var(--muted); margin-top: 0.4rem">
-    Newer work whose repos stay private (commercial, security, or built on my
-    own data). The method, the numbers and the failures are still published.
-  </p>
-  <ul class="projrows">
-    {lab.map((p) => (
-      <li>
-        <span class="row-top">
-          <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
-          <span class={`badge ${p.data.status}`}>{p.data.status}</span>
-          <span class="meta">
-            {p.data.writeup && <a href={p.data.writeup}>write-up →</a>}
-            {p.data.repo && <a href={p.data.repo}>results ↗</a>}
-          </span>
-        </span>
-        <p class="one">{p.data.oneliner}</p>
-      </li>
-    ))}
-  </ul>
+    <section id="floor">
+      <div class="sec-head">
+        <span class="glyph" aria-hidden="true">根</span>
+        <h2>The floor</h2>
+        <p>Roots. These need no GPU and stay up through every switch. Several are CPU-only on purpose: logic you must trust belongs where it can be tested exhaustively.</p>
+      </div>
+      <ul class="floor">
+        {floor.map(([name, tag, href, text, n]) => (
+          <li>
+            <a href={href}><strong>{name}</strong>{tag && <span class="tag">{tag}</span>}</a>
+            <span>{text}</span>
+            <span class="n">{n}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
 
-  <h2>On the drawing board</h2>
-  <p style="color: var(--muted); margin-top: 0.4rem">
-    Designed and decided, nothing built yet. Planning mistakes included.
-  </p>
-  <ul class="projrows">
-    {board.map((p) => (
-      <li>
-        <span class="row-top">
-          <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
-          <span class={`badge ${p.data.status}`}>{p.data.status}</span>
-        </span>
-        <p class="one">{p.data.oneliner}</p>
-      </li>
-    ))}
-  </ul>
-  <p class="meta"><a href="/projects">all projects, statuses honest →</a></p>
+    <section id="all">
+      <div class="sec-head">
+        <span class="glyph" aria-hidden="true">全</span>
+        <h2>Every project</h2>
+        <p>{projects.length} of them, statuses honest: <code>building</code> means building, <code>planned</code> means nothing is built yet. Private repos say so and link the public write-up instead.</p>
+      </div>
+      <div class="groups">
+        <div>
+          <h3 class="label">Public repos · {open.length}</h3>
+          <ul class="projrows">
+            {open.map((p) => (
+              <li>
+                <span class="row-top">
+                  <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
+                  <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+                  <span class="meta">
+                    {gh.get(p.data.repo)?.pushedAt && <span>updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
+                    {p.data.repo && <a href={p.data.repo}>repo ↗</a>}
+                    {p.data.caseStudy && <a href={p.data.caseStudy}>case study →</a>}
+                  </span>
+                </span>
+                <p class="one">{p.data.oneliner}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 class="label">In the lab · private builds · {lab.length}</h3>
+          <ul class="projrows">
+            {lab.map((p) => (
+              <li>
+                <span class="row-top">
+                  <a href={`/projects/${p.id}`}><strong>{p.data.title}</strong></a>
+                  <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+                  <span class="meta">
+                    {p.data.writeup && <a href={p.data.writeup}>write-up →</a>}
+                    {p.data.repo && <a href={p.data.repo}>results ↗</a>}
+                  </span>
+                </span>
+                <p class="one">{p.data.oneliner}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <p class="meta" style="margin-top:1.2rem">
+        <a href="/projects">all projects with their stacks →</a> ·
+        <a href="/workflow-catalogue.html">live workflow catalogue ↗</a> ·
+        <a href="/3d-catalogue">3D asset catalogue ↗</a>
+      </p>
+    </section>
 
-  <h2>Running LLMs on your own hardware?</h2>
-  <p style="color: var(--muted); margin-top: 0.4rem">
-    The self-hosting numbers people actually search for, measured on one RTX 5090:
-  </p>
-  <ul class="postlist">
-    <li>
-      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">guide</span>
-      <a href="/calculator">The local-AI field guide: VRAM math, GPU tiers, users per card, cloud break-even</a>
-    </li>
-    <li>
-      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">kv cache</span>
-      <a href="/blog/i-had-my-kv-cache-math-14x-wrong">I had my KV-cache math 14x wrong</a>
-    </li>
-    <li>
-      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">vram</span>
-      <a href="/blog/a-32gb-gpu-is-a-budget-not-a-suggestion">A 32GB GPU is a budget, not a suggestion</a>
-    </li>
-    <li>
-      <span style="white-space:nowrap; font-family:var(--mono); font-size:0.8rem; color:var(--accent)">serving</span>
-      <a href="/blog/six-hours-in-tensorrt-llm-so-you-dont-have-to">Six hours in TensorRT-LLM so you don't have to</a>
-    </li>
-  </ul>
+    <section id="losses">
+      <div class="sec-head">
+        <span class="glyph" aria-hidden="true">失</span>
+        <h2>The loss column</h2>
+        <p>Most portfolios publish the wins. These are the numbers that went the wrong way, each written up in full, because they were the expensive part.</p>
+      </div>
+      <table class="ledger">
+        {losses.map(([n, head, text, href]) => (
+          <tr><td>{n}</td><td><strong>{head}</strong> <span>{text}</span></td><td><a href={href}>read →</a></td></tr>
+        ))}
+      </table>
+    </section>
 
-  <h2>Latest from the knowledge base</h2>
-  <ul class="postlist">
-    {posts.map((post) => (
-      <li>
-        <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
-        <a href={`/blog/${post.id}`}>{post.data.title}</a>
-      </li>
-    ))}
-  </ul>
-  <p class="meta">
-    <a href="/blog">the knowledge base: case studies + the failure log →</a>
-  </p>
+    <section id="board">
+      <div class="sec-head">
+        <span class="glyph" aria-hidden="true">図</span>
+        <h2>The drawing board</h2>
+        <p>Designed and decided, nothing built yet. Each page is the plan plus what planning already got wrong.</p>
+      </div>
+      <div class="board">
+        {board.map((p) => (
+          <div>
+            <span class="label"><b>planned</b></span>
+            <h3><a href={`/projects/${p.id}`}>{p.data.title}</a></h3>
+            <p>{p.data.oneliner}</p>
+          </div>
+        ))}
+      </div>
+    </section>
 
-  <Contact subject="Private AI for my team" lead="Want one of these running on your hardware?" />
+    <section id="kb">
+      <div class="sec-head">
+        <span class="glyph" aria-hidden="true">記</span>
+        <h2>The knowledge base</h2>
+        <p>Case studies, the failure log and an interactive field guide to running LLMs on your own hardware, measured on this card.</p>
+      </div>
+      <div class="groups">
+        <div>
+          <h3 class="label">Latest from the failure log</h3>
+          <ul class="postlist">
+            {posts.map((post) => (
+              <li>
+                <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
+                <a href={`/blog/${post.id}`}>{post.data.title}</a>
+              </li>
+            ))}
+          </ul>
+          <p class="meta"><a href="/blog">case studies + the whole log →</a> · <a href="/blog/topics">by topic →</a> · <a href="/rss.xml">RSS</a></p>
+        </div>
+        <div>
+          <h3 class="label">Running LLMs on your own hardware?</h3>
+          <ul class="postlist">
+            <li><span class="kicker">guide</span><a href="/calculator">The local-AI field guide: VRAM math, GPU tiers, users per card, cloud break-even</a></li>
+            <li><span class="kicker">users</span><a href="/blog/one-rtx-5090-how-many-users-the-honest-answer">One RTX 5090, how many users? The honest answer</a></li>
+            <li><span class="kicker">kv cache</span><a href="/blog/i-had-my-kv-cache-math-14x-wrong">I had my KV-cache math 14x wrong</a></li>
+            <li><span class="kicker">vram</span><a href="/blog/a-32gb-gpu-is-a-budget-not-a-suggestion">A 32GB GPU is a budget, not a suggestion</a></li>
+            <li><span class="kicker">serving</span><a href="/blog/six-hours-in-tensorrt-llm-so-you-dont-have-to">Six hours in TensorRT-LLM so you don't have to</a></li>
+          </ul>
+          <p class="meta"><a href="/calculator">open the field guide →</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="work">
+      <div class="sec-head">
+        <span class="glyph" aria-hidden="true">縁</span>
+        <h2>Put one on your hardware</h2>
+        <p>Remote-first, worldwide. I spec it, build it by directing LLMs against that spec, verify at every gate, and hand over a runbook your team can operate.</p>
+      </div>
+      <div class="board">
+        <div><span class="label">Start here</span><h3><a href="/services">AI readiness audit</a></h3><p>Two hours and a written report: what AI can safely do for you, on what hardware, with which data risks.</p></div>
+        <div><span class="label">Headline</span><h3><a href="/services">Sovereign deployment</a></h3><p>A private LLM inside your facility. Data cannot reach a cloud API because the routing refuses, not because a policy says so.</p></div>
+        <div><span class="label">After launch</span><h3><a href="/services">Stack health retainer</a></h3><p>Backup verification, dependency updates, GPU-memory tuning and a quarterly failover test.</p></div>
+      </div>
+      <div class="contact">
+        <span class="addr" id="addr">{MAIL}</span>
+        <button type="button" id="copy">Copy address</button>
+        <a class="mono" href="/services">services and pricing →</a>
+        <a class="mono" href="/resume">résumé →</a>
+        <a class="mono" href="https://www.linkedin.com/in/reddymk/">LinkedIn ↗</a>
+      </div>
+    </section>
+  </div>
+
+  <script type="application/json" id="tenant-data" set:html={JSON.stringify(tenants)}></script>
+  <script is:inline>
+  (function () {
+    var T = JSON.parse(document.getElementById('tenant-data').textContent);
+    var TOTAL = 32;
+    var $ = function (id) { return document.getElementById(id); };
+    var card = $('card'), fill = $('rail-fill');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var css = function (name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); };
+    var isDark = function () { return getComputedStyle(document.documentElement).colorScheme.indexOf('dark') !== -1; };
+    var stamp = function () { return new Date().toTimeString().slice(0, 8); };
+    var current = T[0], busy = false;
+    document.documentElement.classList.add('js');
+
+    /* the vein: particles flowing left to right; dense up to min, sparse up to max */
+    var vc = $('vein'), vx = vc.getContext('2d'), vw = 0, vh = 0, dpr = 1;
+    var flow = { min: T[0].min, max: T[0].max, tmin: T[0].min, tmax: T[0].max, color: css(T[0].c) };
+    var P = [];
+    for (var i = 0; i < 900; i++) P.push({ x: Math.random(), y: Math.random(), s: 0.25 + Math.random() * 0.9, r: 0.6 + Math.random() * 1.9, ph: Math.random() * 6.28 });
+    function sizeVein() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var r = vc.getBoundingClientRect(); vw = r.width; vh = r.height;
+      vc.width = Math.round(vw * dpr); vc.height = Math.round(vh * dpr);
+    }
+    function drawVein(t) {
+      vx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      vx.clearRect(0, 0, vw, vh);
+      var dark = isDark();
+      vx.globalCompositeOperation = dark ? 'lighter' : 'source-over';
+      var minX = flow.min / TOTAL, maxX = flow.max / TOTAL;
+      if (minX > 0.002) {
+        var g = vx.createLinearGradient(0, 0, 0, vh);
+        g.addColorStop(0, 'transparent'); g.addColorStop(0.5, flow.color); g.addColorStop(1, 'transparent');
+        vx.globalAlpha = dark ? 0.34 : 0.2; vx.fillStyle = g; vx.fillRect(0, 0, minX * vw, vh);
+      }
+      vx.fillStyle = flow.color;
+      for (var i = 0; i < P.length; i++) {
+        var p = P[i];
+        if (!reduce) { p.x += p.s * 0.0011; if (p.x > 1) p.x -= 1; }
+        if (p.x > maxX) continue;
+        var sparse = p.x > minX;
+        if (sparse && (i % 4)) continue;
+        var mid = 0.5 + Math.sin(p.x * 9 + p.ph + t * 0.0004) * 0.07;
+        var y = (mid + (p.y - 0.5) * (sparse ? 0.8 : 0.62)) * vh;
+        vx.globalAlpha = (sparse ? 0.32 : 0.8) * (dark ? 1 : 0.9);
+        vx.beginPath(); vx.arc(p.x * vw, y, p.r * (sparse ? 0.8 : 1), 0, 6.283); vx.fill();
+      }
+      vx.globalAlpha = 1;
+    }
+
+    /* drifting motes behind the page (dark theme only) */
+    var mc = $('motes'), mx = mc.getContext('2d'), mw = 0, mh = 0, M = [];
+    for (var j = 0; j < 46; j++) M.push({ x: Math.random(), y: Math.random(), vx: (Math.random() - 0.5) * 0.00012, vy: -0.00005 - Math.random() * 0.00012, r: 0.8 + Math.random() * 2.2, ph: Math.random() * 6.28 });
+    function sizeMotes() { mw = window.innerWidth; mh = window.innerHeight; mc.width = mw; mc.height = mh; }
+    function drawMotes(t) {
+      mx.clearRect(0, 0, mw, mh);
+      if (!isDark()) return;
+      mx.fillStyle = css('--accent');
+      for (var j = 0; j < M.length; j++) {
+        var m = M[j];
+        if (!reduce) { m.x += m.vx; m.y += m.vy; if (m.y < -0.02) { m.y = 1.02; m.x = Math.random(); } if (m.x < 0) m.x = 1; if (m.x > 1) m.x = 0; }
+        mx.globalAlpha = 0.05 + 0.09 * (0.5 + 0.5 * Math.sin(t * 0.0006 + m.ph));
+        mx.beginPath(); mx.arc(m.x * mw, m.y * mh, m.r, 0, 6.283); mx.fill();
+      }
+      mx.globalAlpha = 1;
+    }
+    var visible = true;
+    function frame(t) {
+      flow.min += (flow.tmin - flow.min) * 0.09; flow.max += (flow.tmax - flow.max) * 0.09;
+      if (visible) drawVein(t);
+      drawMotes(t);
+      if (!reduce && !document.hidden) requestAnimationFrame(frame);
+    }
+    function kick() { if (reduce) { flow.min = flow.tmin; flow.max = flow.tmax; frame(0); } }
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(vc);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden && !reduce) requestAnimationFrame(frame); });
+    window.addEventListener('resize', function () { sizeVein(); sizeMotes(); kick(); });
+
+    function log(text) {
+      var el = $('log'), row = document.createElement('div');
+      row.textContent = stamp() + '  ' + text; el.appendChild(row);
+      while (el.children.length > 3) el.removeChild(el.firstChild);
+    }
+    function status(verb, t) {
+      var s = $('status'); s.textContent = '';
+      var b = document.createElement('b'); b.textContent = verb + ' ';
+      s.appendChild(b); s.appendChild(document.createTextNode(t.name.toLowerCase()));
+    }
+    function paint(t) {
+      card.style.setProperty('--tenant', 'var(' + t.c + ')');
+      flow.color = css(t.c); flow.tmin = t.min; flow.tmax = t.max;
+      fill.style.width = (t.max / TOTAL * 100) + '%';
+      $('read').textContent = t.read; $('pigment').textContent = t.pig;
+      $('d-kind').textContent = t.kind; $('d-title').textContent = t.title;
+      $('d-line').textContent = t.line; $('d-loss').textContent = t.loss;
+      var a = $('d-link'); a.textContent = t.link[0]; a.href = t.link[1];
+      var ul = $('d-stats'); ul.textContent = '';
+      t.stats.forEach(function (s) {
+        var li = document.createElement('li'), b = document.createElement('b'), sp = document.createElement('span');
+        b.textContent = s[0]; sp.textContent = s[1]; li.appendChild(b); li.appendChild(sp); ul.appendChild(li);
+      });
+      Array.prototype.forEach.call($('tenants').children, function (btn) { btn.setAttribute('aria-pressed', btn.dataset.id === t.id ? 'true' : 'false'); });
+      status('serving', t); kick();
+    }
+    function load(t) {
+      if (busy || current.id === t.id) return;
+      var prev = current; current = t;
+      if (reduce) { paint(t); log('flush ' + prev.id + ' → load ' + t.id + ' · ' + t.sw); return; }
+      busy = true; status('flushing', prev);
+      flow.tmin = 0; flow.tmax = 0; fill.style.width = '0%'; $('read').textContent = 'flush';
+      log('flush ' + prev.id + ' · waiting for VRAM to clear');
+      setTimeout(function () { paint(t); log('load ' + t.id + ' · ' + t.sw + (t.note ? ' · ' + t.note : '')); busy = false; }, 700);
+    }
+    Array.prototype.forEach.call($('tenants').children, function (btn) {
+      btn.addEventListener('click', function () { load(T.find(function (t) { return t.id === btn.dataset.id; })); });
+    });
+
+    sizeVein(); sizeMotes(); drawVein(0);
+    if (reduce) frame(0); else requestAnimationFrame(frame);
+    var re = function () { flow.color = css(current.c); kick(); };
+    if (window.matchMedia) { var mq = window.matchMedia('(prefers-color-scheme: dark)'); if (mq.addEventListener) mq.addEventListener('change', re); }
+
+    $('copy').addEventListener('click', function () {
+      var btn = this, text = $('addr').textContent;
+      var done = function (msg) { btn.textContent = msg; setTimeout(function () { btn.textContent = 'Copy address'; }, 1600); };
+      var select = function () {
+        var r = document.createRange(); r.selectNodeContents($('addr'));
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); done('Selected, press copy');
+      };
+      try { navigator.clipboard.writeText(text).then(function () { done('Copied'); }, select); } catch (e) { select(); }
+    });
+  })();
+  </script>
+
+  <style is:global>
+    #motes { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+    .home { position: relative; z-index: 1; }
+    .home .label { font-family: var(--mono); font-size: 0.68rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); }
+    .home .mono { font-family: var(--mono); font-size: 0.78rem; }
+    .home section { padding-top: 5rem; }
+
+    /* hero */
+    .home .hero { position: relative; padding: 3.2rem 0 2.6rem; }
+    .home .hero .called { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); margin: 0 0 1.2rem; }
+    .home .hero h1 { font-size: clamp(2.5rem, 7.4vw, 5.4rem); line-height: 1.08; margin: 0; max-width: 13em; }
+    .home .hero h1 em { font-style: normal; color: var(--accent); }
+    .home .hero .sub { max-width: 38rem; margin: 1.8rem 0 0; color: var(--muted); font-size: 1.05rem; }
+    .home .hero .sub strong { color: var(--fg); font-weight: 500; }
+    .home .kanji {
+      position: absolute; right: 0; top: 2.2rem; writing-mode: vertical-rl;
+      font-family: var(--display); font-weight: 500; font-size: clamp(3rem, 9vw, 7rem); line-height: 1;
+      color: var(--line); user-select: none; pointer-events: none;
+    }
+
+    /* the card */
+    .gpu { position: relative; background: var(--bg-raise); border: 1px solid var(--line); border-radius: 3px; }
+    .gpu-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.4rem 1rem; padding: 1rem 1.4rem; }
+    .gpu .status { font-family: var(--mono); font-size: 0.76rem; color: var(--muted); }
+    .gpu .status b { font-weight: 500; color: var(--tenant); }
+    .rail-box { padding: 0.4rem 1.4rem; }
+    .rail-read { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 1.2rem; padding-bottom: 0.9rem; }
+    .rail-read span { font-family: var(--display); font-weight: 800; font-size: 2.3rem; line-height: 1; font-variant-numeric: tabular-nums; }
+    .rail-read small { order: 2; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tenant); }
+    .rail { position: relative; height: 6rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .rail canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .rail-fill { position: absolute; left: 0; top: 40%; bottom: 40%; background: var(--tenant); opacity: 0.55; border-radius: 2px; }
+    .js .rail-fill { display: none; }
+    .ticks { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.66rem; color: var(--muted); padding-top: 0.4rem; font-variant-numeric: tabular-nums; }
+    .tenants { display: flex; flex-wrap: wrap; gap: 0.2rem 1.6rem; padding: 1rem 1.4rem 1.3rem; }
+    .tenants button {
+      font: inherit; font-family: var(--display); font-weight: 500; font-size: 1.12rem; color: var(--muted);
+      background: none; border: 0; border-bottom: 1px solid transparent; padding: 0.3rem 0; cursor: pointer;
+      display: flex; align-items: center; gap: 0.55rem;
+    }
+    .tenants button i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--c); display: block; opacity: 0.55; }
+    .tenants button:hover { color: var(--fg); }
+    .tenants button[aria-pressed="true"] { color: var(--fg); border-bottom-color: var(--c); }
+    .tenants button[aria-pressed="true"] i { opacity: 1; }
+    .detail { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); border-top: 1px solid var(--line); }
+    .detail > div { padding: 1.6rem 1.4rem; min-width: 0; }
+    .detail > div + div { border-left: 1px solid var(--line); }
+    .detail h2 { font-size: 2rem; line-height: 1.15; margin: 0.5rem 0 0.8rem; }
+    .detail p { margin: 0 0 1rem; }
+    .detail #d-line { color: var(--muted); }
+    .detail a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
+    .detail a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+    .stats { list-style: none; margin: 0.9rem 0 0; padding: 0; display: grid; gap: 1.1rem; }
+    .stats b { display: block; font-family: var(--display); font-weight: 700; font-size: 1.9rem; line-height: 1.1; color: var(--tenant); font-variant-numeric: tabular-nums; }
+    .stats span { color: var(--muted); font-size: 0.9rem; }
+    .lossline { font-size: 0.93rem; padding-top: 0.9rem; border-top: 1px dashed var(--line); }
+    .lossline .label { color: var(--error); display: block; margin-bottom: 0.2rem; }
+    .log { border-top: 1px solid var(--line); padding: 0.8rem 1.4rem; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); min-height: 4.4rem; }
+    .log div:last-child { color: var(--fg); }
+
+    /* sections */
+    .sec-head { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.25fr); gap: 0.4rem 1.6rem; align-items: end; padding-bottom: 1.1rem; border-bottom: 1px solid var(--line); }
+    .sec-head .glyph { font-family: var(--display); font-weight: 500; font-size: 3.2rem; line-height: 1; color: var(--accent); opacity: 0.85; }
+    .sec-head h2 { font-size: clamp(1.9rem, 4.4vw, 2.7rem); line-height: 1.1; margin: 0; }
+    .sec-head p { margin: 0; color: var(--muted); font-size: 0.97rem; }
+
+    .floor { list-style: none; margin: 0; padding: 0; }
+    .floor li { display: grid; grid-template-columns: 12rem minmax(0, 1fr) auto; gap: 0.3rem 1.8rem; align-items: baseline; padding: 1.05rem 0; border-bottom: 1px solid var(--line); }
+    .floor li > a { color: var(--fg); font-family: var(--display); font-size: 1.1rem; }
+    .floor li > a:hover { color: var(--accent); text-decoration: none; }
+    .floor li > span:nth-child(2) { color: var(--muted); }
+    .floor .n { font-family: var(--mono); font-size: 0.76rem; color: var(--accent); white-space: nowrap; }
+    .floor .tag { font-family: var(--mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-left: 0.5rem; white-space: nowrap; }
+
+    .groups { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 3rem; }
+    .groups > div { min-width: 0; }
+    .groups h3.label { margin: 1.6rem 0 0; }
+    .groups .projrows { margin-top: 0.4rem; }
+    .groups .projrows .row-top .meta { margin-left: 0; width: 100%; }
+    .home .postlist .kicker { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); white-space: nowrap; min-width: 4.5rem; }
+
+    .ledger { width: 100%; border-collapse: collapse; display: table; }
+    .ledger td { padding: 1.15rem 0; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+    .ledger td:first-child { font-family: var(--display); font-weight: 800; font-size: clamp(1.8rem, 4.6vw, 2.6rem); line-height: 1; color: var(--error); white-space: nowrap; padding-right: 2rem; font-variant-numeric: tabular-nums; }
+    .ledger td:last-child { text-align: right; font-family: var(--mono); font-size: 0.76rem; padding-left: 1rem; white-space: nowrap; }
+    .ledger strong { font-weight: 500; }
+    .ledger span { color: var(--muted); }
+
+    .board { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); border-bottom: 1px solid var(--line); }
+    .board > div { padding: 1.5rem 1.6rem 1.7rem 0; min-width: 0; }
+    .board > div + div { padding-left: 1.6rem; border-left: 1px solid var(--line); }
+    .board h3 { font-size: 1.4rem; line-height: 1.2; margin: 0.4rem 0 0.6rem; }
+    .board h3 a { color: var(--fg); }
+    .board h3 a:hover { color: var(--accent); text-decoration: none; }
+    .board p { margin: 0; color: var(--muted); font-size: 0.94rem; }
+    .board .label b { color: var(--accent); font-weight: 400; }
+
+    .contact { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1rem 1.6rem; padding-top: 2.6rem; }
+    .contact .addr { font-family: var(--display); font-weight: 700; font-size: clamp(1.35rem, 4.6vw, 2.6rem); line-height: 1.2; user-select: all; overflow-wrap: anywhere; min-width: 0; flex-basis: 100%; }
+    .contact button { font: inherit; font-family: var(--mono); font-size: 0.78rem; background: none; color: var(--accent); border: 1px solid var(--accent); border-radius: 2px; padding: 0.5rem 0.9rem; cursor: pointer; }
+    .contact button:hover { background: var(--accent); color: var(--bg); }
+
+    @media (max-width: 52rem) {
+      .groups { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 46rem) {
+      .detail { grid-template-columns: minmax(0, 1fr); }
+      .detail > div + div { border-left: 0; border-top: 1px solid var(--line); }
+      .board > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+      .sec-head { grid-template-columns: auto minmax(0, 1fr); }
+      .sec-head p { grid-column: 1 / -1; }
+      .floor li { grid-template-columns: minmax(0, 1fr); }
+      .ledger, .ledger tbody { display: block; }
+      .ledger td { display: block; border: 0; padding: 0; text-align: left !important; }
+      .ledger tr { display: block; padding: 1rem 0; border-bottom: 1px solid var(--line); }
+      .home .kanji { opacity: 0.6; top: 1rem; }
+      .home .hero { padding: 2rem 0; }
+      .home .hero h1 { max-width: 80%; }
+    }
+  </style>
 </Base>

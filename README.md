@@ -13,9 +13,11 @@ include the losses, case studies include the dead ends.
 
 ## What this repo is
 
-- **Astro 6, content-as-files, zero JS frameworks, system fonts only.** Posts and
-  project pages are markdown in `src/content/`; the build is fully static and
-  the performance is the flex (100/100 Lighthouse).
+- **Astro 6, content-as-files, zero JS frameworks, no third-party requests.** Posts and
+  project pages are markdown in `src/content/`; the build is fully static. Fonts are
+  self-hosted subsets; the only script is the homepage GPU card and the field guide.
+- **Two designs.** The current "light vein" design, and the previous one frozen at
+  [`/classic/`](https://theinvalid.me/classic/).
 - **Deploy = push to `main`.** Cloudflare rebuilds and ships in about a minute.
 - **One accent color.** If a design needs a second one, the design is wrong.
 
