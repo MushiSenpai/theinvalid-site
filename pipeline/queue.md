@@ -1007,6 +1007,7 @@ Status: `unmined` → `queued` (promoted to §A) → `published` (date).
 | OPS-155 | M | **Rehearse a deploy on a clean box before trusting it — it found 5 bugs offline tests could not (2026-11-18, NIGHTJAR).** A privileged Debian container with Docker 29 + gVisor, deployed over SSH with the real deploy.sh, surfaced: (1) firewall written as `10.239.10.0/22` — iptables normalises it to `10.239.8.0/22`, silently missing .12, so containers could reach host sshd; list subnets one by one. (2) llama-server key env is `LLAMA_API_KEY`, not `LLAMA_ARG_API_KEY` — the model was open; check `--help` of the pinned image. (3) gVisor bypasses Docker's embedded DNS, so service names fail — use fixed IPs (a privacy win: no DNS in the compartment). (4) SearXNG fetches ClearURLs/jsdelivr tracker lists directly at startup, outside its proxy. (5) canary raced a restarting container. DinD needs volumes for /var/lib/{docker,containerd} and `--cgroupns=host` for runsc. |
 | OPS-156 | M | **Privacy defaults to turn off in local LLM serving (2026-11-18).** llama.cpp `/slots` is ON by default and can show the in-flight prompt — use `--no-slots`. SearXNG behind one Tor SOCKS identity links all cases at the search engine for ~10 min — send NEWNYM per case and set `outgoing.keepalive_expiry` low. `requests` `iter_content(n)` blocks until n bytes, so a 1-byte/s server defeats any in-loop deadline — use `r.raw.read1()`. Caddy `unhealthy_request_count` races under concurrency (two requests to the same "busy" backend). |
 | OPS-157 | H | **mushishi returns different bytes for the same file (2026-11-18).** A 5 GB GGUF hashed differently 1 in 4 times, on nvme2n1 (data-disk2, mergerfs bypassed) and nvme1n1 (/home); 36 GB of RAM-only hashing never mismatched. Suspect storage path / PCIe / page-cache memory / firmware. Caught only because model downloads were sha256-checked. Action: memtest86+, SMART logs, firmware/BIOS; until fixed, verify hashes of anything copied off this box. |
+| OPS-158 | H | **Tor acknowledges NEWNYM with `250 OK` but silently DELAYS it if one was sent in the last 10 s (2026-11-18, NIGHTJAR live deploy).** Tor logs `Rate limiting NEWNYM request: delaying by 9 second(s)`; the caller sees success, so a second case searching within 10 s rides the previous case's circuits — the exact cross-case linkage NEWNYM was meant to stop. The clean-box rehearsal missed it (cases further apart); only the live canary's back-to-back cases exposed it. Fix: track the last NEWNYM and wait ≥11 s before the next. Also: (1) a deploy canary must gate on *service readiness* (SearXNG returns 0 results for its first seconds), not just container/health-endpoint up; (2) `tailscale up --operator=X` re-login without restating `--advertise-tags=tag:home` drops the tag and with it every ACL grant — the PC lost SSH to intel-vps; always restate non-default flags. |
 
 ## 2026-07-16 — Segmentation rule ≠ unwrap rule: measure the flood, not the threshold [§B]
 - Rebuilding S6 (F128 charter): the "obvious" seam source — dihedral hard-edge components
@@ -2305,6 +2306,13 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
   five `~/projects` repos with unpushed work. `backup.sh` listed Documents subfolders one at a time, so each new
   project folder was uncovered until someone remembered to add it. Fix: back up the parent (`~/Documents`, worktrees
   excluded) so new folders are covered by default; run the backup by hand before any hardware handover. **Pri M.**
+
+- **2026-11-18 — before rejecting built work for an alternative, check the alternative covers every job (NAVARATNA, SCOTTY)**
+  I pushed back on a reviewer's 3,100-line model switcher with "try llama-swap plus a small lease service first".
+  llama-swap covers loading, but not leases, priorities or seeing a render's VRAM, which was the hard half and the
+  gap I had diagnosed myself. The owner then asked for exactly that system. Fix: list each job the existing work
+  does, tick which ones the alternative covers, and only then argue. Reading the adopted code also found what
+  the reviewer missed: it verifies VRAM is freed but never RAM. **Pri M.**
 
 - **2026-11-18 — a speed claim is only as good as its test rig (NAVARATNA rev 6.6, Basalt)**
   A Gemini chat said a new Strata fork, Basalt, does ~500 tok/s "on one gaming PC". The model card's best runs
