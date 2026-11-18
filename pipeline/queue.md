@@ -2306,6 +2306,12 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
   project folder was uncovered until someone remembered to add it. Fix: back up the parent (`~/Documents`, worktrees
   excluded) so new folders are covered by default; run the backup by hand before any hardware handover. **Pri M.**
 
+- **2026-11-18 — a speed claim is only as good as its test rig (NAVARATNA rev 6.6, Basalt)**
+  A Gemini chat said a new Strata fork, Basalt, does ~500 tok/s "on one gaming PC". The model card's best runs
+  (300-460 tok/s) used a second GPU holding most of the experts, a 400 W limit and short prompts, and its issue
+  tracker shows hangs on long agent sessions. Fix: record every speed claim with its rig, and gate a new engine on
+  the workload you actually run (long tool loops, RAM ceiling), not on the headline. **Pri L.**
+
 - **2026-11-16 — a safety cap must sit above normal use, and a drain must fit the handover promise (NAVARATNA plan B rev B4)**
   Second instance of the lesson below, same Fable review. Rev B3 gave Maya a 70 GB budget but a 68 GB `MemoryHigh`,
   so the backstop would have throttled ordinary use, and a 120 s drain sat under a 60 s "render gets the card"
