@@ -1,5 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const projectCount = (await getCollection('projects')).length;
 ---
 
 <Base
@@ -16,13 +19,13 @@ import Base from '../layouts/Base.astro';
     <article class="card">
       <h3>You're hiring</h3>
       <p class="oneliner">Recruiter, hiring manager, or team lead sizing me up for a role.</p>
-      <p>Read the <a href="/resume">résumé</a> first. It opens with exactly how I work (spec-first, LLM-directed, verification-gated) so neither of us wastes an interview. Then the proof: <a href="/blog#case-studies">measured case studies</a> and upstream <a href="/resume">open-source fixes</a> to the tools I run.</p>
-      <p class="meta"><a href="/resume">résumé + dated PDF →</a></p>
+      <p>Start with the <a href="/resume-2page.pdf">2-page résumé (PDF)</a>, or the <a href="/resume">full résumé</a> with every project linked. For proof, the <a href="/">homepage</a> lets you load each system onto my GPU and see what it measured, and <a href="/projects">projects</a> lists all {projectCount}, statuses honest.</p>
+      <p class="meta"><a href="/resume-2page.pdf">2-page PDF →</a> <a href="/resume">full résumé →</a></p>
     </article>
     <article class="card">
       <h3>You have a problem to solve</h3>
       <p class="oneliner">You need private AI in your business, or local video, voice and 3D work without per-seat cloud bills.</p>
-      <p>See <a href="/services">what I offer and what it costs</a>: deployment, audit, creative pipelines, retainer, prices listed. The one-page <a href="/briefs/sovereign-stack-brief.pdf">stack briefs (PDF)</a> below are made for forwarding to whoever signs off.</p>
+      <p>See <a href="/services">what I offer and what it costs</a>: deployment, audit, creative pipelines, retainer, prices listed. The one-page <a href="#briefs">briefs (PDF)</a> below are made for forwarding to whoever signs off.</p>
       <p class="meta"><a href="/services">services + pricing →</a></p>
     </article>
     <article class="card">
@@ -59,9 +62,18 @@ import Base from '../layouts/Base.astro';
   <h2>What I can build for you</h2>
   <ul>
     <li><strong>A private ChatGPT</strong> for your team that can answer questions, draft documents, and summarise files, and never sends a word outside your office.</li>
-    <li><strong>A smart search</strong> over your own documents ("find me every contract that mentions X"), running locally.</li>
-    <li><strong>Video and image tools</strong>: remove an object from a video, create a narrated video from images, generate a spoken avatar. All on your own machine.</li>
+    <li><strong>A private document search for your firm</strong>: ask "which contracts let the other side terminate early?" and get the answer with the exact clause cited. When your documents don't say, it tells you so instead of guessing. Every search is logged, and staff only see the matters they're cleared for.</li>
+    <li><strong>Video, voice and image tools</strong>: remove an object from a video, turn a comic page into a narrated video, create a talking avatar from a photo and a voice sample. All on your own machine.</li>
+    <li><strong>3D models of your products from a photo</strong>, ready for an online shop, with an automatic check that rejects any model that doesn't meet the marketplace's rules.</li>
     <li><strong>A health-check service</strong>: once it's set up, I keep it running, backed up, and updated so you don't have to think about it.</li>
+  </ul>
+
+  <h2>Proof, in plain words</h2>
+  <p>Three things I built and measured, each with the full story one click away:</p>
+  <ul>
+    <li><strong>The legal search that refuses to guess.</strong> Tested on 150 questions over real contracts, it finds the right clause first noticeably more often than the usual "chat with your PDFs" approach, and it cites where every answer came from. <a href="/projects/sovereign-legal-rag">The results →</a></li>
+    <li><strong>One graphics card, eight people at once.</strong> I measured how many people a single high-end card can serve before they start waiting: eight working at the same time, then the rest queue. That's the number you need to size a machine for your team. <a href="/blog/one-rtx-5090-how-many-users-the-honest-answer">The test →</a></li>
+    <li><strong>The checker that stopped a bad product model.</strong> Of five real products turned into 3D models, three passed, one was refused before it could reach a shop listing, and one was flagged because it came out 703 mm wide instead of 650 mm. <a href="/case-studies-product-photo-to-3d/">The case study →</a></li>
   </ul>
 
   <h2>Why me</h2>
@@ -71,9 +83,21 @@ import Base from '../layouts/Base.astro';
     then carefully check and operate it. I've spent years in
     <strong>quality control and data security</strong> (the careful,
     rule-following kind of work), which is exactly what you want from someone
-    handling your confidential setup. And I prove everything in public: you can
-    see my work, including the mistakes I made and fixed, before you ever pay me.
+    handling your confidential setup.
   </p>
+  <p>
+    And I prove everything in public: <strong>{projectCount} projects</strong>
+    documented, <strong>13 fixes sent to widely used AI tools, 5 accepted</strong>
+    by their maintainers, and the mistakes written up next to the wins. You can
+    see all of it before you ever pay me.
+  </p>
+
+  <h2>What I won't promise</h2>
+  <ul>
+    <li><strong>Broadcast-grade avatars.</strong> My local talking avatars are good enough for social media. Close-ups for TV still need cloud tools, and I'll say so before you pay.</li>
+    <li><strong>A private model that matches the biggest cloud models.</strong> A model that fits on your own machine is very capable, but it is not the largest one in the world. Sensitive work stays local; anything else goes to the cloud only if your rules allow it.</li>
+    <li><strong>Every video edit.</strong> Glass, liquids and very dark footage can still beat the tools. Hard footage gets a free sample frame first, so you see the result before you commit.</li>
+  </ul>
 
   <h2>How to start</h2>
   <p>
@@ -87,14 +111,15 @@ import Base from '../layouts/Base.astro';
     👉 Or just email me: <a href="mailto:reddy.madhankumar.sg@gmail.com">reddy.madhankumar.sg@gmail.com</a>
   </p>
 
-  <h2>The one-page briefs</h2>
+  <h2 id="briefs">The one-page briefs</h2>
   <p>
-    Three of the systems I operate, each as a downloadable one-page PDF: what
+    Four of the systems I operate, each as a downloadable one-page PDF: what
     it does, the measured numbers, and what it honestly can't do yet. Made for
     forwarding to a colleague or a boss:
   </p>
   <ul>
     <li><a href="/briefs/sovereign-stack-brief.pdf">Sovereign AI Stack</a>: a private LLM that physically can't leak (PDF)</li>
+    <li><a href="/briefs/legal-rag-brief.pdf">Sovereign Legal RAG</a>: private document search that cites the clause and refuses to guess (PDF)</li>
     <li><a href="/briefs/creative-stack-brief.pdf">Creative Stack</a>: local video generation, object removal, 4K finishing (PDF)</li>
     <li><a href="/briefs/audio-stack-brief.pdf">Audio Stack</a>: voice cloning, avatars, music, dubbing (PDF)</li>
   </ul>
@@ -103,6 +128,7 @@ import Base from '../layouts/Base.astro';
     .router { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; margin: 1.6rem 0 0.6rem; }
     .router .card { margin: 0; }
     .router h3 { margin-top: 0; }
+    .router .meta { gap: 0.9rem; }
     @media (max-width: 44rem) { .router { grid-template-columns: 1fr; } }
   </style>
 

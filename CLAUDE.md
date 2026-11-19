@@ -49,6 +49,12 @@ the operating playbook, and the brand/visual-identity spec — is
 
 ## Deploy
 - `npm run build` MUST pass, then `git push` to `main` auto-deploys.
+- **Cloudflare only builds pushes whose head commit is authored by the owner's account**
+  (found 2026-11-19: six commits authored `Claude <noreply@anthropic.com>` never built; an
+  owner-authored empty commit deployed at once). A Claude session works on a branch; the
+  owner merges or pushes the final commit to `main` from their own clone.
+- **Verify a deploy by content, not status code:** curl a string only the new build has
+  (e.g. a new route), since a stale page also returns 200.
 - 3D catalogue: run **`scripts/deploy-3d-catalogue.sh`** (never hand-edit the deployed
   `public/3d-catalogue.html`).
 - Lessons/decisions → append a row to `pipeline/queue.md` §B (same session).
