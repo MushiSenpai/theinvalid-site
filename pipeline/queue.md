@@ -2357,6 +2357,7 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
 - **2026-11-17 — a deploy that "worked" can be a deploy that never ran (SITE merge):** six commits merged to `main`
   and pushed, local build green, yet the live homepage was still the old one an hour later. Every earlier deploy came
   from commits authored by the owner's GitHub account; these were authored as `Claude <noreply@anthropic.com>`.
-  Unconfirmed cause, but the check is cheap: after a push, curl a string that only the new build contains (a
-  status code alone passes on the stale page). Also from this session: a 2-page résumé now builds beside the full
+  Confirmed 2026-11-19: an owner-authored empty commit deployed at once (`/classic/` went 404 to 200), so
+  Cloudflare builds only owner-authored pushes; the rule is now in CLAUDE.md §Deploy. And the check is cheap:
+  after a push, curl a string that only the new build contains (a status code alone passes on the stale page). Also from this session: a 2-page résumé now builds beside the full
   one (`scripts/make-resume-pdf.sh` renders both), and a fourth one-page brief covers Legal RAG. **Pri M.**
