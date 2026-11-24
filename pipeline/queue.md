@@ -2414,3 +2414,14 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
   publish step failed on a repo that was 8 ahead / 10 behind origin, because sessions had been committing here
   for weeks without pushing. **Unpushed commits are not saved work; they are a conflict waiting for whoever
   publishes next.** **Pri H.**
+
+- **OPS-165 | H | Push site-repo commits in the SAME session, never just commit (2026-11-24, SITE/oss-observer).**
+  The existing rule was "commit site-repo edits explicitly", which sessions followed, and the repo still drifted
+  to **8 ahead / 10 behind** origin because committing was where everyone stopped. The cost landed on the next
+  session that tried to publish: `oss-observer`'s `git pull --rebase` hit a `queue.md` conflict, crashed without
+  aborting, and left the checkout detached mid-rebase, where a later commit then captured a file containing
+  conflict markers. Fixed three ways: the observer now aborts a failed rebase, skips the site update and alerts
+  instead of leaving wreckage; the divergence was merged (not rebased, so no session's commits were rewritten)
+  with the conflicting appends kept in date order; and the rule is now **commit AND push, same session**.
+  **A local commit protects your work from you. Only a push protects everyone else's from a conflict they did
+  not create — and an append-only log like this file conflicts on every parallel edit.**
