@@ -2399,3 +2399,18 @@ Plan: `~/Documents/NAVARATNA/navaratna-plan.html` (rev 3). Nothing built; build 
 | OPS-162 | M | **A config labelled DRAFT can be the live policy (2026-11-19, NAVARATNA/SCOTTY tailnet ACL).** The home node's packet filter matched the "DRAFT" file rule for rule while the infra doc still said "tailnet is allow-all". Read the enforced state (`tailscale debug netmap` packet filter) before reasoning from a config file's own label. Tightening `tag:admin` from `*:*` worked because every remote web service already sat behind `tailscale serve` on 443: one TLS port with paths is far easier to lock down than one port per service. Lockout guard: an ACL `tests` block, so the console refuses a policy that would cut off SSH. |
 | OPS-163 | M | **Change a remote firewall under a dead-man timer (2026-11-19, intel-vps UFW).** Arm `systemd-run --on-active=300 ufw disable` first, enable the rules, then prove a NEW ssh session, container egress and each service before cancelling the timer. A lockout then costs five minutes, not a rescue console. The same check found one container with no internet: its own egress lock by design, not UFW, so read the existing iptables chains before blaming the new rule. |
 | OPS-164 | H | **A deny list is not a sandbox, and an unencrypted disk makes both moot (2026-11-19, estate defence plan).** Claude Code's `Read(...)` deny rules stop the Read tool and plain `cat`, not a script that opens the file; its bubblewrap sandbox covers shell commands only, not Read/Edit/WebFetch/MCP. Our deny list also missed the one key that mattered (`hetzner_ed25519`, no passphrase, root on both VPSes). Defence for agents = tiers (operator / sandboxed reader / container for running untrusted code) plus fail-closed gate tests, and full-disk encryption under all of it. |
+
+- **STALE-CLOSE-1 (2026-11-24) — The alarm I built worked perfectly, warned six days out, and the thing it
+  was guarding still died, because the alarm only rings while the machine is awake.** A stale bot auto-closed
+  two of my upstream PRs after 30 days of maintainer silence. The watch added in September fired daily from
+  "~6d to auto-close" down to "~2d" and every alert reached my phone. Then the box went down for a handover on
+  day 28, so the last three days went unwatched, and I was away from the machine during the window the
+  warnings were buying. **A monitor is two halves, detection and a human with time to act. Mine had a third
+  dependency nobody wrote down: the host being powered on. A daily cron on a personal workstation quietly
+  inherits every reboot, trip and handover, so time-critical watches belong on something that is always up.**
+  Two more findings from the same hour. The résumé generator only ever appended "(merged)", so the two dead
+  PRs rendered exactly like live submissions; an earlier closed PR had been hand-excluded months ago, which
+  hid the whole class of bug. **A one-off manual exclusion is a bug report you declined to read.** And the
+  publish step failed on a repo that was 8 ahead / 10 behind origin, because sessions had been committing here
+  for weeks without pushing. **Unpushed commits are not saved work; they are a conflict waiting for whoever
+  publishes next.** **Pri H.**
