@@ -20,6 +20,28 @@ Hero tagline: terminal prompt `$ they called me invalid_` answered by
 technical double meaning (what systems call rejected input) — the site is the
 counter-evidence.
 
+## 3a. A second design for the homepage only: "light vein" (2026-11-17, owner decision)
+
+The owner wanted a bolder homepage, with the rest of the site kept exactly in its
+classic style. The split:
+
+- **`/` is the new design.** A 32 GB rail is the hero: each stack is a tenant you load
+  onto the card, and the card shows what it holds, what it measured and where it lost.
+  Then the CPU floor, the loss column, the drawing board (generated from `planned`
+  projects) and the offer. Own layout (`layouts/Home.astro`) and stylesheet
+  (`styles/home.css`), so nothing leaks into other pages. Shippori Mincho / Zen Kaku
+  Gothic New / DM Mono, self-hosted subsets (~170 KB if every face loads, latin + 8
+  kanji); a ~6 KB inline canvas script, paused off-screen and under reduced motion; the
+  first tenant renders server-side so the page is complete without JS.
+- **Everything else stays classic** (`Base.astro` + `global.css`, the constraints in §3
+  and §10 below unchanged). The classic homepage moved to `/classic/` and stays live,
+  so it keeps picking up new projects and posts.
+- **Navigation between them.** The homepage header links projects, blog, field guide,
+  résumé, work with me and the classic site; its footer lists every classic page. Classic
+  pages' brand link opens `/`, and their footer links both homepages.
+- **What held on both:** no third-party requests, no trackers, no frameworks, static
+  build, honest statuses, every number traceable.
+
 ## 3. Design philosophy — why NOT a 3D animated showpiece
 
 Considered and rejected: the $10k-look 3D/scroll-animated portfolio trend.
@@ -61,7 +83,8 @@ src/
 ├── content.config.ts        # zod schemas for both collections
 ├── content/
 │   ├── projects/*.md         # ONE file per project (frontmatter: title,
-│   │                         #   oneliner, status, repo, stack[], started, order)
+│   │                         #   oneliner, status, repo, stack[], started, order,
+│   │                         #   + optional caseStudy, writeup, private)
 │   ├── blog/*.md             # ONE file per post (title, description, date,
 │   │                         #   project?, tags[])
 │   └── resume.md             # canonical resume (rendered at /resume)
@@ -69,8 +92,9 @@ src/
 ├── styles/global.css         # all design tokens, ~200 lines, no framework
 ├── lib/github.js             # build-time repo status (fail-soft) → "updated X ago"
 └── pages/
-    ├── index.astro           # hero + CTA row + Latest work (3 newest by `started`)
-    │                         #   + compact earlier-builds rows + self-hosting strip
+    ├── index.astro           # hero + CTA row + Latest work (3 newest PUBLIC by
+    │                         #   `started`) + compact earlier-builds rows + "In the
+    │                         #   lab" rows (private builds) + self-hosting strip
     │                         #   + latest posts + contact band (since 2026-07-12)
     ├── start-here.astro      # plain-English intro (non-technical buyers)
     ├── services.astro        # "Work with me" — the offer, pricing, contact
@@ -82,6 +106,10 @@ src/
     ├── calculator.astro      # "Field guide" — VRAM/fit/tier/concurrency + cloud-vs-local
     ├── resume.astro          # content/resume.md + live project list + dated download
     └── rss.xml.js            # RSS feed
+src/layouts/Home.astro        # homepage-only layout (light vein, §3a)
+src/styles/home.css           # homepage-only tokens + styles
+src/pages/classic/index.astro # the classic homepage, still live at /classic/
+public/fonts/                 # self-hosted font subsets for the homepage + OFL licences
 public/resume.md              # downloadable copy — keep in sync with content/resume.md
 .github/workflows/scheduled-rebuild.yml  # daily redeploy → fresh GitHub-status snapshot
 ```
@@ -90,6 +118,20 @@ public/resume.md              # downloadable copy — keep in sync with content/
 (`building` / `shipped` / `parked`) drive the homepage sections automatically.
 Posts link to projects via the `project:` frontmatter key matching the project
 filename.
+
+**Private builds (since 2026-11-16).** A project whose repo must stay private
+(commercial deliverable, security or intelligence tooling, or it runs on the
+owner's own data) sets `private: true` and, instead of a repo link, a `writeup:`
+pointing at its public blog post (or `repo:` pointing at a public results-only
+sibling, as Legal RAG does). Private entries never lead the homepage: they get
+their own "In the lab" rows and a second section on `/projects`, each labelled
+`private repo`. A private card may only state what is already public: its
+write-up, its public results repo, or its rows in `pipeline/queue.md` (this repo
+is public, so the lesson log is too). No ports, hostnames, pricing or client
+detail. `status: planned` (dashed badge) marks work that is designed but not
+built; those sit in an "On the drawing board" section. Deliberately absent: the
+private catalogue and the business/pricing tracks. The hero project count is
+computed from the collection, not hardcoded.
 
 **Navigation — 5 tabs (since 2026-06-23):** `start here · work with me ·
 projects · field guide · knowledge base`. GitHub is a footer logo + username
@@ -114,7 +156,11 @@ related project's filename. Push. (Post ideas queue: the "Blog Content Mine"
 table in the sovereign stack doc.)
 
 **Update the resume:** edit `src/content/resume.md`, then
-`cp src/content/resume.md public/resume.md`. Push. (The copy in
+`cp src/content/resume.md public/resume.md` and `bash scripts/make-resume-pdf.sh`
+(regenerates `public/resume.pdf`). Push. Leave the `oss-auto` block alone: it is
+generated. Heading text feeds the `/resume#how-i-work-read-this-first` anchor
+linked from the footer and Work-with-me, so renaming that heading means updating
+both links. (The copy in
 `~/Documents/resume/` is the working-draft archive.)
 
 **Preview locally:** `npm run dev` (port 4321). **Verify:** `npm run build`
@@ -165,6 +211,8 @@ system monospace. The constraints in §3 ARE the identity — the discipline is 
 adding to them. Any visual change must hold all of these.
 
 ### 10.1 Design tokens — source of truth is `src/styles/global.css :root`
+These are the classic tokens, used by every page except the homepage (§3a; the
+homepage's own tokens live in `home.css`).
 Never hardcode a new hex or font; use the CSS variable. Current values:
 
 | token | value | use |

@@ -2,7 +2,7 @@
 title: "A GTK switch for one GPU shared by seven AI stacks"
 description: "GTK4 mode switcher for an RTX 5090 shared across seven local AI stacks: the idle-vs-busy detection problem, an SM-util false positive from reverse-PRIME graphics, and why the app is a front-end only."
 date: 2026-08-08
-project: sovereign-ai-stack
+project: estate-ops
 tags: ["linux", "gtk4", "gpu", "local-llm", "ops"]
 ---
 

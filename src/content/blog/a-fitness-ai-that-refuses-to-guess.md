@@ -2,6 +2,7 @@
 title: "A fitness AI that refuses to guess"
 description: "ADASHINO plans training with a deterministic solver -- the LLM is the conversational shell, not the source of the numbers. No demo video, and a four-week dogfood gate before any claims ship."
 date: 2026-07-22
+project: adashino
 tags: ["fitness", "adashino", "deterministic", "property-testing", "llm"]
 ---
 

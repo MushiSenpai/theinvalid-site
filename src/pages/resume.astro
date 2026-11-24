@@ -13,17 +13,18 @@ const gh = await repoStatuses(projects.map((p) => p.data.repo).filter(Boolean));
 const stamp = new Date().toISOString().slice(0, 7); // YYYY-MM
 const pdfName = `Madhan-Kumar-Reddy-Resume-${stamp}.pdf`;
 const mdName = `Madhan-Kumar-Reddy-Resume-${stamp}.md`;
+const shortName = `Madhan-Kumar-Reddy-Resume-2-page-${stamp}.pdf`;
 ---
 
 <Base
   title="Resume — Madhan Kumar Reddy"
-  description="AI Infrastructure Operator — I spec, direct LLMs, and verify. Resume, honestly written, with a live project list that stays current."
+  description="AI Infrastructure Operator: I spec, direct LLMs, and verify. Resume, honestly written, with a live project list that stays current."
 >
   <Resume />
 
   <h2 id="current-projects">Current projects</h2>
   <p style="color: var(--muted); font-size: 0.9rem">
-    Generated from the live project list — current as of the last site build
+    Generated from the live project list, current as of the last site build
     ({stamp}). Statuses are honest: <code>building</code> means building.
   </p>
   <ul class="postlist">
@@ -32,6 +33,7 @@ const mdName = `Madhan-Kumar-Reddy-Resume-${stamp}.md`;
         <span>
           <a href={`/projects/${p.id}`}>{p.data.title}</a>
           <span class={`badge ${p.data.status}`}>{p.data.status}</span>
+          {p.data.private && <span style="font-family: var(--mono); font-size: 0.75rem; color: var(--muted)"> · private repo</span>}
           {gh.get(p.data.repo)?.pushedAt && <span style="font-family: var(--mono); font-size: 0.75rem; color: var(--muted)"> · updated {ago(gh.get(p.data.repo).pushedAt)}</span>}
           <br /><span style="color: var(--muted); font-size: 0.9rem">{p.data.oneliner}</span>
         </span>
@@ -41,8 +43,9 @@ const mdName = `Madhan-Kumar-Reddy-Resume-${stamp}.md`;
 
   <hr class="no-print" />
   <p class="no-print" style="font-family: var(--mono); font-size: 0.85rem; color: var(--muted)">
-    Want this as a file? <a href="/resume.pdf" download={pdfName}>Download PDF</a> ·
-    <a href="/resume.md" download={mdName}>markdown</a> —
-    same content either way, no tracking pixel, nothing hidden in the formatting.
+    Want this as a file? <a href="/resume-2page.pdf" download={shortName}>2-page PDF</a> (for applications) ·
+    <a href="/resume.pdf" download={pdfName}>full PDF</a> ·
+    <a href="/resume.md" download={mdName}>markdown</a>.
+    No tracking pixel, nothing hidden in the formatting.
   </p>
 </Base>

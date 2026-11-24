@@ -2,7 +2,7 @@
 title: "Driving a Linux AI workstation from the couch"
 description: "How I built a tailnet-only web command panel for 25 services on an RTX 5090 rig, and why typing localhost:PORT from a remote browser connects to the wrong machine."
 date: 2026-08-14
-project: sovereign-ai-stack
+project: estate-ops
 tags: ["tailscale", "selfhosted", "homelab", "linux", "python"]
 ---
 
@@ -26,7 +26,7 @@ Most services bind to `127.0.0.1` deliberately, because binding to a real networ
 
 Mapping 25 services across the stack, I found four reachability classes:
 
-- **T (tailnet-bound):** already listens on the tailnet IP (`100.106.82.51`). LiteLLM `:4000`, Hermes Dashboard `:9119`, Paperclip Workshop `:3100`. The Mac can open these directly.
+- **T (tailnet-bound):** already listens on the tailnet IP (`100.x.y.z`). LiteLLM `:4000`, Hermes Dashboard `:9119`, Paperclip Workshop `:3100`. The Mac can open these directly.
 - **L (localhost-only):** ComfyUI `:8188`, Open WebUI `:3080`, rq-dashboard `:9010`, and about a dozen more. Not reachable from the Mac without a proxy.
 - **N (no web UI):** vLLM `:8000`, Fish Speech `:9002`, Redis `:6379`. Workers with no dashboard. Status and control only.
 - **P (public via VPS):** PocketBase Arena, fronted by Caddy on the VPS edge. Reachable from anywhere.

@@ -13,9 +13,11 @@ include the losses, case studies include the dead ends.
 
 ## What this repo is
 
-- **Astro 6, content-as-files, zero JS frameworks, system fonts only.** Posts and
-  project pages are markdown in `src/content/`; the build is fully static and
-  the performance is the flex (100/100 Lighthouse).
+- **Astro 6, content-as-files, zero JS frameworks, no third-party requests.** Posts and
+  project pages are markdown in `src/content/`; the build is fully static.
+- **Two designs.** The homepage is the "light vein" design (self-hosted fonts, one small
+  inline canvas script); every other page keeps the classic system-font design, and the
+  classic homepage is still at [`/classic/`](https://theinvalid.me/classic/).
 - **Deploy = push to `main`.** Cloudflare rebuilds and ships in about a minute.
 - **One accent color.** If a design needs a second one, the design is wrong.
 
@@ -24,7 +26,7 @@ include the losses, case studies include the dead ends.
 | Path | What lives there |
 |---|---|
 | `src/content/blog/` | posts + case studies (failure logs included) |
-| `src/content/projects/` | project pages — the stacks, apps, and experiments |
+| `src/content/projects/` | project pages: the stacks, apps, experiments, and private builds (write-up only) |
 | `src/pages/` | routes: index, blog, projects, services, resume |
 | `public/` | static assets + standalone catalogue pages |
 | `pipeline/` | editorial queue + publishing checklist |

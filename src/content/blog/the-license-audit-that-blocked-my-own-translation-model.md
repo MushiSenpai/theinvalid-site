@@ -2,6 +2,7 @@
 title: "The license audit that blocked my own translation model"
 description: "NLLB-200, MMS, SeamlessM4T all CC-BY-NC: the Apache label on the repo does not cover the weights inside it."
 date: 2026-07-18
+project: isaza
 tags: ["translation", "licensing", "nllb", "open-source", "local-llm"]
 ---
 

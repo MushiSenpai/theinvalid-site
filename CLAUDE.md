@@ -6,21 +6,33 @@ the operating playbook, and the brand/visual-identity spec — is
 **[docs/SITE-DECISIONS.md](docs/SITE-DECISIONS.md)**. Read it before non-trivial work.
 
 ## Non-negotiables — the brand IS the constraints (SITE-DECISIONS §3, §10)
-- **One accent only:** lantern gold `--accent #e8a33d`. If a design needs a second
-  color to work, the design is wrong.
-- **Tokens are defined in `src/styles/global.css :root`** — that's the source of
-  truth. Use the vars (`var(--accent)` …), never hardcode a new hex. Palette:
-  bg `#0b0e14` · raise `#11151f` · fg `#e6e1d7` · muted `#8a8f98` · line `#1e2430`.
-- **System fonts only** (`--mono` / `--sans`). No webfonts, no client JS, no
-  frameworks, no gradients/shadows. Performance is the flex (100/100 Lighthouse).
+- **Two designs, split by page (owner decision 2026-11-17).**
+  - **Homepage `/` only = "light vein":** `src/pages/index.astro` + `layouts/Home.astro`
+    + `styles/home.css`. Night-forest ink, gold accent `#f2c14e`, Mincho display face,
+    the GPU card. Its header and footer link to the classic pages (blog, résumé,
+    projects, field guide, work with me, classic homepage). Never import `home.css`
+    anywhere else.
+  - **Every other page = classic**, unchanged: `layouts/Base.astro` + `styles/global.css`.
+    The classic homepage lives on at `/classic/` (`src/pages/classic/index.astro`).
+    Do not restyle classic pages toward the new look; the owner wants them kept as is.
+- **Classic tokens** (`global.css :root`, the source of truth for classic pages):
+  **one accent only**, lantern gold `--accent #e8a33d`; bg `#0b0e14` · raise `#11151f`
+  · fg `#e6e1d7` · muted `#8a8f98` · line `#1e2430`. System fonts, no client JS
+  (the field guide's calculator is the existing exception), no gradients/shadows.
+- **Homepage tokens** live in `home.css :root`. The `--p-*` stack pigments name a GPU
+  tenant on the card and nowhere else. Fonts are self-hosted subsets in `public/fonts/`
+  (OFL files beside them): no font CDN, no third-party request of any kind. A new
+  kanji glyph needs a regenerated `shippori-mincho-kanji` subset. Its script is inline,
+  the page is complete without it, and `prefers-reduced-motion` is respected.
+- **Use the vars, never hardcode a new hex**, in either stylesheet.
 
 ## Brand marks (full spec: SITE-DECISIONS §10)
-- **Mark = the empty set ∅** (invalid / null). Used ONLY as favicon / app icon /
-  social card — deliberately NOT on the page.
-- **On-page identity = the wordmark** `>theinvalid.me` (nav `.brand`: gold `>`
-  prompt, cream name, gold `.me`). Keep it tight — the `max-width:46rem` nav wraps
-  if the brand grows.
-- **Favicons** live in `public/`, wired in `src/layouts/Base.astro`, and are
+- **Mark = the empty set ∅** (invalid / null). Favicon / app icon / social card, the
+  classic contact band, and the homepage's nav brand.
+- **On-page identity:** classic pages use the wordmark `>theinvalid.me` (gold `>`, cream
+  name, gold `.me`; keep it tight, the 46rem nav wraps if it grows). The homepage uses
+  the ∅ mark + `theinvalid` + gold `.me`.
+- **Favicons** live in `public/`, wired in BOTH `src/layouts/Base.astro` and `Home.astro`, and are
   cache-busted `?v=<token>` (now `?v=nullset`). **Bump the token on ANY favicon
   change** or browsers keep the stale icon. Master assets + regen: `~/Documents/design/theinvalid-logo/`.
 - **Intro / loader videos** (5 options × 16:9/9:16 × 15 s/5 s, incl. a transparent overlay):
@@ -37,6 +49,12 @@ the operating playbook, and the brand/visual-identity spec — is
 
 ## Deploy
 - `npm run build` MUST pass, then `git push` to `main` auto-deploys.
+- **Cloudflare only builds pushes whose head commit is authored by the owner's account**
+  (found 2026-11-19: six commits authored `Claude <noreply@anthropic.com>` never built; an
+  owner-authored empty commit deployed at once). A Claude session works on a branch; the
+  owner merges or pushes the final commit to `main` from their own clone.
+- **Verify a deploy by content, not status code:** curl a string only the new build has
+  (e.g. a new route), since a stale page also returns 200.
 - 3D catalogue: run **`scripts/deploy-3d-catalogue.sh`** (never hand-edit the deployed
   `public/3d-catalogue.html`).
 - Lessons/decisions → append a row to `pipeline/queue.md` §B (same session).

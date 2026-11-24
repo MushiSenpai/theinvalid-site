@@ -2,6 +2,7 @@
 title: "I built a trading intelligence stack that isn't allowed to trade yet"
 description: "GINKO: nine phases of financial intelligence infrastructure, a hard Live Gate, and zero live orders. No performance numbers published because none have passed the audit. That is the post."
 date: 2026-07-15
+project: ginko
 tags: ["trading", "fintech", "backtesting", "ops", "ai-infrastructure"]
 ---
 

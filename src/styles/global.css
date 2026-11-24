@@ -212,6 +212,7 @@ nav.site a[aria-current="page"] {
 .badge.shipped  { color: var(--ok); }
 .badge.building { color: var(--warn); }
 .badge.parked   { color: var(--dim); }
+.badge.planned  { color: var(--muted); border-style: dashed; }
 
 /* ── hero proof strip ────────────────────────────── */
 .proof {

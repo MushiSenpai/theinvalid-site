@@ -21,10 +21,12 @@ const fmt = (d: Date) =>
   <h1>{project.data.title} <span class={`badge ${project.data.status}`}>{project.data.status}</span></h1>
   <p style="color: var(--muted)">{project.data.oneliner}</p>
   <p class="meta" style="font-family: var(--mono); font-size: 0.85rem;">
+    {project.data.private && <span>private repo ·&nbsp;</span>}
     {project.data.repo && (
       <a href={project.data.repo}>{project.data.repo.replace('https://', '')} ↗</a>
     )}
     {project.data.caseStudy && <a href={project.data.caseStudy}>case study →</a>}
+    {project.data.writeup && <a href={project.data.writeup}>write-up →</a>}
     &nbsp;·&nbsp; {project.data.stack.join(' · ')}
   </p>
   <hr />
